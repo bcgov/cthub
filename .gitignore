@@ -1,0 +1,17 @@
+__pycache__/
+.DS_Store
+.env
+.idea/
+.vscode/
+*.py[cod]
+build/
+node_modules/
+public/
+TEST-*xml
+venv/
+
+db.sqlite3
+.coverage
+frontend/coverage/
+backend/minio/
+.sql.gz
