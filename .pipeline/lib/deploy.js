@@ -11,10 +11,12 @@ module.exports = settings => {
   const oc = new OpenShiftClientX(Object.assign({namespace: phases[phase].namespace}, options));
 
   //add Valid Redirect URIs for the pull request to keycloak
+  /************
   if(phase === 'dev') {
     const kc = new KeyCloakClient(settings, oc);
     kc.addUris();
   }
+  *************/
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
   var objects = [];
@@ -41,10 +43,9 @@ module.exports = settings => {
       }
     }))
     //deploy Patroni
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deploy.yaml`, {
       'param': {
         'NAME': 'patroni',
-        'ENV_NAME': phases[phase].phase,
         'SUFFIX': phases[phase].suffix,
         'CPU_REQUEST': phases[phase].patroniCpuRequest,
         'CPU_LIMIT': phases[phase].patroniCpuLimit,

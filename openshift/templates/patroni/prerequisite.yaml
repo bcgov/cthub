@@ -59,7 +59,7 @@ objects:
       labels:
         app: ${NAME}${SUFFIX}
         cluster-name: ${NAME}${SUFFIX}
-      name: ${NAME}
+      name: ${NAME}${SUFFIX}
     rules:
       - apiGroups:
           - ""

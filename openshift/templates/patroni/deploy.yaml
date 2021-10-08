@@ -26,9 +26,9 @@ metadata:
     tags: postgresql
   name: patroni-pgsql-persistent
 labels:
-  app: ${NAME}
+  app: ${NAME}${SUFFIX}
   phase: deploy
-  app.kubernetes.io/instance: ${NAME}
+  app.kubernetes.io/instance: ${NAME}${SUFFIX}
   app.kubernetes.io/component: database
   app.kubernetes.io/name: patroni
   app.kubernetes.io/managed-by: template
@@ -38,16 +38,16 @@ objects:
     metadata:
       creationTimestamp: null
       labels:
-        app: ${NAME}
-        cluster-name: ${NAME}
-      name: ${NAME}-master
+        app: ${NAME}${SUFFIX}
+        cluster-name: ${NAME}${SUFFIX}
+      name: ${NAME}-master${SUFFIX}
     spec:
       ports:
         - port: 5432
           protocol: TCP
           targetPort: 5432
       selector:
-        cluster-name: ${NAME}
+        cluster-name: ${NAME}${SUFFIX}
         role: master
         app.kubernetes.io/name: patroni
       sessionAffinity: None
@@ -60,24 +60,24 @@ objects:
       creationTimestamp: null
       generation: 3
       labels:
-        app: ${NAME}
-        cluster-name: ${NAME}
-      name: ${NAME}
+        app: ${NAME}${SUFFIX}
+        cluster-name: ${NAME}${SUFFIX}
+      name: ${NAME}${SUFFIX}
     spec:
       podManagementPolicy: OrderedReady
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         matchLabels:
-          statefulset: ${NAME}
-      serviceName: ${NAME}
+          statefulset: ${NAME}${SUFFIX}
+      serviceName: ${NAME}${SUFFIX}
       template:
         metadata:
           creationTimestamp: null
           labels:
-            app: ${NAME}
-            statefulset: ${NAME}
-            cluster-name: ${NAME}
+            app: ${NAME}${SUFFIX}
+            statefulset: ${NAME}${SUFFIX}
+            cluster-name: ${NAME}${SUFFIX}
             app.kubernetes.io/name: patroni
         spec:
           affinity:
@@ -88,7 +88,7 @@ objects:
                       - key: statefulset
                         operator: In
                         values:
-                          - ${NAME}
+                          - ${NAME}${SUFFIX}
                   topologyKey: "kubernetes.io/hostname"
           containers:
             - env:
@@ -113,44 +113,44 @@ objects:
                       apiVersion: v1
                       fieldPath: metadata.namespace
                 - name: PATRONI_KUBERNETES_LABELS
-                  value: '{"cluster-name": "${NAME}", "app.kubernetes.io/name": "patroni"}'
+                  value: '{"cluster-name": "${NAME}${SUFFIX}", "app.kubernetes.io/name": "patroni"}'
                 - name: PATRONI_SUPERUSER_USERNAME
                   valueFrom:
                     secretKeyRef:
                       key: superuser-username
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_SUPERUSER_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: superuser-password
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_REPLICATION_USERNAME
                   valueFrom:
                     secretKeyRef:
                       key: replication-username
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_REPLICATION_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: replication-password
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: APP_USER
                   valueFrom:
                     secretKeyRef:
                       key: app-db-username
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: APP_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: app-db-password
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: APP_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: app-db-name
-                      name: ${NAME}-creds
+                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_SCOPE
-                  value: ${NAME}
+                  value: ${NAME}${SUFFIX}
                 - name: PATRONI_NAME
                   valueFrom:
                     fieldRef:
@@ -200,7 +200,7 @@ objects:
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
-          serviceAccountName: ${NAME}
+          serviceAccountName: ${NAME}${SUFFIX}
           terminationGracePeriodSeconds: 0
       updateStrategy:
         type: RollingUpdate
@@ -209,7 +209,7 @@ objects:
             annotations:
               volume.beta.kubernetes.io/storage-class: ${STORAGE_CLASS}
             labels:
-              app: ${NAME}
+              app: ${NAME}${SUFFIX}
             name: postgresql
           spec:
             storageClassName: ${STORAGE_CLASS}
