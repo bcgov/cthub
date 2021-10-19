@@ -1,0 +1,19 @@
+[{
+  "fields": {
+    "first_name": "Joe",
+    "last_name": "Banyard",
+    "position": "RB",
+    "team": ["JAX"]
+  },
+  "model": "api.Player",
+  "pk": 1
+}, {
+  "fields": {
+    "first_name": "Shaun",
+    "last_name": "Hill",
+    "position": "QB",
+    "team": ["MIN"]
+  },
+  "model": "api.Player",
+  "pk": 2
+}]

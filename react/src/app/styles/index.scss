@@ -1,0 +1,24 @@
+/*
+Base Style
+Everything else will generally be controlled via bootstrap
+*/
+$bg-alt-black: #1E1F21;
+$bg-black: #000;
+$bg-white: #FFF;
+$default-text-color: #000;
+$default-table-border-color: rgba(249, 249, 249, 0.2);
+$default-table-color: #F9F9F9;
+$highlight: #0078FD;
+
+@import 'App.scss';
+@import 'ReactTable.scss';
+@import 'Roboto.scss';
+
+body {
+  background-color: $bg-white;
+  color: $default-text-color;
+  font-family: 'Roboto', 'Open Sans', sans-serif;
+  font-weight: 700;
+  height: 100%;
+  margin: 0;
+}

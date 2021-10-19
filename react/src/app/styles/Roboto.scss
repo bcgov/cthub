@@ -1,0 +1,21 @@
+/*
+Roboto Webfont
+*/
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/Roboto-Regular.ttf') format('ttf');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: bold;
+  src: url('./fonts/Roboto-Bold.ttf') format('ttf');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: italic;
+  font-weight: bold;
+  src: url('./fonts/Roboto-BoldItalic.ttf') format('woff');
+}

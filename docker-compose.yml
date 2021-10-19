@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  keycloak:
+    build: ./keycloak
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+  api:
+    build: ./django
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - keycloak.env
+    environment: 
+      - ALLOWED_HOSTS=localhost
+      - CORS_ORIGIN_ALLOW_ALL=False
+      - CORS_ORIGIN_WHITELIST=http://localhost:3000
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_HOST=db
+      - DB_NAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - LOCAL_DEV=True
+    volumes:
+      - ./django:/api
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    build: ./react
+    command: >
+      sh -c "npm install --legacy-peer-deps &&
+             npm start"
+    env_file:
+      - keycloak.env
+    environment: 
+      - API_BASE=http://localhost:8000
+      - ENABLE_KEYCLOAK=true
+    volumes:
+      - ./react:/web
+    ports:
+      - "3000:3000"
