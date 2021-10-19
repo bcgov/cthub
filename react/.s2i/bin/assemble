@@ -29,8 +29,8 @@ curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.
 # -d means --loglevel info
 npm install -d
 
-# run webpack
-npm run dist
+# run webpack, was dist in zeva
+npm run build
 
 # Fix source directory permissions
 fix-permissions ./
