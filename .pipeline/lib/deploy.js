@@ -34,7 +34,7 @@ module.exports = settings => {
     }))
   }*/
 
-  if(phase === 'dev') {
+  //if(phase === 'dev') {
     //deploy Patroni required secrets
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/prerequisite.yaml`, {
       'param': {
@@ -60,7 +60,7 @@ module.exports = settings => {
         'STORAGE_CLASS': phases[phase].storageClass
       }
     }))
-  }
+  //}
 
   oc.applyRecommendedLabels(
       objects,

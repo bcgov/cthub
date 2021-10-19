@@ -18,11 +18,11 @@ parameters:
     required: true
   - name: GIT_URL
     displayName:
-    description: zeva repo
+    description: cthub repo
     required: true
   - name: GIT_REF
     displayName:
-    description: zeva branch name of the pr
+    description: cthub branch name of the pr
     required: true
 objects:
 - apiVersion: image.openshift.io/v1
@@ -68,28 +68,15 @@ objects:
         ref: ${GIT_REF}
         uri: ${GIT_URL}
       type: Git
-      contextDir: frontend
+      contextDir: react
     strategy:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: nodejs:14-1-28
-          namespace: e52f12-tools
-        pullSecret:
-          name: zeva-image-pull-secret
+          name: nodejs-14:1-46.1634035772
+          namespace: 30b186-tools
         forcePull: true
         noCache: true          
-        env:
-          - name: ARTIFACTORY_USER
-            valueFrom:
-              secretKeyRef:
-                name: artifacts-zeva-artifactory-service-account-xgchey
-                key: username
-          - name: ARTIFACTORY_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: artifacts-zeva-artifactory-service-account-xgchey
-                key: password
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []
