@@ -1,0 +1,239 @@
+[{
+  "fields": {
+    "t_code": "ARI",
+    "t_name": "Arizona Cardinals"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "ATL",
+    "t_name": "Atlanta Falcons"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "BAL",
+    "t_name": "Baltimore Ravens"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "BUF",
+    "t_name": "Buffalo Bills"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "CAR",
+    "t_name": "Carolina Panthers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "CHI",
+    "t_name": "Chicago Bears"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "CIN",
+    "t_name": "Cincinnati Bengals"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "CLE",
+    "t_name": "Cleveland Browns"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "DAL",
+    "t_name": "Dallas Cowboys"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "DEN",
+    "t_name": "Denver Broncos"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "DET",
+    "t_name": "Detroit Lions"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "GB",
+    "t_name": "Green Bay Packers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "HOU",
+    "t_name": "Houston Texans"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "IND",
+    "t_name": "Indianapolis Colts"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "JAX",
+    "t_name": "Jacksonville Jaguars"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "KC",
+    "t_name": "Kansas City Chiefs"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "LV",
+    "t_name": "Las Vegas Raiders"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "LAC",
+    "t_name": "Los Angeles Chargers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "LA",
+    "t_name": "Los Angeles Rams"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "MIA",
+    "t_name": "Miami Dolphins"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "MIN",
+    "t_name": "Minnesota Vikings"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "NE",
+    "t_name": "New England Patriots"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "NO",
+    "t_name": "New Orleans Saints"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "NYG",
+    "t_name": "New York Giants"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "NYJ",
+    "t_name": "New York Jets"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "OAK",
+    "t_name": "Oakland Raiders"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "PHI",
+    "t_name": "Philadelphia Eagles"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "PIT",
+    "t_name": "Pittsburgh Steelers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "SD",
+    "t_name": "San Diego Chargers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "SF",
+    "t_name": "San Francisco 49ers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "SEA",
+    "t_name": "Seattle Seahawks"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "TB",
+    "t_name": "Tampa Bay Buccaneers"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "TEN",
+    "t_name": "Tennessee Titans"
+  },
+  "model": "api.Team",
+  "pk": null
+}, {
+  "fields": {
+    "t_code": "WAS",
+    "t_name": "Washington Football Team"
+  },
+  "model": "api.Team",
+  "pk": null
+}]

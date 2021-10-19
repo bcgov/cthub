@@ -1,0 +1,39 @@
+[{
+  "fields": {
+    "player": 1,
+    "att_per_game": 2,
+    "att_total": 2,
+    "yds_total": 7,
+    "yds_avg_per_att": 3.5,
+    "yds_per_game": 7,
+    "td_total": 0,
+    "rush_max": 7,
+    "rush_max_td": false,
+    "rush_1st": 0,
+    "rush_1st_pct": 0,
+    "rush_20_yds": 0,
+    "rush_40_yds": 0,
+    "fumbles_total": 0
+  },
+  "model": "api.RushingStats",
+  "pk": null
+}, {
+  "fields": {
+    "player": 2,
+    "att_per_game": 1.7,
+    "att_total": 5,
+    "yds_total": 5,
+    "yds_avg_per_att": 1,
+    "yds_per_game": 1.7,
+    "td_total": 0,
+    "rush_max": 9,
+    "rush_max_td": false,
+    "rush_1st": 0,
+    "rush_1st_pct": 0,
+    "rush_20_yds": 0,
+    "rush_40_yds": 0,
+    "fumbles_total": 0
+  },
+  "model": "api.RushingStats",
+  "pk": null
+}]
