@@ -7,7 +7,7 @@
 ### build minio
 
 oc import-image rhel7/rhel:7.9-508 --from=registry.redhat.io/rhel7/rhel:7.9-508 --confirm
-oc process -f ./minio-bc.yaml | oc create -f - -n b03186-tools
+oc process -f ./minio-bc.yaml GIT_REF=pipeline2-0.1.0 | oc create -f - -n 30b186-tools
 oc tag minio:latest minio:20211020
 
 ### One minio instance serve all PRs on Dev
