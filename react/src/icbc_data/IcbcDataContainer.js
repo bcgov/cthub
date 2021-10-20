@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useCallback, useRef, useState } from 'react';
 
 import { getFilters, getOrderBy } from '../app/utilities/reactTable';
-import RushingStatsTable from './components/RushingStatsTable';
+import IcbcDataTable from './components/IcbcDataTable';
 import ROUTES from './routes';
 
-const RushingStatsContainer = () => {
+const IcbcDataContainer = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(-1);
@@ -42,7 +42,7 @@ const RushingStatsContainer = () => {
   return (
     <div className="row">
       <div className="col-12">
-        <RushingStatsTable
+        <IcbcDataTable
           data={data}
           loading={loading}
           pageCount={pageCount}
@@ -54,4 +54,4 @@ const RushingStatsContainer = () => {
   );
 };
 
-export default RushingStatsContainer;
+export default IcbcDataContainer;
