@@ -78,7 +78,7 @@ objects:
           memory: 200M
       runPolicy: SerialLatestOnly
       source:
-        contextDir: backend
+        contextDir: django
         git:
           ref: ${GIT_REF}
           uri: ${GIT_URL}

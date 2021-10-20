@@ -1,7 +1,7 @@
 "use strict";
 const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
 const path = require("path");
-const KeyCloakClient = require('./keycloak');
+//const KeyCloakClient = require('./keycloak');
 
 module.exports = settings => {
   const phases = settings.phases;
@@ -33,8 +33,24 @@ module.exports = settings => {
       }
     }))
   }*/
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'ENV_NAME': phases[phase].phase,
+        'HOST_NAME': phases[phase].host,
+        'BACKEND_HOST_NAME': phases[phase].backendHost,
+        'SSO_NAME': phases[phase].ssoName,
+        'KEYCLOAK_REALM': 'onestopauth',
+        'DJANGO_DEBUG': phases[phase].djangoDebug,
+        'OCP_NAME': phases[phase].ocpName,
+        'LOGOUT_HOST_NAME': phases[phase].logoutHostName,
+      }
+    }))
+  }
 
-  //if(phase === 'dev') {
+  if(phase === 'dev') {
     //deploy Patroni required secrets
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/prerequisite.yaml`, {
       'param': {
@@ -60,7 +76,48 @@ module.exports = settings => {
         'STORAGE_CLASS': phases[phase].storageClass
       }
     }))
+  }
+
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix
+    }
+  }))
   //}
+
+  // deploy frontend
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'ENV_NAME': phases[phase].phase,
+      'HOST_NAME': phases[phase].host,
+      'CPU_REQUEST': phases[phase].frontendCpuRequest,
+      'CPU_LIMIT': phases[phase].frontendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].frontendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].frontendMemoryLimit,
+      'REPLICAS':  phases[phase].frontendReplicas
+    }
+  }))
+
+  //deploy backend
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'ENV_NAME': phases[phase].phase,
+      'BACKEND_HOST_NAME': phases[phase].backendHost,
+      'CPU_REQUEST': phases[phase].backendCpuRequest,
+      'CPU_LIMIT': phases[phase].backendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
+      'REPLICAS':  phases[phase].backendReplicas
+    }
+  })) 
 
   oc.applyRecommendedLabels(
       objects,
