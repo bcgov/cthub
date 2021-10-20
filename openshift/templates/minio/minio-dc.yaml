@@ -93,6 +93,10 @@ objects:
           protocol: TCP
           port: 9000
           targetPort: 9000
+        - name: 9001-web
+          protocol: TCP
+          port: 9001
+          targetPort: 9001          
       selector:
         deploymentconfig: ${NAME}-minio${SUFFIX}
       type: ClusterIP
@@ -111,7 +115,7 @@ objects:
     spec:
       host: ${NAME}-minio${SUFFIX}.${OCP_NAME}.gov.bc.ca
       port:
-        targetPort: 9000-tcp
+        targetPort: 9001-tcp
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
