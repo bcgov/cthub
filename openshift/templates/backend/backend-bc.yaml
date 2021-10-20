@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: zeva-backend-bc
+  name: cthub-backend-bc
 parameters:
   - name: NAME
     displayName:
@@ -18,11 +18,11 @@ parameters:
     required: true
   - name: GIT_URL
     displayName:
-    description: zeva repo
+    description: cthub repo
     required: true
   - name: GIT_REF
     displayName:
-    description: zeva branch name of the pr
+    description: cthub branch name of the pr
     required: true
 objects:
   - apiVersion: image.openshift.io/v1
@@ -89,18 +89,16 @@ objects:
             - name: ARTIFACTORY_USER
               valueFrom:
                 secretKeyRef:
-                  name: artifacts-zeva-artifactory-service-account-xgchey
+                  name: artifacts-default-idxprm
                   key: username
             - name: ARTIFACTORY_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: artifacts-zeva-artifactory-service-account-xgchey
+                  name: artifacts-default-idxprm
                   key: password            
           from:
             kind: ImageStreamTag
-            name: python:3.6-1-134
-          pullSecret:
-            name: zeva-image-pull-secret            
+            name: python-39:1-18.1634036280
           forcePull: true
           noCache: true            
         type: Source
