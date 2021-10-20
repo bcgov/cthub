@@ -7,7 +7,7 @@ metadata:
     openshift.io/display-name: BC Gov Minio
 parameters:
   - name: NAME
-    value: zeva
+    value: cthub
     required: true
   - name: SUFFIX
     displayName:
@@ -41,13 +41,13 @@ parameters:
     description: Memory upper limit
     required: true
     value: '500M'    
-  - name: MINIO_ACCESS_KEY
-    description: Minio access key
+  - name: MINIO_ROOT_USER
+    description: Minio root user
     from: "[a-zA-Z0-9]{8}"
     generate: expression
     required: true
-  - name: MINIO_SECRET_KEY
-    description: Minio secret key
+  - name: MINIO_ROOT_PASSWORD
+    description: Minio root password
     from: "[a-zA-Z0-9]{16}"
     generate: expression
     required: true      
@@ -61,8 +61,8 @@ objects:
     metadata:
       name: ${NAME}-minio${SUFFIX}
     stringData:
-       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -84,7 +84,7 @@ objects:
       creationTimestamp:
       labels:
         name: minio
-        app: zeva
+        app: cthub
         role: minio
         env: ${ENV_NAME}
     spec:
@@ -104,7 +104,7 @@ objects:
     metadata:
       creationTimestamp: null
       labels:
-        app: zeva
+        app: cthub
         role: minio
         env: ${ENV_NAME}
       name: ${NAME}-minio${SUFFIX}
@@ -140,8 +140,8 @@ objects:
               - minio
             from:
               kind: ImageStreamTag
-              namespace: e52f12-tools
-              name: minio:20200309
+              namespace: 30b186-tools
+              name: minio:20211020
       replicas: 1
       test: false
       selector:
@@ -163,12 +163,12 @@ objects:
                 - containerPort: 9000
                   protocol: TCP
               env:
-                - name: MINIO_ACCESS_KEY
+                - name: MINIO_ROOT_USER
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-minio${SUFFIX}
                       key: MINIO_ACCESS_KEY
-                - name: MINIO_SECRET_KEY
+                - name: MINIO_ROOT_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-minio${SUFFIX}
@@ -200,7 +200,7 @@ objects:
                   command:
                     - /bin/sh
                     - '-c'
-                    - mkdir -p /data/zeva
+                    - mkdir -p /data/cthub
                 failureThreshold: 3
                 initialDelaySeconds: 25
                 periodSeconds: 10
