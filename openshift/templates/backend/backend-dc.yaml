@@ -166,11 +166,6 @@ objects:
                 - |-
                   sleep 90
                   python ./manage.py migrate
-                  if [ $? -eq 0 ]; then 
-                    python ./manage.py load_ops_data --directory ./api/fixtures/operational
-                  else
-                    exit 1
-                  fi
               containerName: backend
             failurePolicy: Retry
           timeoutSeconds: 600
@@ -190,7 +185,7 @@ objects:
                 - name: ALLOWED_HOSTS
                   value: ${NAME}${SUFFIX}.apps.silver.devops.gov.bc.ca
                 - name: CORS_ORIGIN_ALLOW_ALL
-                  value: False
+                  value: "false"
                 - name: CORS_ORIGIN_WHITELIST
                   value: "https://${NAME}${SUFFIX}.apps.silver.devops.gov.bc.ca"
                 - name: DB_ENGINE
@@ -205,14 +200,16 @@ objects:
                       name: patroni-creds${SUFFIX}
                       key: app-db-password
                 - name: DB_PORT
-                  value: 5432
+                  value: "5432"
                 - name: DB_USER
                   valueFrom:
                     secretKeyRef:
                       name: patroni-creds${SUFFIX}
                       key: app-db-username
+                - name: DATABASE_URL
+                  value: "postgres://cthubqaqvcufb:BfwLa2pu5xr4s3kp2HQaaM5scHEbbbIj@patroni-master-dev-6/cthub"        
                 - name: LOCAL_DEV
-                  value: False
+                  value: "false"
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:

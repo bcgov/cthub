@@ -33,22 +33,6 @@ module.exports = settings => {
       }
     }))
   }*/
-  if(phase === 'dev') {
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix,
-        'ENV_NAME': phases[phase].phase,
-        'HOST_NAME': phases[phase].host,
-        'BACKEND_HOST_NAME': phases[phase].backendHost,
-        'SSO_NAME': phases[phase].ssoName,
-        'KEYCLOAK_REALM': 'onestopauth',
-        'DJANGO_DEBUG': phases[phase].djangoDebug,
-        'OCP_NAME': phases[phase].ocpName,
-        'LOGOUT_HOST_NAME': phases[phase].logoutHostName,
-      }
-    }))
-  }
 
   if(phase === 'dev') {
     //deploy Patroni required secrets
@@ -101,6 +85,7 @@ module.exports = settings => {
       'REPLICAS':  phases[phase].frontendReplicas
     }
   }))
+  
 
   //deploy backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {

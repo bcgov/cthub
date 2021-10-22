@@ -162,7 +162,7 @@ objects:
                 - name: API_BASE
                   value: "https://${NAME}-backend${SUFFIX}.apps.silver.devops.gov.bc.ca"
                 - name: ENABLE_KEYCLOAK
-                  value: true
+                  value: "true"
                 - name: KEYCLOAK_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
