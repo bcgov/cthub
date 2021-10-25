@@ -8,11 +8,12 @@ ie General Container
     -ms-flex-direction: row;
     -ms-flex-pack: center;
     align-items: center;
-    background-color: $bg-alt-black;
+    background-color: $bg-white;
+    border-bottom: 2px solid $bg-primary;
     display: -ms-flexbox;
     display: flex;
     flex-direction: row;
-    height: 60px;
+    height: 80px;
     width: 100%;
 
     .container {
@@ -23,10 +24,10 @@ ie General Container
     }
 
     .logo {
-      background: url('../static/logo.svg') 0 2px no-repeat;
-      background-size: auto 190%;
-      height: 24px;
-      width: 110px;
+      background: url('../static/logo.png') center center no-repeat;
+      background-size: 100% auto;
+      height: 100px;
+      width: 200px;
     }
   }
 

@@ -1,5 +1,5 @@
 const ROUTES = {
-  LIST: '/api/rushing-stats',
+  LIST: '/api/icbc-data',
 };
 
 export default ROUTES;

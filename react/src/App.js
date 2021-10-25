@@ -6,7 +6,7 @@ import { Switch } from 'react-router';
 import { Route, BrowserRouter } from 'react-router-dom';
 
 import settings from './app/settings';
-import RusingStatsContainer from './rushing_stats/RusingStatsContainer';
+import IcbcDataContainer from './icbc_data/IcbcDataContainer';
 
 const { API_BASE } = settings;
 
@@ -27,7 +27,7 @@ const App = () => (
         <Switch>
           <Route
             path="/"
-            component={RusingStatsContainer}
+            component={IcbcDataContainer}
           />
         </Switch>
       </BrowserRouter>

@@ -18,12 +18,12 @@ from django.urls import path, re_path, include
 from django.views.generic import TemplateView
 from rest_framework import routers
 
-from api.viewsets.rushing_stats import RushingStatsViewset
+from api.viewsets.icbc_data import IcbcViewset
 
 ROUTER = routers.SimpleRouter(trailing_slash=False)
 
 ROUTER.register(
-    r'rushing-stats/?$', RushingStatsViewset, basename='rushing-stats'
+    r'icbc-data/?$', IcbcViewset, basename='icbc-data'
 )
 
 urlpatterns = [
