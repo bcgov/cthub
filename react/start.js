@@ -17,9 +17,7 @@ const serverOptions = {
       to: '/api',
     }],
   },
-  port: 3000,
   compress: true,
-  public: 'localhost',
   hot: true,
   watchOptions: {
     ignored: ['node_modules'],
