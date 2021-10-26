@@ -3,6 +3,7 @@ version: "3.9"
 services:
   db:
     image: postgres
+    restart: always
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -15,8 +16,12 @@ services:
   keycloak:
     build: ./keycloak
     ports:
-      - "8080:8080"
-      - "8443:8443"
+      - 8080:8080
+      - 8443:8443
+  metabase:
+    image: metabase/metabase
+    ports:
+      - 3001:3000
   api:
     build: ./django
     command: >
@@ -38,7 +43,7 @@ services:
     volumes:
       - ./django:/api
     ports:
-      - "8000:8000"
+      - 8000:8000
     depends_on:
       db:
         condition: service_healthy
@@ -55,4 +60,4 @@ services:
     volumes:
       - ./react:/web
     ports:
-      - "3000:3000"
+      - 3000:3000

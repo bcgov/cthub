@@ -2,11 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import ReactTable from '../../app/components/ReactTable';
-// import playerColumns from './RushingStatsTable/playerColumns';
-// import rushingStatsColumns from './RushingStatsTable/rushingStatsColumns';
-// import teamColumns from './RushingStatsTable/teamColumns';
 
-const RushingStatsTable = (props) => {
+const IcbcDataTable = (props) => {
   const columns = [{
     accessor: 'icbc_vehicle.model_year',
     align: 'center',
@@ -55,7 +52,7 @@ const RushingStatsTable = (props) => {
   );
 };
 
-RushingStatsTable.propTypes = {
+IcbcDataTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   onFetchData: PropTypes.func.isRequired,
@@ -63,4 +60,4 @@ RushingStatsTable.propTypes = {
   totalRowsCount: PropTypes.number.isRequired,
 };
 
-export default RushingStatsTable;
+export default IcbcDataTable;
