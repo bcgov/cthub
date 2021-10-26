@@ -62,6 +62,8 @@ module.exports = {
     new Webpack.DefinePlugin({
       __API_BASE__: 'API_BASE' in process.env ? JSON.stringify(process.env.API_BASE) : JSON.stringify('/'),
       __ENABLE_KEYCLOAK__: 'ENABLE_KEYCLOAK' in process.env ? process.env.ENABLE_KEYCLOAK === 'true' : false,
+      __KEYCLOAK_CLIENT_ID__: 'KEYCLOAK_CLIENT_ID' in process.env ? JSON.stringify(process.env.KEYCLOAK_CLIENT_ID) : JSON.stringify('demo-app'),
+      __KEYCLOAK_REALM__: 'KEYCLOAK_REALM' in process.env ? JSON.stringify(process.env.KEYCLOAK_REALM) : JSON.stringify('Demo'),
       __KEYCLOAK_URL__: 'KEYCLOAK_URL' in process.env ? JSON.stringify(process.env.KEYCLOAK_URL) : JSON.stringify('http://localhost:8080/auth'),
     }),
   ],
