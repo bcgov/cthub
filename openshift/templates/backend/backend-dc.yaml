@@ -206,6 +206,8 @@ objects:
                     secretKeyRef:
                       name: patroni-creds${SUFFIX}
                       key: app-db-username
+                - name: APP_CONFIG
+                  value: /opt/app-root/src/gunicorn.cfg                      
                 - name: LOCAL_DEV
                   value: "false"
               livenessProbe:
