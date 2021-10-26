@@ -157,62 +157,27 @@ objects:
             name: ${NAME}-frontend${SUFFIX}
         spec:
           containers:
-            - env:
-                - name: KEYCLOAK_CERTS_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_certs_url
-                - name: KEYCLOAK_REALM
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_realm
-                - name: KEYCLOAK_AUTHORITY
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_authority
-                - name: KEYCLOAK_ISSUER
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_issuer
-                - name: KEYCLOAK_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_url
-                - name: KEYCLOAK_AUDIENCE
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_audience
+            - name: frontend
+              env:
+                - name: API_BASE
+                  value: "https://${NAME}-backend${SUFFIX}.apps.silver.devops.gov.bc.ca"
+                - name: ENABLE_KEYCLOAK
+                  value: "true"
                 - name: KEYCLOAK_CLIENT_ID
                   valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_client_id
-                - name: KEYCLOAK_REALM_NAME
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_CLIENT_ID
+                - name: KEYCLOAK_REALM
                   valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_realm_name
-                - name: RABBITMQ_ENABLED
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_REALM
+                - name: KEYCLOAK_URL
                   valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_enabled
-                - name: APIBASE
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: apibase
-                - name: KEYCLOAK_LOGOUT_REDIRECT_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_logout_redirect_url
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_URL
               image:
               imagePullPolicy: IfNotPresent
               livenessProbe:
@@ -223,7 +188,6 @@ objects:
                 tcpSocket:
                   port: 3000
                 timeoutSeconds: 3
-              name: frontend
               ports:
                 - containerPort: 3000
                   protocol: TCP

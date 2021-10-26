@@ -2,11 +2,11 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: zeva-backend-dc
+  name: cthub-backend-dc
 parameters:
   - name: NAME
     displayName: null
-    description: 'the module name entered when run yo bcdk:pipeline, which is zeva'
+    description: 'the module name entered when run yo bcdk:pipeline, which is cthub'
     required: true
   - name: SUFFIX
     displayName: null
@@ -25,10 +25,6 @@ parameters:
     displayName: Host name for route
     description: Host name for route
     required: true    
-  - name: RABBITMQ_CLUSTER_NAME
-    displayName: rabbitmq cluser name
-    description: rabbitmq cluser name
-    required: true        
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -85,7 +81,7 @@ objects:
       name: '${NAME}-backend${SUFFIX}'
       labels:
         name: backend
-        app: zeva
+        app: cthub
         role: backend
         env: '${ENV_NAME}'
     spec:
@@ -108,7 +104,7 @@ objects:
         haproxy.router.openshift.io/timeout: 1200s      
       labels:
         name: backend
-        app: zeva
+        app: cthub
         role: backend
         env: '${ENV_NAME}'
       name: ${NAME}-backend${SUFFIX}
@@ -131,7 +127,7 @@ objects:
 #      creationTimestamp: null
 #      labels:
 #        name: backend
-#        app: zeva
+#        app: cthub
 #        role: backend
 #        env: '${ENV_NAME}'
 #      name: '${NAME}-backend-health${SUFFIX}'
@@ -170,11 +166,6 @@ objects:
                 - |-
                   sleep 90
                   python ./manage.py migrate
-                  if [ $? -eq 0 ]; then 
-                    python ./manage.py load_ops_data --directory ./api/fixtures/operational
-                  else
-                    exit 1
-                  fi
               containerName: backend
             failurePolicy: Retry
           timeoutSeconds: 600
@@ -191,177 +182,34 @@ objects:
               image: null
               imagePullPolicy: IfNotPresent
               env:
-                - name: DATABASE_NAME
-                  value: zeva
-                - name: DATABASE_USER
+                - name: ALLOWED_HOSTS
+                  value: ${NAME}${SUFFIX}.apps.silver.devops.gov.bc.ca
+                - name: CORS_ORIGIN_ALLOW_ALL
+                  value: "false"
+                - name: CORS_ORIGIN_WHITELIST
+                  value: "https://${NAME}${SUFFIX}.apps.silver.devops.gov.bc.ca"
+                - name: DB_ENGINE
+                  value: django.db.backends.postgresql
+                - name: DB_HOST
+                  value: patroni-master${SUFFIX}
+                - name: DB_NAME
+                  value: cthub
+                - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: patroni${SUFFIX}
-                      key: app-db-username
-                - name: DATABASE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: patroni${SUFFIX}
+                      name: patroni-creds${SUFFIX}
                       key: app-db-password
-                - name: DATABASE_ENGINE
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: database_engine
-                - name: DATABASE_SERVICE_NAME
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: database_service_name
-                - name: POSTGRESQL_SERVICE_HOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: postgresql_service_host
-                - name: POSTGRESQL_SERVICE_PORT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: postgresql_service_port
-                - name: KEYCLOAK_CERTS_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_certs_url
-                - name: KEYCLOAK_REALM
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_realm
-                - name: KEYCLOAK_REALM_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_realm_url
-                - name: KEYCLOAK_AUTHORITY
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_authority
-                - name: KEYCLOAK_ISSUER
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_issuer
-                - name: KEYCLOAK_AUDIENCE
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_audience
-                - name: KEYCLOAK_CLIENT_ID
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_client_id
-                - name: KEYCLOAK_SA_BASEURL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_sa_baseurl
-                - name: KEYCLOAK_SA_REALM
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_sa_realm
-                - name: KEYCLOAK_SA_CLIENT_ID
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: keycloak_sa_client_id
-                - name: KEYCLOAK_SA_CLIENT_SECRET
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: zeva-keycloak
-                      key: KEYCLOAK_SA_CLIENT_SECRET
-                - name: DJANGO_DEBUG
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: django_debug
-                - name: DJANGO_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-django${SUFFIX}
-                      key: DJANGO_SECRET_KEY
-                - name: RABBITMQ_VHOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_vhost
-                - name: RABBITMQ_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
-                      key: username
-                - name: RABBITMQ_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
-                      key: password
-                - name: RABBITMQ_HOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_host
-                - name: RABBITMQ_PORT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_port
-                - name: APP_CONFIG
-                  value: /opt/app-root/src/gunicorn.cfg
-                - name: ENV_NAME
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: env_name
-                - name: MINIO_USE_SSL
-                  value: 'true'
-                - name: MINIO_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-minio-${ENV_NAME}
-                      key: MINIO_ACCESS_KEY
-                - name: MINIO_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-minio-${ENV_NAME}
-                      key: MINIO_SECRET_KEY
-                - name: MINIO_ENDPOINT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: minio_endpoint
-                - name: EMAIL_SERVICE_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: email-service
-                      key: EMAIL_SERVICE_CLIENT_ID                      
-                - name: EMAIL_SERVICE_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: email-service
-                      key: EMAIL_SERVICE_CLIENT_SECRET
-                - name: CHES_AUTH_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: email-service
-                      key: CHES_AUTH_URL                      
-                - name: CHES_EMAIL_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: email-service
-                      key: CHES_EMAIL_URL
-                - name: SENDER_EMAIL
-                  valueFrom:
-                    secretKeyRef:
-                      name: email-service
-                      key: SENDER_EMAIL              
+                      name: patroni-creds${SUFFIX}
+                      key: app-db-username
+                - name: DATABASE_URL
+                  value: "postgres://cthubqaqvcufb:BfwLa2pu5xr4s3kp2HQaaM5scHEbbbIj@patroni-master-dev-6/cthub"        
+                - name: LOCAL_DEV
+                  value: "false"
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:

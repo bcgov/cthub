@@ -76,7 +76,18 @@ objects:
           name: nodejs-14:1-46.1634035772
           namespace: 30b186-tools
         forcePull: true
-        noCache: true          
+        noCache: true      
+        env:
+          - name: ARTIFACTORY_USER
+            valueFrom:
+              secretKeyRef:
+                name: artifacts-default-idxprm
+                key: username
+          - name: ARTIFACTORY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: artifacts-default-idxprm
+                key: password            
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []
