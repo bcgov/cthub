@@ -10,10 +10,14 @@ $default-text-color: #000;
 $default-table-border-color: rgba(249, 249, 249, 0.2);
 $default-table-color: #F9F9F9;
 $highlight: #0078FD;
+$md: 991px;
 
 @import 'App.scss';
+@import 'Login.scss';
 @import 'ReactTable.scss';
 @import 'Roboto.scss';
+
+
 
 body {
   background-color: $bg-white;
