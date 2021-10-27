@@ -21,7 +21,7 @@ if (settings.ENABLE_KEYCLOAK) {
           const { token } = keycloakTokens;
 
           if (!token || !keycloak.authenticated) {
-            return keycloak.login({ idpHint: 'idir' });
+            return keycloak.login({ idpHint: 'bceid' });
           }
 
           axios.defaults.headers.common.Authorization = `Bearer ${token}`;
