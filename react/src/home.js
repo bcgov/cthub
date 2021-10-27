@@ -33,8 +33,6 @@ export default function Home() {
     }
   };
 
-  console.error(auth);
-
   return (
     <div>
       <h1>A simple Keycloak Configuration</h1>

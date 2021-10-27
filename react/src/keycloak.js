@@ -1,64 +1,43 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Keycloak from 'keycloak-js';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 
-const keycloakContainer = (props) => {
+import Login from './Login';
+import App from './App';
+
+const keycloakContainer = () => {
   const [auth, setAuth] = useState({ keycloak: {} });
-  const keycloak = Keycloak('/keycloak.json');
+  const keycloakJson = window.location.hostname === 'localhost'
+    ? '/keycloak-local.json'
+    : '/keycloak.json';
+  const keycloak = Keycloak(keycloakJson);
   const initOptions = { pkceMethod: 'S256', redirectUri: `${window.location.origin}/`, idpHint: 'idir' };
 
   useEffect(() => {
     const initKeycloak = async () => {
-      keycloak
-        .init(initOptions)
-        .then((authenticated) => {
-          console.error('set auth');
-          setAuth({
-            authenticated,
-            keycloak,
-          });
+      keycloak.init(initOptions).then((authenticated) => {
+        setAuth({
+          authenticated,
+          keycloak,
         });
+      });
     };
     initKeycloak();
   }, []);
-  console.error('keycloak');
-  console.error(keycloak);
+
+  if (!keycloak || !auth.keycloak) {
+    return <div>Loading...</div>;
+  }
+
+  if (!auth.keycloak.authenticated) {
+    return <Login keycloak={auth.keycloak} />;
+  }
+
+  const { token } = auth.keycloak;
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
   return (
-    <ReactKeycloakProvider
-      authClient={keycloak}
-      initOptions={initOptions}
-      isLoadingCheck={(kc) => {
-        console.error('kc');
-        console.error(kc);
-        if (!kc.authenticated) {
-          kc.login({ idpHint: 'idir' });
-          return true;
-        }
-
-        if (!axios.defaults.headers.common.Authorization) {
-          return true;
-        }
-
-        return false;
-      }}
-      LoadingComponent={(<div>Loading...</div>)}
-      onTokens={(keycloakTokens) => {
-        console.error('auth keycloak');
-        console.error(auth.keycloak);
-        const { token } = keycloakTokens;
-
-        if (!token || !auth.keycloak.authenticated) {
-          return auth.keycloak.login({ idpHint: 'idir' });
-        }
-
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        return true;
-      }}
-    >
-      {props.children}
-    </ReactKeycloakProvider>
+    <App keycloak={auth.keycloak} />
   );
 };
 
