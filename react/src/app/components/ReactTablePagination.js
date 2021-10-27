@@ -18,7 +18,7 @@ const ReactTablePagination = (props) => {
   const classes = useStyles();
   const {
     count,
-    onChangePage,
+    onPageChange,
     page,
     rowsPerPage,
   } = props;
@@ -33,7 +33,7 @@ const ReactTablePagination = (props) => {
             aria-label="Previous Page"
             disabled={page === 0}
             onClick={(event) => {
-              onChangePage(event, page - 1);
+              onPageChange(event, page - 1);
             }}
           >
             <KeyboardArrowLeft />
@@ -44,7 +44,7 @@ const ReactTablePagination = (props) => {
             onChange={(event) => {
               const { value } = event.target;
 
-              onChangePage(event, value);
+              onPageChange(event, value);
             }}
             value={page}
           >
@@ -57,7 +57,7 @@ const ReactTablePagination = (props) => {
             aria-label="Next Page"
             disabled={page >= pagesCount - 1}
             onClick={(event) => {
-              onChangePage(event, page + 1);
+              onPageChange(event, page + 1);
             }}
           >
             <KeyboardArrowRight />
@@ -70,7 +70,7 @@ const ReactTablePagination = (props) => {
 
 ReactTablePagination.propTypes = {
   count: PropTypes.number.isRequired,
-  onChangePage: PropTypes.func.isRequired,
+  onPageChange: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
 };
