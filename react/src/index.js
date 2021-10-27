@@ -10,9 +10,7 @@ import App from './App';
 
 if (settings.ENABLE_KEYCLOAK) {
   ReactDOM.render(
-    <Keycloak>
-      <App />
-    </Keycloak>,
+    <Keycloak />,
     document.getElementById('root'),
   );
 } else {

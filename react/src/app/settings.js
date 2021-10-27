@@ -5,21 +5,6 @@
   __KEYCLOAK_REALM__,
   __KEYCLOAK_URL__,
 */
-import { useKeycloak as reactKeycloak } from '@react-keycloak/web';
-
-let useKeycloak;
-
-if (__ENABLE_KEYCLOAK__) {
-  useKeycloak = reactKeycloak;
-} else {
-  useKeycloak = () => ({ // mock useKeycloak
-    keycloak: {
-      authenticated: true,
-      token: '',
-    },
-    initialized: true,
-  });
-}
 
 const settings = {
   API_BASE: __API_BASE__,
@@ -27,7 +12,6 @@ const settings = {
   KEYCLOAK_CLIENT_ID: __KEYCLOAK_CLIENT_ID__,
   KEYCLOAK_REALM: __KEYCLOAK_REALM__,
   KEYCLOAK_URL: __KEYCLOAK_URL__,
-  useKeycloak,
 };
 
 export default settings;

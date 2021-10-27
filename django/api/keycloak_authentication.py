@@ -57,9 +57,6 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
                 'Invalid Token'
             )
 
-        print(token_info)
-        print(user_info)
-
         # user = None
 
     #     if 'user_id' not in user_info:

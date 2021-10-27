@@ -3,24 +3,29 @@ import axios from 'axios';
 import React from 'react';
 import { Switch } from 'react-router';
 import { Route, BrowserRouter } from 'react-router-dom';
-import Login from './Login';
 
+import CustomPropTypes from './app/utilities/props';
 import settings from './app/settings';
 import IcbcDataContainer from './icbc_data/IcbcDataContainer';
 
-const { API_BASE, useKeycloak } = settings;
+const { API_BASE } = settings;
 
 axios.defaults.baseURL = API_BASE;
 
-const App = () => {
-  const { keycloak } = useKeycloak();
+const App = (props) => {
+  const { keycloak } = props;
 
-  if (keycloak && !keycloak.authenticated) {
-    return <Login keycloak={keycloak} />;
-  }
+  keycloak.onTokenExpired = () => {
+    keycloak.updateToken(5).then((refreshed) => {
+      if (refreshed) {
+        const { token: newToken } = keycloak;
 
-  const { token } = keycloak;
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+      }
+    }).catch(() => {
+      keycloak.logout();
+    });
+  };
 
   return (
     <div className="App">
@@ -44,6 +49,10 @@ const App = () => {
       </div>
     </div>
   );
+};
+
+App.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default App;
