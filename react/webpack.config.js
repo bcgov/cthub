@@ -46,7 +46,7 @@ module.exports = {
       test: /\.s[ac]ss$/i,
       use: ['style-loader', 'css-loader', 'sass-loader'],
     }, {
-      test: /\.(otf|eot|svg|png|ttf|woff|woff2)$/i,
+      test: /\.(otf|eot|svg|png|ttf|woff|jpe?g|woff2)$/i,
       use: [{
         loader: 'url-loader',
       }],
