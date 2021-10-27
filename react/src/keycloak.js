@@ -7,7 +7,10 @@ import App from './App';
 
 const keycloakContainer = () => {
   const [auth, setAuth] = useState({ keycloak: {} });
-  const keycloak = Keycloak('/keycloak-local.json');
+  const keycloakJson = window.location.hostname === 'localhost'
+    ? '/keycloak-local.json'
+    : '/keycloak.json';
+  const keycloak = Keycloak(keycloakJson);
   const initOptions = { pkceMethod: 'S256', redirectUri: `${window.location.origin}/`, idpHint: 'idir' };
 
   useEffect(() => {
