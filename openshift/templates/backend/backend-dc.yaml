@@ -207,7 +207,22 @@ objects:
                       name: patroni-creds${SUFFIX}
                       key: app-db-username
                 - name: APP_CONFIG
-                  value: /opt/app-root/src/gunicorn.cfg                      
+                  value: /opt/app-root/src/gunicorn.cfg      
+                - name: KEYCLOAK_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_CLIENT_ID
+                - name: KEYCLOAK_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_REALM
+                - name: KEYCLOAK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_URL                                  
                 - name: LOCAL_DEV
                   value: "false"
               livenessProbe:
