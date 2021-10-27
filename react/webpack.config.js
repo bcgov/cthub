@@ -1,13 +1,16 @@
 const Webpack = require('webpack');
 const path = require('path');
 
+const isDevelopment = 'API_BASE' in process.env && process.env.API_BASE === 'http://localhost:8000';
+
 module.exports = {
   devServer: {
     historyApiFallback: true,
   },
   devtool: 'source-map',
   entry: path.resolve(__dirname, 'src', 'index.js'),
-  mode: 'development',
+  hot: isDevelopment,
+  mode: isDevelopment ? 'development' : 'production',
   module: {
     rules: [{
       enforce: 'pre',
