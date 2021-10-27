@@ -12,7 +12,7 @@ const Login = (props) => {
         <div className="flex-container">
           <div className="brand-logo" />
           <div className="buttons-section">
-            <button type="button" onClick={() => keycloak.login({ idpHint: 'bceid' })} id="link-idir" className="button">
+            <button type="button" onClick={() => keycloak.login({ idpHint: 'idir' })} id="link-idir" className="button">
               <span className="text"> Login with </span>
               <span className="display-name"> IDIR </span>
             </button>
