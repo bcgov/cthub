@@ -11,7 +11,7 @@ export default function Home() {
       const keycloak = Keycloak('/keycloak.json');
       if (window && typeof window !== 'object') return;
       keycloak
-        .init({ pkceMethod: 'S256', redirectUri: 'https://cthub-dev-11.apps.silver.devops.gov.bc.ca/', idpHint: 'idir' })
+        .init({ pkceMethod: 'S256', redirectUri: 'https://cthub-dev-9.apps.silver.devops.gov.bc.ca/', idpHint: 'idir' })
         .then((authenticated) => {
           console.error(authenticated);
           setAuth({ keycloak, authenticated });
@@ -26,7 +26,7 @@ export default function Home() {
   const getSecret = async () => {
     try {
       const headers = auth.keycloak.token ? { Authorization: `Bearer ${auth.keycloak.token}` } : {};
-      const response = await axios.get('https://cthub-backend-dev-11.apps.silver.devops.gov.bc.ca/api/icbc-data', { headers });
+      const response = await axios.get('https://cthub-backend-dev-9.apps.silver.devops.gov.bc.ca/api/icbc-data', { headers });
       setAnswer(`The password is: ${response.data.message}`);
     } catch (err) {
       setAnswer('Failed to fetch resources');
