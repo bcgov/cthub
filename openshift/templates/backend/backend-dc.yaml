@@ -206,8 +206,8 @@ objects:
                     secretKeyRef:
                       name: patroni-creds${SUFFIX}
                       key: app-db-username
-                - name: DATABASE_URL
-                  value: "postgres://cthubqaqvcufb:BfwLa2pu5xr4s3kp2HQaaM5scHEbbbIj@patroni-master-dev-6/cthub"        
+                - name: APP_CONFIG
+                  value: /opt/app-root/src/gunicorn.cfg                      
                 - name: LOCAL_DEV
                   value: "false"
               livenessProbe:
