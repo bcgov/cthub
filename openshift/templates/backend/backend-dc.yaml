@@ -183,7 +183,7 @@ objects:
               imagePullPolicy: IfNotPresent
               env:
                 - name: ALLOWED_HOSTS
-                  value: ${NAME}${SUFFIX}.apps.silver.devops.gov.bc.ca
+                  value: ${NAME}-backend${SUFFIX}.apps.silver.devops.gov.bc.ca
                 - name: CORS_ORIGIN_ALLOW_ALL
                   value: "false"
                 - name: CORS_ORIGIN_WHITELIST
