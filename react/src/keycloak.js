@@ -6,38 +6,43 @@ import Login from './Login';
 import App from './App';
 
 const keycloakContainer = () => {
-  const [auth, setAuth] = useState({ keycloak: {} });
+  const [authenticated, setAuthenticated] = useState(false);
+  const [initializedKeycloak, setInitializedKeycloak] = useState(false);
+
   const keycloakJson = window.location.hostname === 'localhost'
     ? '/keycloak-local.json'
     : '/keycloak.json';
   const keycloak = Keycloak(keycloakJson);
-  const initOptions = { pkceMethod: 'S256', redirectUri: `${window.location.origin}/`, idpHint: 'idir' };
+  const initOptions = {
+    idpHint: 'idir',
+    onLoad: 'check-sso',
+    pkceMethod: 'S256',
+    redirectUri: `${window.location.origin}/`,
+  };
 
   useEffect(() => {
     const initKeycloak = async () => {
-      keycloak.init(initOptions).then((authenticated) => {
-        setAuth({
-          authenticated,
-          keycloak,
-        });
+      keycloak.init(initOptions).then((auth) => {
+        setAuthenticated(auth);
+        setInitializedKeycloak(keycloak);
       });
     };
     initKeycloak();
   }, []);
 
-  if (!keycloak || !auth.keycloak) {
+  if (!keycloak || !initializedKeycloak) {
     return <div>Loading...</div>;
   }
 
-  if (!auth.keycloak.authenticated) {
-    return <Login keycloak={auth.keycloak} />;
+  if (!authenticated) {
+    return <Login keycloak={initializedKeycloak} />;
   }
 
-  const { token } = auth.keycloak;
+  const { token } = initializedKeycloak;
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
   return (
-    <App keycloak={auth.keycloak} />
+    <App keycloak={initializedKeycloak} />
   );
 };
 
