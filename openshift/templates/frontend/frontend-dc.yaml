@@ -123,7 +123,7 @@ objects:
     spec:
       host: ${HOST_NAME}
       port:
-        targetPort: web
+        targetPort: websocket-notifications
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
