@@ -207,7 +207,7 @@ objects:
                       name: patroni-creds${SUFFIX}
                       key: app-db-username
                 - name: APP_CONFIG
-                  value: /opt/app-root/src/gunicorn.cfg      
+                  value: /opt/app-root/src/gunicorn.cfg.py
                 - name: KEYCLOAK_CLIENT_ID
                   valueFrom:
                     secretKeyRef:

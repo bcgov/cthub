@@ -99,7 +99,7 @@ objects:
       host: ${HOST_NAME}
       path: /sockjs-node
       port:
-        targetPort: web
+        targetPort: websocket-notifications
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
