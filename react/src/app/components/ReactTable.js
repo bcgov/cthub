@@ -252,10 +252,10 @@ const ReactTable = (props) => {
         component="div"
         count={totalRowsCount}
         page={pageIndex}
-        onChangePage={(e, pageNumber) => {
+        onPageChange={(e, pageNumber) => {
           gotoPage(pageNumber);
         }}
-        onChangeRowsPerPage={(event) => {
+        onRowsPerPageChange={(event) => {
           setPageSize(Number(event.target.value));
           gotoPage(0);
         }}

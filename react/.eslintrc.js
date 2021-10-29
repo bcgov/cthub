@@ -19,6 +19,7 @@ module.exports = {
   ],
   rules: {
     'no-use-before-define': 'off',
+    'linebreak-style': 0,
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'react/jsx-props-no-spreading': [0, {
       custom: 'ignore',
