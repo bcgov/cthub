@@ -37,7 +37,7 @@ const keycloakContainer = () => {
         setDelayedRefreshToken();
       }
     }).catch(() => {
-      keycloak.logout();
+      initializedKeycloak.logout();
     });
   };
 
