@@ -1,4 +1,4 @@
-FROM node
+FROM node:16.13
 
 WORKDIR /web
 COPY . /web/
