@@ -6,10 +6,10 @@ const isDevelopment = 'API_BASE' in process.env && process.env.API_BASE === 'htt
 module.exports = {
   devServer: {
     historyApiFallback: true,
+    hot: isDevelopment,
   },
   devtool: 'source-map',
   entry: path.resolve(__dirname, 'src', 'index.js'),
-  hot: isDevelopment,
   mode: isDevelopment ? 'development' : 'production',
   module: {
     rules: [{
