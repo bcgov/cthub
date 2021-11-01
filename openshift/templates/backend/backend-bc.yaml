@@ -95,7 +95,9 @@ objects:
               valueFrom:
                 secretKeyRef:
                   name: artifacts-default-idxprm
-                  key: password            
+                  key: password         
+            - name: UPGRADE_PIP_TO_LATEST
+              value: true
           from:
             kind: ImageStreamTag
             name: python-39:1-18.1634036280

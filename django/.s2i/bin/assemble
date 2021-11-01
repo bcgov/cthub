@@ -92,7 +92,6 @@ elif [[ ! -z "$ENABLE_MICROPIPENV" ]]; then
 elif [[ -f requirements.txt ]]; then
   echo "---> Installing dependencies ..."
   # the following two lines are used to add artifactory
-  pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple --upgrade pip
   pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
   # it was from original /usr/libexec/s2i/assemble script, comment it out in order to use artifactory
   #pip install -r requirements.txt
