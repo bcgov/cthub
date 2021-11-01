@@ -37,7 +37,7 @@ const keycloakContainer = () => {
         setDelayedRefreshToken();
       }
     }).catch(() => {
-      keycloak.logout();
+      initializedKeycloak.logout();
     });
   };
 
@@ -69,7 +69,7 @@ const keycloakContainer = () => {
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
   axios.interceptors.request.use((config) => {
-    if (initializedKeycloak.isTokenExpired(150)) {
+    if (initializedKeycloak.isTokenExpired(150)) { // if the token is expiring by 2 mins, 30 secs
       refreshToken(300); // refresh the token now
     }
 
