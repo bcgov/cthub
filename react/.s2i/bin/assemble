@@ -89,7 +89,7 @@ else
         # the following two lines are added for artifactory
         npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
         curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
-        NODE_ENV=development npm install -d
+        NODE_ENV=development npm install
 
         #do not fail when there is no build script
         echo "---> Building in production mode"
