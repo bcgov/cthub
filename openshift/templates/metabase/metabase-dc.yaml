@@ -117,9 +117,9 @@ objects:
           deploymentconfig: metabase
       spec:
         containers:
+        - name: metabase
           image:
           imagePullPolicy: Always
-          name: metabase
           resources:
             limits:
               cpu: ${CPU_LIMIT}
