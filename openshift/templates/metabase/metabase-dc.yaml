@@ -34,7 +34,7 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: matabase
+    name: metabase
     annotations:
       volume.beta.kubernetes.io/storage-class: netapp-file-standard
       template.openshift.io.bcgov/create: 'true'
