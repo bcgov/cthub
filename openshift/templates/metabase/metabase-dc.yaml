@@ -82,7 +82,7 @@ objects:
       app: metabase
     name: metabase
   spec:
-    host: metabase-${ENV_NAME}.apps.silver.gov.bc.ca
+    host: metabase-${ENV_NAME}.apps.silver.devops.gov.bc.ca
     path: /
     port:
       targetPort: metabase-web
@@ -130,22 +130,6 @@ objects:
           env:
             - name: MB_DB_FILE
               value: /tmp/metabase.db
-          command:
-             - java
-          args:
-            - '-Xmx300m'
-            - '-Xss512k'
-            - '-Dfile.encoding=UTF-8'
-            - '-Dlogfile.path=target/log'
-            - '-XX:+CMSClassUnloadingEnabled'
-            - '-XX:+UseConcMarkSweepGC'
-            - '-server'
-            - '-jar'
-            - '/app/metabase.jar'              
-          ports:
-          - containerPort: 3000
-            name: metabase
-            protocol: TCP            
           resources:
             limits:
               cpu: ${CPU_LIMIT}
