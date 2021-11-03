@@ -5,11 +5,31 @@ metadata:
   name: metabase-dc
 parameters:
   - name: ENV_NAME
-    value: dev
+    value: 
     required: true
   - name: METABASE_PVC_SIZE
-    value: dev
+    value: 
     required: true    
+  - name: CPU_REQUEST
+    value: 50Mi
+    displayName: Requested CPU
+    description: Requested CPU
+    required: true    
+  - name: CPU_LIMIT
+    value: 200Mi
+    displayName: CPU upper limit
+    description: CPU upper limit
+    required: true
+  - name: MEMORY_REQUEST
+    value: 50Mi
+    displayName: Requested memory
+    description: Requested memory
+    required: true
+  - name: MEMORY_LIMIT
+    value: 200Mi
+    displayName: Memory upper limit
+    description: Memory upper limit
+    required: true
 objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
