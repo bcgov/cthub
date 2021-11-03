@@ -20,7 +20,7 @@ const phases = {
         ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `cthub-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest.gov.bc.ca',
-        metabaseCpuRequest: '300Mi', metabaseCpuLimit: '500Mi', metabaseMemoryRequest: '500Mi', metabaseMemoryLimit: '2Gi', metabasePvcSize: '5Gi',
+        metabaseCpuRequest: '300m', metabaseCpuLimit: '500m', metabaseMemoryRequest: '500Mi', metabaseMemoryLimit: '2Gi', metabasePvcSize: '5Gi',
         frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
         backendCpuRequest: '300m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendHost: `cthub-backend-dev-${changeId}.${ocpName}.gov.bc.ca`, backendReplicas: 1,
         minioCpuRequest: '100m', minioCpuLimit: '200m', minioMemoryRequest: '200M', minioMemoryLimit: '500M', minioPvcSize: '1G',
