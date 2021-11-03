@@ -140,7 +140,7 @@ objects:
         volumes:
         - name: metabase-data
           persistentVolumeClaim:
-            claimName: matabase
+            claimName: metabase
     test: false
     triggers:
     - imageChangeParams:
