@@ -16,7 +16,8 @@ module.exports = settings => {
   // The deployment of your cool app goes here ▼▼▼
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase/metabase-dc.yaml`, {
     'param': {
-      'ENV_NAME': phases[phase].phase
+      'ENV_NAME': phases[phase].phase,
+      'METABASE_PVC_SIZE': phases[phase].metabasePvcSize
     }
   }))
 
