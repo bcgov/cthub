@@ -117,7 +117,7 @@ objects:
           deploymentconfig: metabase
       spec:
         containers:
-          image: null
+          image:
           imagePullPolicy: Always
           name: metabase
           resources:
