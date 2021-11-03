@@ -10,6 +10,7 @@
     "clean": "node clean.js",
     "deploy": "node deploy.js",
     "deploy-unittest": "node deploy-unittest.js",
+    "deploy-metabase": "node deploy-metabase.js",
     "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
   },
   "repository": {

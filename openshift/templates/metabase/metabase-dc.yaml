@@ -2,10 +2,10 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: nagios-dc
+  name: metabase-dc
 parameters:
-  - name: NAME
-    value: zeva
+  - name: ENV_NAME
+    value: dev
     required: true
 objects:
 - apiVersion: v1
@@ -70,20 +70,19 @@ objects:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
     creationTimestamp: null
-    generation: 25
     labels:
-      app: nagios
-    name: nagios
+      app: metabase
+    name: metabase
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      app: nagios
-      deploymentconfig: nagios
+      app: metabase
+      deploymentconfig: metabase
     strategy:
-      activeDeadlineSeconds: 21600
+      activeDeadlineSeconds: 600
       recreateParams:
-        timeoutSeconds: 600
+        timeoutSeconds: 300
       type: Recreate
     template:
       metadata:
@@ -91,100 +90,13 @@ objects:
           openshift.io/generated-by: OpenShiftWebConsole
         creationTimestamp: null
         labels:
-          app: nagios
-          deploymentconfig: nagios
+          app: metabase
+          deploymentconfig: metabase
       spec:
         containers:
-        - env:
-          - name: AMQP_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: rabbitmq_host
-          - name: AMQP_PORT
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: rabbitmq_port
-          - name: AMQP_USER
-            valueFrom:
-              secretKeyRef:
-                name: ${NAME}-${ENV_NAME}-rabbitmq-cluster-secret
-                key: username
-          - name: AMQP_VHOST
-            value: /zeva
-          - name: AMQP_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: ${NAME}-${ENV_NAME}-rabbitmq-cluster-secret
-                key: password 
-          - name: MINIO_ENDPOINT
-            value: docs-mem-${NAME}-${ENV_NAME}.${OCP_NAME}.gov.bc.ca:443
-          - name: MINIO_USE_SSL
-            value: "true"
-          - name: MINIO_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ${NAME}-minio-${ENV_NAME}
-                key: MINIO_ACCESS_KEY
-          - name: MINIO_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ${NAME}-minio-${ENV_NAME}
-                key: MINIO_SECRET_KEY
-          - name: KEYCLOAK_SA_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: zeva-keycloak
-                key: KEYCLOAK_SA_CLIENT_SECRET
-          - name: KEYCLOAK_CLIENT_ID
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_client_id
-          - name: KEYCLOAK_SA_REALM
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_sa_realm
-          - name: KEYCLOAK_SA_CLIENT_ID
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_sa_client_id
-          - name: KEYCLOAK_SA_BASEURL
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_sa_baseurl
-          - name: KEYCLOAK_REALM
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: keycloak_realm
-          - name: DATABASE_SERVICE_NAME
-            valueFrom:
-              configMapKeyRef:
-                name: ${NAME}-config-${ENV_NAME}
-                key: database_service_name
-          - name: DATABASE_USER
-            valueFrom:
-              secretKeyRef:
-                key: app-db-username
-                name: patroni-${ENV_NAME}
-          - name: DATABASE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: app-db-password
-                name: patroni-${ENV_NAME}
-          - name: DATABASE_NAME
-            valueFrom:
-              secretKeyRef:
-                key: app-db-name
-                name: patroni-${ENV_NAME}
-          image: 
+          image: null
           imagePullPolicy: Always
-          name: nagios
+          name: metabase
           resources:
             limits:
               cpu: ${CPU_LIMIT}
@@ -195,29 +107,27 @@ objects:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
-          - mountPath: /var/log/nagios3
-            name: nagios-data
+          - mountPath: /metabase-data
+            name: metabase-data
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
-        serviceAccount: nagios
-        serviceAccountName: nagios
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: nagios-data
+        - name: metabase-data
           persistentVolumeClaim:
-            claimName: nagios
+            claimName: matabase
     test: false
     triggers:
     - imageChangeParams:
         automatic: true
         containerNames:
-        - nagios
+        - metabase
         from:
           kind: ImageStreamTag
-          name: nagios:${ENV_NAME}
-          namespace: e52f12-${ENV_NAME}
+          name: metabase:v0.41.1
+          namespace: 30b186-tools
         lastTriggeredImage: 
       type: ImageChange
     - type: ConfigChange
