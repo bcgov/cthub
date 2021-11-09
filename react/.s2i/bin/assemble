@@ -95,10 +95,11 @@ else
         echo "---> npm install"
         npm install
         echo "---> npm install -D webpack-cli"
-        npm install -D webpack-cli
+        npm install webpack-cli
 
         ls -l /opt/app-root/src/node_modules/webpack
         ls -l /opt/app-root/src/node_modules/webpack/bin
+        ls -l /opt/app-root/src/node_modules/webpack-cli
 
         # run webpack, yes as input
         echo "---> npm run build,   yes as input"
