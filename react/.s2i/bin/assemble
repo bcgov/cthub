@@ -97,6 +97,9 @@ else
         echo "---> npm install -D webpack-cli"
         npm install -D webpack-cli
 
+        ls -l /opt/app-root/src/node_modules/webpack
+        ls -l /opt/app-root/src/node_modules/webpack/bin
+
         # run webpack, yes as input
         echo "---> npm run build,   yes as input"
         yes | npm run build
