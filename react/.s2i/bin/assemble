@@ -95,8 +95,8 @@ else
         echo "---> Building in production mode"
         npm run build --if-present
 
-        echo "---> Pruning the development dependencies"
-        npm prune
+        #echo "---> Pruning the development dependencies"
+        #npm prune
 
         # Clear the npm's cache and tmp directories only if they are not a docker volumes
         NPM_CACHE=$(npm config get cache)
