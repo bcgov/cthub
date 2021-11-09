@@ -87,7 +87,7 @@ else
 
         echo "---> Installing all dependencies from artifactory"
         echo "DEV_MODE=" $DEV_MODE "NODE_ENV=" $NODE_ENV
-        
+
         # the following two lines are added for artifactory
         npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
         curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
@@ -97,7 +97,7 @@ else
 
         #do not fail when there is no build script
         echo "---> Building in production mode"
-        npm run build --if-present
+        DEV_MODE="" npm run build --if-present
 
         echo "---> Pruning the development dependencies"
         npm prune
