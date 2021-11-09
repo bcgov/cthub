@@ -84,27 +84,23 @@ if [ "$NODE_ENV" != "production" ]; then
         npm install
 
 else
-        export NODE_ENV=''
-        export NODE_ENV=''
+        export DEV_MODE=""
+        export NODE_ENV=""
         echo "---> Installing all dependencies from artifactory"
         echo "DEV_MODE=" $DEV_MODE "NODE_ENV=" $NODE_ENV
         # the following three lines are added for artifactory
         npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
         curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
         
-        # -d means --loglevel info
-        echo "---> npm install"
-        npm install
-        echo "---> npm install -D webpack-cli"
-        npm install webpack-cli
+        echo "---> Installing all dependencies"
+        NODE_ENV=development npm install
 
-        ls -l /opt/app-root/src/node_modules/webpack
-        ls -l /opt/app-root/src/node_modules/webpack/bin
-        ls -l /opt/app-root/src/node_modules/webpack-cli
+        #do not fail when there is no build script
+        echo "---> Building in production mode"
+        npm run build --if-present
 
-        # run webpack, yes as input
-        echo "---> npm run build,   yes as input"
-        yes | npm run build
+        echo "---> Pruning the development dependencies"
+        npm prune
         
         # Clear the npm's cache and tmp directories only if they are not a docker volumes
         NPM_CACHE=$(npm config get cache)
