@@ -92,10 +92,13 @@ else
         curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
         
         # -d means --loglevel info
+        echo "---> npm install"
         npm install
+        echo "---> npm install -D webpack-cli"
         npm install -D webpack-cli
 
         # run webpack
+        echo "---> npm run build"
         npm run build
         
         # Clear the npm's cache and tmp directories only if they are not a docker volumes
