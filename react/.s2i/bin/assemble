@@ -97,9 +97,9 @@ else
         echo "---> npm install -D webpack-cli"
         npm install -D webpack-cli
 
-        # run webpack
-        echo "---> npm run build"
-        npm run build
+        # run webpack, yes as input
+        echo "---> npm run build,   yes as input"
+        yes | npm run build
         
         # Clear the npm's cache and tmp directories only if they are not a docker volumes
         NPM_CACHE=$(npm config get cache)
