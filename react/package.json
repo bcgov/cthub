@@ -43,6 +43,7 @@
   "scripts": {
     "start": "node start",
     "build": "webpack",
+    "build-production": "webpack --production",
     "test": "jest --coverage"
   }
 }
