@@ -86,6 +86,7 @@ if [ "$NODE_ENV" != "production" ]; then
 else
 
         echo "---> Installing all dependencies from artifactory"
+        echo "DEV_MODE=" $DEV_MODE "NODE_ENV=" $NODE_ENV
         # the following three lines are added for artifactory
         npm cache clean --force
         npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
