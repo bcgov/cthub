@@ -104,17 +104,14 @@ class LdvRebates(Auditable):
         ,
         null=True,
         unique=False,
-        db_comment='province eg BC'
     )
     msrp = models.DecimalField(
         max_digits=20,
         decimal_places=2,
-        db_comment='mrsp amount'
     )
     other_incentives = models.DecimalField(
         max_digits=20,
         decimal_places=2,
-        db_comment='total value of other incentives'
     )
     document_type = models.CharField(
         blank=True,
@@ -131,7 +128,6 @@ class LdvRebates(Auditable):
     incentive_amount = models.DecimalField(
         max_digits=20,
         decimal_places=2,
-        db_comment='Value per credit in dollars'
     )
     vin = models.CharField(
         blank=True,
