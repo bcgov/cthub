@@ -88,14 +88,12 @@ else
         echo "---> Installing all dependencies from artifactory"
         echo "DEV_MODE=" $DEV_MODE "NODE_ENV=" $NODE_ENV
         # the following three lines are added for artifactory
-        npm cache clean --force
         npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
         curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
         
         # -d means --loglevel info
-        npm install -d
-
-        npm install --legacy-peer-deps
+        npm install
+        npm install -D webpack-cli
 
         # run webpack
         npm run build
