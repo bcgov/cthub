@@ -26,6 +26,8 @@ npm cache clean --force
 npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
 curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
 
+echo "DEV_MODE=" $DEV_MODE "NODE_ENV=" $NODE_ENV
+
 # -d means --loglevel info
 npm install -d
 
@@ -36,3 +38,4 @@ npm run build
 
 # Fix source directory permissions
 fix-permissions ./
+
