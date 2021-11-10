@@ -87,7 +87,7 @@ objects:
             valueFrom:
               secretKeyRef:
                 name: artifacts-default-idxprm
-                key: password            
+                key: password        
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []
