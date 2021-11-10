@@ -1,5 +1,6 @@
 const Webpack = require('webpack');
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isDevelopment = 'API_BASE' in process.env && process.env.API_BASE === 'http://localhost:8000';
 
@@ -62,6 +63,22 @@ module.exports = {
     publicPath: '/',
   },
   plugins: [
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: './src/keycloak-source.json',
+        to: './keycloak.json',
+        force: true,
+        transform(content) {
+          const keycloak = JSON.parse(content.toString());
+
+          if ('AUTH_SERVER_URL' in process.env) {
+            keycloak['auth-server-url'] = process.env.AUTH_SERVER_URL;
+          }
+
+          return JSON.stringify(keycloak, null, 2);
+        },
+      }],
+    }),
     new Webpack.DefinePlugin({
       __API_BASE__: 'API_BASE' in process.env ? JSON.stringify(process.env.API_BASE) : JSON.stringify('/'),
       __ENABLE_KEYCLOAK__: 'ENABLE_KEYCLOAK' in process.env ? process.env.ENABLE_KEYCLOAK === 'true' : false,
