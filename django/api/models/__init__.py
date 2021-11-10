@@ -7,3 +7,4 @@ from . import organization
 from . import vehicle
 from . import vehicle_class
 from . import vehicle_zev_type
+from . import ldv_rebates
