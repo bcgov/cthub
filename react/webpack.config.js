@@ -71,8 +71,8 @@ module.exports = {
         transform(content) {
           const keycloak = JSON.parse(content.toString());
 
-          if ('AUTH_SERVER_URL' in process.env) {
-            keycloak['auth-server-url'] = process.env.AUTH_SERVER_URL;
+          if ('KEYCLOAK_URL' in process.env) {
+            keycloak['auth-server-url'] = process.env.KEYCLOAK_URL;
           }
 
           return JSON.stringify(keycloak, null, 2);
