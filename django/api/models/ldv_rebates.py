@@ -25,6 +25,12 @@ class LdvRebates(Auditable):
         null=True,
         unique=False
     )
+    company_city = models.CharField(
+        blank=True,
+        max_length=200,
+        null=True,
+        unique=False
+    )
     applicant_name = models.CharField(
         blank=True,
         max_length=200,
