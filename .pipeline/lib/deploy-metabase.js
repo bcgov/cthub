@@ -14,7 +14,7 @@ module.exports = settings => {
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase/metabase-dc.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase-postgresql/metabase-dc.yaml`, {
     'param': {
       'ENV_NAME': phases[phase].phase,
       'CPU_REQUEST': phases[phase].metabaseCpuRequest,
