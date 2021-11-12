@@ -158,9 +158,6 @@ objects:
               memory: ${MEMORY_REQUEST}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          volumeMounts:
-          - mountPath: /metabase-data
-            name: metabase-data
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
@@ -168,10 +165,6 @@ objects:
         serviceAccount: metabase
         serviceAccountName: metabase
         terminationGracePeriodSeconds: 30
-        volumes:
-        - name: metabase-data
-          persistentVolumeClaim:
-            claimName: metabase
     test: false
     triggers:
     - imageChangeParams:
