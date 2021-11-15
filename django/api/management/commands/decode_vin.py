@@ -5,10 +5,10 @@ class Command(BaseCommand):
     help = 'Loads operational data'
 
     def handle(self, *args, **options):
-        print(decoder())
+        decoder()
         self.stdout.write(
-            self.style.ERROR(
-                'Done'
+            self.style.SUCCESS(
+                'Decoding Completed!'
             )
         )
         
