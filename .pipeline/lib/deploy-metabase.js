@@ -17,6 +17,7 @@ module.exports = settings => {
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase-postgresql/metabase-dc.yaml`, {
     'param': {
       'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix,
       'CPU_REQUEST': phases[phase].metabaseCpuRequest,
       'CPU_LIMIT': phases[phase].metabaseCpuLimit,
       'MEMORY_REQUEST': phases[phase].metabaseMemoryRequest,
