@@ -10,9 +10,6 @@ parameters:
   - name: SUFFIX
     displayName: null
     description: sample is -dev-97    
-  - name: METABASE_PVC_SIZE
-    value: 
-    required: true    
   - name: CPU_REQUEST
     value: 50M
     displayName: Requested CPU
@@ -41,19 +38,6 @@ objects:
     labels:
       app: metabase
       service: metabase
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: metabase
-    annotations:
-      volume.beta.kubernetes.io/storage-class: netapp-file-standard
-      template.openshift.io.bcgov/create: 'true'
-  spec:
-    accessModes:
-      - ReadWriteMany
-    resources:
-      requests:
-        storage: ${METABASE_PVC_SIZE}
 - apiVersion: v1
   kind: Service
   metadata:
