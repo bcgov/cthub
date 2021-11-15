@@ -151,7 +151,7 @@ objects:
                   key: mb-db-password
                   name: cthub-metabase
             - name: MB_DB_HOST
-              value: patroni-master-dev-9
+              value: patroni-master${SUFFIX}
           resources:
             limits:
               cpu: ${CPU_LIMIT}
