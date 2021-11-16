@@ -1,7 +1,6 @@
 import pandas as pd
 from api.models.ldv_rebates import LdvRebates
 
-
 def trim_all_columns(df):
     """
     Trim whitespace from ends of each value across all series in dataframe
@@ -40,7 +39,7 @@ def import_from_xls(excel_file):
         "VIN#",
         "Delivered",
         "Consent to Contact",
-    ]), 1, inplace=True) 
+    ]), 1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df['CASL Consent'].replace(
