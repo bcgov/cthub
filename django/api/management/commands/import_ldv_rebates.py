@@ -7,15 +7,15 @@ from api.services.ldv_rebates import import_from_xls
 
 class Command(BaseCommand):
     """
-    This command takes in a json file and will parse and create records
+    This command takes in an excel file and will parse and create records
     TODO: Allow users to put in a directory as an argument so that the
-    function can parse multiple json files
+    function can parse multiple files
     """
     help = 'Loads file into the ldv rebates table'
 
     def add_arguments(self, parser):
         """
-        Currently only takes in a json file as a required argument
+        Currently only takes in an excel file as a required argument
         """
         parser.add_argument(
             'xls_file', help='Filename of the xls being imported'
