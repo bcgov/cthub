@@ -4,20 +4,22 @@ from django.db import models
 
 class LdvRebates(Auditable):
     submission_id = models.IntegerField(
-        unique=True
+        unique=False
     )
     casl_consent =  models.BooleanField(
         default=False
     )
-    date_approved = models.DateField(
+    date_approved = models.CharField(
         blank=True,
         null=True,
-        auto_now=False
+        max_length=100,
+        unique=False
     )
-    submission_date = models.DateField(
+    submission_date = models.CharField(
         blank=True,
         null=True,
-        auto_now=False
+        max_length=100,
+        unique=False
     )
     company_name = models.CharField(
         blank=True,
@@ -57,26 +59,26 @@ class LdvRebates(Auditable):
     )
     applicant_postal_code = models.CharField(
         blank=True,
-        max_length=10,
+        max_length=50,
         null=True,
         unique=False
     )
 
     applicant_phone = models.CharField(
         blank=True,
-        max_length=15,
+        max_length=25,
         null=True,
         unique=False
     )
     applicant_email = models.CharField(
         blank=True,
-        max_length=50,
+        max_length=200,
         null=True,
         unique=False
     )
     applicant_use = models.CharField(
         blank=True,
-        max_length=20,
+        max_length=50,
         null=True,
         unique=False
     )
@@ -94,13 +96,13 @@ class LdvRebates(Auditable):
     )
     business_number = models.CharField(
         blank=True,
-        max_length=30,
+        max_length=50,
         null=True,
         unique=False
     )
     drivers_license = models.CharField(
         blank=True,
-        max_length=30,
+        max_length=50,
         null=True,
         unique=False
     )
@@ -121,7 +123,7 @@ class LdvRebates(Auditable):
     )
     document_type = models.CharField(
         blank=True,
-        max_length=40,
+        max_length=50,
         null=True,
         unique=False
     )
