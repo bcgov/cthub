@@ -30,6 +30,11 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
+  - name: REPLICAS
+    description: |
+      The number of replicas to use.
+    displayName: REPLICAS
+    value: "1"    
 objects:
 - apiVersion: v1
   kind: ServiceAccount
@@ -81,6 +86,26 @@ objects:
       name: metabase
       weight: 100
     wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      cluster-name: patroni${SUFFIX}
+    name: patroni-master${SUFFIX}-metabase
+  spec:
+    ports:
+      - port: 5432
+        protocol: TCP
+        targetPort: 5432
+    selector:
+      cluster-name: patroni${SUFFIX}
+      role: master
+      app.kubernetes.io/name: patroni
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}    
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -91,7 +116,7 @@ objects:
       app: metabase
     name: metabase
   spec:
-    replicas: 1
+    replicas: ${{REPLICAS}}
     revisionHistoryLimit: 10
     selector:
       app: metabase
@@ -135,7 +160,7 @@ objects:
                   key: mb-db-password
                   name: cthub-metabase
             - name: MB_DB_HOST
-              value: patroni-master${SUFFIX}
+              value: patroni-master${SUFFIX}-metabase
           resources:
             limits:
               cpu: ${CPU_LIMIT}
@@ -143,6 +168,16 @@ objects:
             requests:
               cpu: ${CPU_REQUEST}
               memory: ${MEMORY_REQUEST}
+            readinessProbe:
+              httpGet:
+                path: /api/health
+                port: 3000
+                scheme: HTTP
+              initialDelaySeconds: 180
+              timeoutSeconds: 5
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 10              
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst

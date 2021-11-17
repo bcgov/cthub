@@ -21,7 +21,8 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].metabaseCpuRequest,
       'CPU_LIMIT': phases[phase].metabaseCpuLimit,
       'MEMORY_REQUEST': phases[phase].metabaseMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].metabaseMemoryLimit
+      'MEMORY_LIMIT': phases[phase].metabaseMemoryLimit,
+      'REPLICAS': phases[phase].metabaseReplicas,
     }
   }))
 
