@@ -6,7 +6,7 @@ class LdvRebates(Auditable):
     submission_id = models.IntegerField(
         unique=False
     )
-    casl_consent =  models.BooleanField(
+    casl_consent = models.BooleanField(
         default=False
     )
     date_approved = models.CharField(
@@ -108,8 +108,7 @@ class LdvRebates(Auditable):
     )
     province = models.CharField(
         blank=True,
-        max_length=50
-        ,
+        max_length=50,
         null=True,
         unique=False,
     )
@@ -143,7 +142,7 @@ class LdvRebates(Auditable):
         null=True,
         unique=False
     )
-    delivered =  models.BooleanField(
+    delivered = models.BooleanField(
         default=False
     )
     consent_to_contact = models.BooleanField(

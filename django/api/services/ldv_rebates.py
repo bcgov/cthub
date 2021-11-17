@@ -8,37 +8,38 @@ def trim_all_columns(df):
     trim_strings = lambda x: x.strip() if isinstance(x, str) else x
     return df.applymap(trim_strings)
 
+
 def import_from_xls(excel_file):
     df = pd.read_excel(excel_file, 'Raw Data')
     df.drop(df.columns.difference([
-    "CASL Consent",
-    "DATE APPROVED",
-    "Submission ID",
-    "Submission Date",
-    "Company Name",
-    "City",
-    "Applicant Name",
-    "Applicant Address 1",
-    "Applicant Address 2",
-    "Applicant City",
-    "Applicant Postal Code",
-    "Applicant Phone",
-    "Applicant Email",
-    "Applicant Use",
-    "Applicant Type",
-    "Business Name",
-    "Business Number",
-    "Drivers License",
-    "Province",
-    "MSRP",
-    "Other Incentives",
-    "Document Type",
-    "Vehicle",
-    "Incentive Amount",
-    "VIN#",
-    "Delivered",
-    "Consent to Contact",
-    ]), 1, inplace=True) 
+        "CASL Consent",
+        "DATE APPROVED",
+        "Submission ID",
+        "Submission Date",
+        "Company Name",
+        "City",
+        "Applicant Name",
+        "Applicant Address 1",
+        "Applicant Address 2",
+        "Applicant City",
+        "Applicant Postal Code",
+        "Applicant Phone",
+        "Applicant Email",
+        "Applicant Use",
+        "Applicant Type",
+        "Business Name",
+        "Business Number",
+        "Drivers License",
+        "Province",
+        "MSRP",
+        "Other Incentives",
+        "Document Type",
+        "Vehicle",
+        "Incentive Amount",
+        "VIN#",
+        "Delivered",
+        "Consent to Contact",
+    ]), 1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df['CASL Consent'].replace(
@@ -105,6 +106,7 @@ def import_from_xls(excel_file):
                 delivered=row["Delivered"],
                 consent_to_contact=row["Consent to Contact"]
             )
-        except:
+        except Exception as e:
+            print(e)
             print(row)
     return True
