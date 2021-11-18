@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useCallback, useRef, useState } from 'react';
+import { withRouter } from 'react-router-dom';
 
 import { getFilters, getOrderBy } from '../app/utilities/reactTable';
 import IcbcDataTable from './components/IcbcDataTable';
@@ -54,4 +55,4 @@ const IcbcDataContainer = () => {
   );
 };
 
-export default IcbcDataContainer;
+export default withRouter(IcbcDataContainer);
