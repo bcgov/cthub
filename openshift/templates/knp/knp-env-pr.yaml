@@ -2,9 +2,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: zeva-network-policy
+  template: cthub-network-policy
 metadata:
-  name: zeva-network-policy
+  name: cthub-network-policy
 parameters:
   - name: SUFFIX
     displayName: null
@@ -23,12 +23,12 @@ objects:
       ## Allow backend to accept communication from frontend
       podSelector:
         matchLabels:
-          name: zeva-backend${SUFFIX}
+          name: cthub-backend${SUFFIX}
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  name: zeva-frontend${SUFFIX}
+                  name: cthub-frontend${SUFFIX}
           ports:
             - protocol: TCP
               port: 8080
@@ -45,7 +45,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  name: zeva-backend${SUFFIX}
+                  name: cthub-backend${SUFFIX}
           ports:
             - protocol: TCP
               port: 5432
@@ -57,12 +57,12 @@ objects:
       ## Allow minio to accept communication from backend
       podSelector:
         matchLabels:
-          app: zeva-minio-${ENVIRONMENT}
+          app: cthub-minio-${ENVIRONMENT}
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  name: zeva-backend${SUFFIX}
+                  name: cthub-backend${SUFFIX}
           ports:
             - protocol: TCP
               port: 9000                  
@@ -164,7 +164,7 @@ objects:
       ## Allow backend to accept communication from schemaspy
       podSelector:
         matchLabels:
-          name: zeva-backend${SUFFIX}
+          name: cthub-backend${SUFFIX}
       ingress:
         - from:
             - podSelector:

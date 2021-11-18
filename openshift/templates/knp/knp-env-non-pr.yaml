@@ -2,9 +2,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: zeva-network-policy
+  template: cthub-network-policy
 metadata:
-  name: zeva-network-policy
+  name: cthub-network-policy
 parameters:
   - name: ENVIRONMENT
     displayName: null
@@ -19,7 +19,7 @@ objects:
       ## Allow minio to accept communication from nagios
       podSelector:
         matchLabels:
-          app: zeva-minio-${ENVIRONMENT}
+          app: cthub-minio-${ENVIRONMENT}
       ingress:
         - from:
             - podSelector:

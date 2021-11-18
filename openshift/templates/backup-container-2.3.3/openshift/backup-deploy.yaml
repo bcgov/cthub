@@ -36,8 +36,6 @@ objects:
       name: ${NAME}
       labels:
         name: ${NAME}
-        app: backup-container
-        role: backup-container
     spec:
       strategy:
         type: Recreate
@@ -60,8 +58,6 @@ objects:
           name: ${NAME}
           labels:
             name: ${NAME}
-            app: backup-container
-            role: backup-container
         spec:
           volumes:
             - name: ${BACKUP_VOLUME_NAME}
