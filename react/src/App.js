@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 
 import settings from './app/settings';
-import IcbcDataContainer from './icbc_data/IcbcDataContainer';
+import IcbcDataRouter from './icbc_data/router';
 
 const { API_BASE } = settings;
 
@@ -39,10 +39,7 @@ const App = () => {
           )}
 
           <Switch>
-            <Route
-              path="/"
-              component={IcbcDataContainer}
-            />
+            <IcbcDataRouter />
           </Switch>
         </Router>
       </div>
