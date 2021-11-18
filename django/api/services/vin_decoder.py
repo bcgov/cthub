@@ -1,7 +1,6 @@
 import logging
 import requests
 
-from rest_framework.response import Response
 from django.core.paginator import Paginator
 
 from api.models.icbc_registration_data import IcbcRegistrationData
@@ -14,11 +13,15 @@ def decoder():
     url = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/'
     json_response = None
     model_year = None
-    vin_queryset = IcbcRegistrationData.objects.values_list('vin', flat=True).order_by('vin')
+
+    vin_queryset = IcbcRegistrationData.objects.values_list(
+        'vin', flat=True
+    ).order_by('vin')
+
     pages = Paginator(vin_queryset, 50)
-    # Remove commented out code to decode all the VINs inside icbc registration data table
-    for p in pages:
-        page = pages.page(p.number)
+
+    for each in pages:
+        page = pages.page(each.number)
         vin_batch = ';'.join(page.object_list)
         post_fields = {'format': 'json', 'data': vin_batch}
         try:
@@ -31,17 +34,18 @@ def decoder():
             results = json_response['Results']
             if results:
                 for item in results:
-                    if item['ModelYear']:
-                        model_year = int(item['ModelYear']) 
+                    if item.get('ModelYear'):
+                        model_year = int(item.get('ModelYear'))
                     VINDecodedInformation.objects.create(
-                        manufacturer=item['Manufacturer'],
-                        make=item['Make'],
-                        model=item['Model'],
+                        fuel_type_primary=item.get('FuelTypePrimary'),
+                        make=item.get('Make'),
+                        manufacturer=item.get('Manufacturer'),
                         model_year=model_year,
-                        fuel_type_primary=item['FuelTypePrimary']
+                        model=item.get('Model'),
+                        vin=item.get('VIN')
                     )
-        except requests.exceptions.RequestException as e:
-            LOGGER.error("Error: {}".format(e))
+        except requests.exceptions.RequestException as error:
+            LOGGER.error("Error: %s", error)
             return
 
     return
