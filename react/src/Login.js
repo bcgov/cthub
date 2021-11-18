@@ -3,6 +3,7 @@ import CustomPropTypes from './app/utilities/props';
 
 const Login = (props) => {
   const { keycloak } = props;
+
   return (
     <div id="login-page">
       <div id="header">

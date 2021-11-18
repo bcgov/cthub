@@ -6,6 +6,8 @@ import Login from './Login';
 import App from './App';
 
 const keycloakContainer = () => {
+  const { location, sessionStorage } = window;
+  const { pathname, search } = location;
   const [authenticated, setAuthenticated] = useState(false);
   const [initializedKeycloak, setInitializedKeycloak] = useState(false);
   let globalTimeout;
@@ -20,6 +22,10 @@ const keycloakContainer = () => {
     pkceMethod: 'S256',
     redirectUri: `${window.location.origin}/`,
   };
+
+  if ((pathname && pathname !== '/') || search) {
+    sessionStorage.setItem('redirect', pathname + search);
+  }
 
   const refreshToken = (time = 60) => {
     /*
