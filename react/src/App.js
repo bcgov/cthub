@@ -6,6 +6,7 @@ import { Route, BrowserRouter } from 'react-router-dom';
 
 import settings from './app/settings';
 import IcbcDataContainer from './icbc_data/IcbcDataContainer';
+import UploadContainer from './uploads/UploadContainer';
 
 const { API_BASE } = settings;
 
@@ -24,6 +25,10 @@ const App = () => (
     <div className="App-body">
       <BrowserRouter>
         <Switch>
+          <Route
+            path="/upload"
+            component={UploadContainer}
+          />
           <Route
             path="/"
             component={IcbcDataContainer}
