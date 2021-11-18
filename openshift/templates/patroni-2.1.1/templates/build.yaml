@@ -77,18 +77,17 @@ objects:
           kind: ImageStreamTag
           name: "${NAME}:${OUT_VERSION}"
       source:
-        contextDir: /
+        contextDir: openshift/templates/patroni-2.1.1
         git:
           ref: ${GIT_REF}
           uri: ${GIT_URI}
         type: Git
       strategy:
         dockerStrategy:
-          pullSecret:
-            name: dockerhub-creds 
           from:
-            kind: DockerImage
+            kind: ImageStreamTag
             name: postgres:13.5
+            namespace: 30b186-tools
         type: Docker
       triggers:
         - type: ConfigChange
