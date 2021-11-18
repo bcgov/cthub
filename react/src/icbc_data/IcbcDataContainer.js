@@ -44,15 +44,6 @@ const IcbcDataContainer = () => {
   return (
     <div className="row">
       <div className="col-12">
-        <button
-          type="button"
-          onClick={() => {
-            history.push('/nyan');
-          }}
-        >
-          Test
-        </button>
-        <Link to="/nyan">Test Link</Link>
         <IcbcDataTable
           data={data}
           loading={loading}
