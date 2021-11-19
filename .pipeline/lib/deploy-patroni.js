@@ -25,7 +25,7 @@ module.exports = settings => {
 
   if(phase === 'dev') {
     //deploy Patroni
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/template_patroni_persistend.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/template_patroni_persistent.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix,
         'CPU_REQUEST': phases[phase].patroniCpuRequest,
