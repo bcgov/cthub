@@ -217,7 +217,7 @@ objects:
           terminationMessagePolicy: File
           volumeMounts:
           - mountPath: /home/postgres/pgdata
-            name: ${APPLICATION_NAME}${SUFFIX}
+            name: ${APPLICATION_NAME}
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
@@ -225,17 +225,17 @@ objects:
         serviceAccount: ${SERVICE_ACCOUNT}${SUFFIX}
         serviceAccountName: ${SERVICE_ACCOUNT}${SUFFIX}
         terminationGracePeriodSeconds: 0
-        volumes:
-        - name: ${APPLICATION_NAME}${SUFFIX}
-          persistentVolumeClaim: 
-            claimName: ${APPLICATION_NAME}${SUFFIX}
+#       volumes:
+#       - name: ${APPLICATION_NAME}
+#         persistentVolumeClaim: 
+#           claimName: ${APPLICATION_NAME}
     volumeClaimTemplates:
     - metadata:
         annotations:
           volume.beta.kubernetes.io/storage-class: ${STORAGE_CLASS}
         labels:
           application: ${APPLICATION_NAME}
-        name: ${APPLICATION_NAME}${SUFFIX}
+        name: ${APPLICATION_NAME}
       spec:
         accessModes:
         - ReadWriteOnce
