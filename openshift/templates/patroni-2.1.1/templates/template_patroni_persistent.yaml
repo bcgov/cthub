@@ -142,7 +142,7 @@ objects:
           terminationMessagePolicy: File
           volumeMounts:
           - mountPath: /home/postgres/pgdata
-            name: ${APPLICATION_NAME}${SUFFIX}
+            name: ${APPLICATION_NAME}
         containers:
         - env:
           - name: PATRONI_KUBERNETES_POD_IP
