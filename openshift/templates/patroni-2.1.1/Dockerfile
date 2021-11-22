@@ -8,10 +8,6 @@ ENV PATRONI_HOME=/opt/patroni
 
 ARG PGHOME=/home/postgres
 
-RUN which python
-RUN which python2
-RUN which python3
-
 RUN export DEBIAN_FRONTEND=noninteractive \
     && set -x \
     && echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommend \
