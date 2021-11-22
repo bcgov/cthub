@@ -8,6 +8,12 @@ ENV PATRONI_HOME=/opt/patroni
 
 ARG PGHOME=/home/postgres
 
+RUN which python \
+    which python2 \
+    which python3 \
+    which pip3 \
+    pip3 list
+
 RUN export DEBIAN_FRONTEND=noninteractive \
     && set -x \
     && echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommend \
@@ -31,6 +37,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* /root/.cache
+
+RUN pip3 list
 
 COPY contrib/root /
 
