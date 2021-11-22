@@ -9,10 +9,10 @@ ENV PATRONI_HOME=/opt/patroni
 ARG PGHOME=/home/postgres
 
 RUN which python \
-    which python2 \
-    which python3 \
-    which pip3 \
-    pip3 list
+    && which python2 \
+    && which python3 \
+    && which pip3 \
+    && pip3 list
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && set -x \
