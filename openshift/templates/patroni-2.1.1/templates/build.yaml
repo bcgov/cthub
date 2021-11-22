@@ -29,13 +29,13 @@ parameters:
     value: "patroni-postgres"
   - name: OUT_VERSION
     description: Ouput version
-    value: "13.5"
+    value: "12.4"
   - name: GIT_URI
     value: "https://github.com/bcgov/cthub.git"
   - name: GIT_REF
     value: "metabase-0.1.0"
   - name: PG_VERSION
-    value: "13.5"
+    value: "12.4"
 objects:
   # Postgres ImageStream is created if it doesn't already exist
   - apiVersion: image.openshift.io/v1
@@ -86,7 +86,7 @@ objects:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: postgres:13.5
+            name: postgres:${OUT_VERSION}
             namespace: 30b186-tools
         type: Docker
       triggers:
