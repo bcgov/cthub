@@ -8,11 +8,9 @@ ENV PATRONI_HOME=/opt/patroni
 
 ARG PGHOME=/home/postgres
 
-RUN which python \
-    && which python2 \
-    && which python3 \
-    && which pip3 \
-    && pip3 list
+RUN which python
+RUN which python2
+RUN which python3
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && set -x \
@@ -21,6 +19,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y curl jq locales git build-essential libpq-dev python3 python3-dev python3-pip python3-wheel python3-setuptools python3-virtualenv \
     && echo 'Make sure we have a en_US.UTF-8 locale available' \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && pip3 list \
     && pip3 --isolated --no-cache-dir install psycopg2-binary==2.8.6 six==1.16.0 \
     && pip3 --isolated --no-cache-dir install "patroni[kubernetes]==${PATRONI_VERSION}" \
     && PGHOME=/home/postgres \
