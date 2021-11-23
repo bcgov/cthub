@@ -30,10 +30,9 @@ module.exports = settings => {
         'SUFFIX': phases[phase].suffix
       }
     }))    
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/template_patroni_persistent.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/deploy.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix,
-        'ENV_NAME': phases[phase].phase,
         'CPU_REQUEST': phases[phase].patroniCpuRequest,
         'CPU_LIMIT': phases[phase].patroniCpuLimit,
         'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
