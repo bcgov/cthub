@@ -200,7 +200,7 @@ objects:
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
-          serviceAccountName: ${NAME}
+          serviceAccountName: ${NAME}${SUFFIX}
           terminationGracePeriodSeconds: 0
       updateStrategy:
         type: RollingUpdate
