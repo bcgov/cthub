@@ -37,7 +37,7 @@ parameters:
   - name: PG_VERSION
     value: "12.4"
 objects:
-  # Postgres ImageStream is created if it doesn't already exist
+  # Create postgresq image stream in tools project
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
@@ -45,6 +45,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
+  # import the postgres:12.4 image from docker into the postgres imagestream under tools project
   - apiVersion: v1
     kind: ImageStreamTag
     lookupPolicy:
@@ -60,6 +61,7 @@ objects:
       name: "${PG_VERSION}"
       referencePolicy:
         type: Source
+  # Create patroni-postgresq image stream in tools project
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -67,6 +69,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
+  # Build the patroni image and push to patroni-postgresq imagestream
   - apiVersion: v1
     kind: BuildConfig
     metadata:
