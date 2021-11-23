@@ -28,11 +28,12 @@ module.exports = settings => {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/template_patroni_persistent.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix,
+        'ENV_NAME': phases[phase].phase,
         'CPU_REQUEST': phases[phase].patroniCpuRequest,
         'CPU_LIMIT': phases[phase].patroniCpuLimit,
         'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
         'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
-        'REPLICA': phases[phase].patroniReplica,
+        'REPLICAS': phases[phase].patroniReplica,
         'PVC_SIZE': phases[phase].patroniPvcSize,
         'STORAGE_CLASS': phases[phase].storageClass
       }
