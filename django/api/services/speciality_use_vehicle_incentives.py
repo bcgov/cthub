@@ -11,10 +11,12 @@ def trim_all_columns(df):
 
 
 def applicant_type(row):
-    if row["Fleet"] in ["FLEET", "FLEETS"]:
+    if isinstance((row["Fleet"]), str):
         return 'Fleet'
-    if row["Individual"] == 'INDIVIDUAL':
+    elif isinstance((row["Individual"]), str):
         return 'Individual'
+    else:
+        return ''
 
 
 def import_from_xls(excel_file):
