@@ -22,25 +22,13 @@ module.exports = settings => {
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/prerequisite.yaml`, {
-    'param': {
-      'SUFFIX': phases[phase].suffix
-    }
-  }))
-
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/deploy.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env-pr.yaml`, {
     'param': {
       'SUFFIX': phases[phase].suffix,
-      'CPU_REQUEST': phases[phase].patroniCpuRequest,
-      'CPU_LIMIT': phases[phase].patroniCpuLimit,
-      'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
-      'REPLICAS': phases[phase].patroniReplica,
-      'PVC_SIZE': phases[phase].patroniPvcSize,
-      'STORAGE_CLASS': phases[phase].storageClass
+      'ENVIRONMENT': phases[phase].phase
     }
   }))
-
+  
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,

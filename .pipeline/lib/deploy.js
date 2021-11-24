@@ -25,16 +25,14 @@ module.exports = settings => {
 
   //create network security policies for internal pod to pod communications
   if(phase === 'dev') {
+
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env-pr.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix,
         'ENVIRONMENT': phases[phase].phase
       }
     }))
-  }
 
-  if(phase === 'dev') {
-    //deploy Patroni
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/prerequisite.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix
@@ -61,9 +59,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix
     }
   }))
-  //}
 
-  // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -79,8 +75,6 @@ module.exports = settings => {
     }
   }))
   
-
-  //deploy backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
