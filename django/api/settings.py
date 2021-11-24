@@ -39,6 +39,7 @@ CORS_ORIGIN_WHITELIST = [
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
+    'tfrs.apps.ApiConfig',
     'corsheaders',
     'django_filters',
     'django.contrib.admin',
@@ -61,6 +62,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+# Auth User
+AUTH_USER_MODEL = 'tfrs.User'
 
 ROOT_URLCONF = 'api.urls'
 
