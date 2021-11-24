@@ -24,7 +24,6 @@ module.exports = settings => {
   // The deployment of your cool app goes here ▼▼▼
 
   //create network security policies for internal pod to pod communications
-  /*
   if(phase === 'dev') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env-pr.yaml`, {
       'param': {
@@ -32,7 +31,7 @@ module.exports = settings => {
         'ENVIRONMENT': phases[phase].phase
       }
     }))
-  }*/
+  }
 
   if(phase === 'dev') {
     //deploy Patroni required secrets

@@ -26,9 +26,9 @@ metadata:
     tags: postgresql
   name: patroni-pgsql-persistent
 labels:
-  app: ${NAME}${SUFFIX}
+  app: ${NAME}
   phase: deploy
-  app.kubernetes.io/instance: ${NAME}${SUFFIX}
+  app.kubernetes.io/instance: ${NAME}
   app.kubernetes.io/component: database
   app.kubernetes.io/name: patroni
   app.kubernetes.io/managed-by: template
@@ -149,6 +149,21 @@ objects:
                     secretKeyRef:
                       key: app-db-name
                       name: ${NAME}-creds${SUFFIX}
+                - name: METABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: metabase-db-username
+                      name: ${NAME}-creds${SUFFIX}
+                - name: METABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: metabase-db-password
+                      name: ${NAME}-creds${SUFFIX}
+                - name: METABASE_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: metabase-db-name
+                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_SCOPE
                   value: ${NAME}${SUFFIX}
                 - name: PATRONI_NAME
@@ -187,15 +202,12 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               readinessProbe:
-                httpGet:
-                  path: /health
-                  port: 8008
-                  scheme: HTTP
-                initialDelaySeconds: 30
+                initialDelaySeconds: 5
                 timeoutSeconds: 5
-                periodSeconds: 10
-                successThreshold: 1
-                failureThreshold: 10
+                failureThreshold: 4
+                exec:
+                  command:
+                    - /usr/share/scripts/patroni/health_check.sh
               volumeMounts:
                 - mountPath: /home/postgres/pgdata
                   name: postgresql
@@ -226,8 +238,9 @@ parameters:
     description: |
       The name of the application for labelling all artifacts.
     displayName: Application Name
-    value: mycool-app-patroni
+    value: patroni
   - name: SUFFIX
+    description: A suffix appended to all artifact's name (NAME), such as -dev-9, dev, test and prod
     required: true    
   - name: REPLICAS
     description: |
@@ -256,7 +269,7 @@ parameters:
       The OpenShift Namespace where the patroni and postgresql
       ImageStream resides.
     displayName: ImageStream Namespace
-    value: bcgov
+    value: 30b186-tools
   - name: IMAGE_NAME
     description: |
       The Patroni image stream name
@@ -265,7 +278,7 @@ parameters:
     description: |
       The image tag used to specify which image you would like deployed.
       Don't use `latest`.
-    value: "12.4-latest"
+    value: "12.4"
   - name: PVC_SIZE
     description: The size of the persistent volume to create.
     displayName: Persistent Volume Size

@@ -14,14 +14,15 @@ module.exports = settings => {
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase/metabase-dc.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase-postgresql/metabase-dc.yaml`, {
     'param': {
       'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix,
       'CPU_REQUEST': phases[phase].metabaseCpuRequest,
       'CPU_LIMIT': phases[phase].metabaseCpuLimit,
       'MEMORY_REQUEST': phases[phase].metabaseMemoryRequest,
       'MEMORY_LIMIT': phases[phase].metabaseMemoryLimit,
-      'METABASE_PVC_SIZE': phases[phase].metabasePvcSize
+      'REPLICAS': phases[phase].metabaseReplicas,
     }
   }))
 
