@@ -19,6 +19,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-backend-accepts-frontend${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}
     spec:
       ## Allow backend to accept communication from frontend
       podSelector:
@@ -36,6 +38,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-patroni-accepts-backend${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow patroni to accept communications from backend
       podSelector:
@@ -53,6 +57,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-minio-accepts-backend${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow minio to accept communication from backend
       podSelector:
@@ -71,6 +77,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-patroni-accepts-backendmid${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow patroni to accept communications from backend mid lifecycle pod
       podSelector:
@@ -88,6 +96,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-patroni-accepts-patroni-itself${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow patroni to accept communications from other patroni pods
       podSelector:
@@ -107,6 +117,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-patroni-accepts-backup-container${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow patroni to accept communications from backup container
       podSelector:
@@ -124,6 +136,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-patroni-accepts-nagios${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow patroni to accept communications from nagios
       podSelector:
@@ -143,6 +157,8 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: allow-patroni-accepts-schemaspy${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow patroni to accept communications from schemaspy
       podSelector:
@@ -155,11 +171,32 @@ objects:
                   name: schemaspy-public${SUFFIX}
           ports:
             - protocol: TCP
-              port: 5432                                   
+              port: 5432          
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-patroni-accepts-metabase
+    labels:
+      app: cthub${SUFFIX}      
+    spec:
+      ## Allow patroni to accept communications from backup container
+      podSelector:
+        matchLabels:
+          cluster-name: patroni${SUFFIX}
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: metabase
+          ports:
+            - protocol: TCP
+              port: 5432                                         
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
       name: allow-backend-accepts-schemaspy${SUFFIX}
+    labels:
+      app: cthub${SUFFIX}      
     spec:
       ## Allow backend to accept communication from schemaspy
       podSelector:
