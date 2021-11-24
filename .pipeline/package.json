@@ -8,6 +8,7 @@
   "scripts": {
     "build": "node build.js",
     "build-metabase": "node build-metabase.js",
+    "build-patroni": "node build-patroni.js",
     "clean": "node clean.js",
     "deploy": "node deploy.js",
     "deploy-unittest": "node deploy-unittest.js",
