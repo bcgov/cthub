@@ -36,7 +36,7 @@ objects:
         app: ${NAME}${SUFFIX}
         cluster-name: ${NAME}${SUFFIX}
       annotations:
-        as-copy-of: "template.${NAME}-patroni"                
+        as-copy-of: "template.${NAME}-creds"                
       name: ${NAME}-creds${SUFFIX}
     stringData:
       replication-username: ${PATRONI_REPLICATION_USERNAME}
@@ -46,6 +46,9 @@ objects:
       app-db-name: ${APP_DB_NAME}
       app-db-username: ${APP_DB_USERNAME}
       app-db-password: ${APP_DB_PASSWORD}
+      metabase-db-name: ${METABASE_DB_NAME}
+      metabase-db-username: ${METABASE_DB_USERNAME}
+      metabase-db-password: ${METABASE_DB_PASSWORD}      
   - apiVersion: v1
     kind: ServiceAccount
     metadata:
@@ -158,3 +161,11 @@ parameters:
   - name: APP_DB_PASSWORD
     generate: expression
     from: "[a-z0-9]{32}"
+  - name: METABASE_DB_USERNAME
+    from: cthub[a-z]{8}
+    generate: expression
+  - name: METABASE_DB_NAME
+    value: cthub-metabase
+  - name: METABASE_DB_PASSWORD
+    generate: expression
+    from: '[a-zA-Z0-9]{32}'    
