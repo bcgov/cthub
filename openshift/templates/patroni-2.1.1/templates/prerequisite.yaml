@@ -35,3 +35,11 @@ objects:
       annotations:
         as-copy-of: "template.${NAME}-creds"                
       name: KUAN-TEST
+parameters:
+  - name: NAME
+    description: |
+      The name of the application for labelling all artifacts.
+    displayName: Application Name
+    value: patroni
+  - name: SUFFIX
+    required: true    
