@@ -7,7 +7,7 @@ const Router = () => (
   <>
     <Route
       exact
-      path="/"
+      path="/upload"
       component={UploadContainer}
     />
   </>
