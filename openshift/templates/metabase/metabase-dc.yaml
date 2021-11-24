@@ -45,6 +45,8 @@ objects:
     annotations:
       volume.beta.kubernetes.io/storage-class: netapp-file-standard
       template.openshift.io.bcgov/create: 'true'
+    labels:
+      app: metabase
   spec:
     accessModes:
       - ReadWriteMany
