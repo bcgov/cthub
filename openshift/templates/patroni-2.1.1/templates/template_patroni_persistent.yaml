@@ -69,7 +69,7 @@ objects:
       application: ${APPLICATION_NAME}
       cluster-name: ${PATRONI_CLUSTER_NAME}${SUFFIX}    
     annotations:
-      as-copy-of: "template.patroni-patroni"        
+      as-copy-of: "template.patroni-creds"        
   stringData:
     replication-username: ${PATRONI_REPLICATION_USERNAME}
     replication-password: ${PATRONI_REPLICATION_PASSWORD}

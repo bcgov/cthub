@@ -149,6 +149,21 @@ objects:
                     secretKeyRef:
                       key: app-db-name
                       name: ${NAME}-creds${SUFFIX}
+                - name: METABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: metabase-db-username
+                      name: ${NAME}-creds${SUFFIX}
+                - name: METABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: metabase-db-password
+                      name: ${NAME}-creds${SUFFIX}
+                - name: METABASE_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: metabase-db-name
+                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_SCOPE
                   value: ${NAME}${SUFFIX}
                 - name: PATRONI_NAME
