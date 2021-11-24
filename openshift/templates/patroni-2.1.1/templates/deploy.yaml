@@ -38,7 +38,6 @@ objects:
     metadata:
       creationTimestamp: null
       labels:
-        app: ${NAME}${SUFFIX}
         cluster-name: ${NAME}${SUFFIX}
       name: ${NAME}-master${SUFFIX}
     spec:
@@ -60,7 +59,6 @@ objects:
       creationTimestamp: null
       generation: 3
       labels:
-        app: ${NAME}${SUFFIX}
         cluster-name: ${NAME}${SUFFIX}
       name: ${NAME}${SUFFIX}
     spec:
@@ -223,8 +221,6 @@ objects:
         - metadata:
             annotations:
               volume.beta.kubernetes.io/storage-class: ${STORAGE_CLASS}
-            labels:
-              app: ${NAME}${SUFFIX}
             name: postgresql
           spec:
             storageClassName: ${STORAGE_CLASS}
