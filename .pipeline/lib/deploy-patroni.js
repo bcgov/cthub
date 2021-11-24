@@ -27,7 +27,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix
     }
   }))
-
+/*
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/deploy.yaml`, {
     'param': {
       'SUFFIX': phases[phase].suffix,
@@ -39,7 +39,7 @@ module.exports = settings => {
       'PVC_SIZE': phases[phase].patroniPvcSize,
       'STORAGE_CLASS': phases[phase].storageClass
     }
-  }))
+  }))*/
 
   oc.applyRecommendedLabels(
       objects,

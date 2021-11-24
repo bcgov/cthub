@@ -2,6 +2,14 @@
 const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
 const KeyCloakClient = require('./keycloak');
 
+// The clean tasks should be based on the following five labels added by BCDK pipeline
+// app: cthub-dev-9
+// app-name: cthub
+// env-id: '9'
+// env-name: dev
+// github-owner: bcgov
+// github-repo: cthub
+
 const getTargetPhases = (env, phases) => {
   let target_phase = [];
   for (const phase in phases) {
