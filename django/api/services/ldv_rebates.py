@@ -1,6 +1,7 @@
 import pandas as pd
 from api.models.ldv_rebates import LdvRebates
 
+
 def trim_all_columns(df):
     """
     Trim whitespace from ends of each value across all series in dataframe
@@ -106,7 +107,7 @@ def import_from_xls(excel_file):
                 delivered=row["Delivered"],
                 consent_to_contact=row["Consent to Contact"]
             )
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print(error)
             print(row)
     return True

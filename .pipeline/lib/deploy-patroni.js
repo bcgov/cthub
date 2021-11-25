@@ -10,19 +10,34 @@ module.exports = settings => {
   const changeId = phases[phase].changeId;
   const oc = new OpenShiftClientX(Object.assign({namespace: phases[phase].namespace}, options));
 
+  //add Valid Redirect URIs for the pull request to keycloak
+  /************
+  if(phase === 'dev') {
+    const kc = new KeyCloakClient(settings, oc);
+    kc.addUris();
+  }
+  *************/
+
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/metabase-postgresql/metabase-dc.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/prerequisite.yaml`, {
     'param': {
-      'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix
+    }
+  }))
+
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/deploy.yaml`, {
+    'param': {
       'SUFFIX': phases[phase].suffix,
-      'CPU_REQUEST': phases[phase].metabaseCpuRequest,
-      'CPU_LIMIT': phases[phase].metabaseCpuLimit,
-      'MEMORY_REQUEST': phases[phase].metabaseMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].metabaseMemoryLimit,
-      'REPLICAS': phases[phase].metabaseReplicas,
+      'CPU_REQUEST': phases[phase].patroniCpuRequest,
+      'CPU_LIMIT': phases[phase].patroniCpuLimit,
+      'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
+      'REPLICAS': phases[phase].patroniReplica,
+      'PVC_SIZE': phases[phase].patroniPvcSize,
+      'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
 

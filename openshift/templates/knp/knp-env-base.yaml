@@ -2,14 +2,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: zeva-network-policy
+  template: cthub-network-policy
 metadata:
-  name: zeva-network-policy
-parameters:
-  - name: ENVIRONMENT
-    displayName: null
-    description: such as dev, test or prod
-    required: true  
+  name: cthub-network-policy
 objects:
   ## Base Network Policies
   - kind: NetworkPolicy

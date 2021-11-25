@@ -4,6 +4,11 @@ from auditable.models import Auditable
 
 
 class VINDecodedInformation(Auditable):
+    vin = models.CharField(
+        blank=False,
+        null=False,
+        max_length=20
+    )
     manufacturer = models.CharField(
         max_length=500,
         null=True,
@@ -28,7 +33,6 @@ class VINDecodedInformation(Auditable):
         max_length=250,
         null=True
     )
-
 
     class Meta:
         db_table = 'vin_decoded_information'

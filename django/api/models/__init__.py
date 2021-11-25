@@ -9,3 +9,4 @@ from . import vehicle_class
 from . import vehicle_zev_type
 from . import vin_decoded_information
 from . import ldv_rebates
+from . import speciality_use_vehicle_incentives

@@ -36,16 +36,8 @@ objects:
         app: ${NAME}${SUFFIX}
         cluster-name: ${NAME}${SUFFIX}
       annotations:
-        as-copy-of: "template.${NAME}-patroni"        
+        as-copy-of: "template.${NAME}-creds"                
       name: ${NAME}-creds${SUFFIX}
-    stringData:
-      replication-username: ${PATRONI_REPLICATION_USERNAME}
-      replication-password: ${PATRONI_REPLICATION_PASSWORD}
-      superuser-username: ${PATRONI_SUPERUSER_USERNAME}
-      superuser-password: ${PATRONI_SUPERUSER_PASSWORD}
-      app-db-name: ${APP_DB_NAME}
-      app-db-username: ${APP_DB_USERNAME}
-      app-db-password: ${APP_DB_PASSWORD}
   - apiVersion: v1
     kind: ServiceAccount
     metadata:
@@ -129,32 +121,3 @@ parameters:
     value: patroni
   - name: SUFFIX
     required: true    
-  - name: PATRONI_SUPERUSER_USERNAME
-    description: |
-      Username of the superuser account for initialization.
-    displayName: Superuser Username
-    value: postgres
-  - name: PATRONI_SUPERUSER_PASSWORD
-    description: |
-      Password of the superuser account for initialization.
-    displayName: Superuser Password
-    generate: expression
-    from: "[a-z0-9]{32}"
-  - name: PATRONI_REPLICATION_USERNAME
-    description: |
-      Username of the replication account for initialization.
-    displayName: Replication Username
-    value: replication
-  - name: PATRONI_REPLICATION_PASSWORD
-    description: Password of the replication account for initialization.
-    displayName: Replication Password
-    generate: expression
-    from: "[a-z0-9]{32}"
-  - name: APP_DB_USERNAME
-    generate: expression
-    from: "cthub[a-z]{8}"
-  - name: APP_DB_NAME
-    value: cthub
-  - name: APP_DB_PASSWORD
-    generate: expression
-    from: "[a-z0-9]{32}"

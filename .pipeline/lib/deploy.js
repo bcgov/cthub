@@ -24,37 +24,28 @@ module.exports = settings => {
   // The deployment of your cool app goes here ▼▼▼
 
   //create network security policies for internal pod to pod communications
-  /*
   if(phase === 'dev') {
+
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env-pr.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix,
         'ENVIRONMENT': phases[phase].phase
       }
     }))
-  }*/
 
-  if(phase === 'dev') {
-    //deploy Patroni required secrets
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/prerequisite.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/prerequisite.yaml`, {
       'param': {
-        'NAME': 'patroni',
         'SUFFIX': phases[phase].suffix
       }
     }))
-    //deploy Patroni
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deploy.yaml`, {
+
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/deploy.yaml`, {
       'param': {
-        'NAME': 'patroni',
         'SUFFIX': phases[phase].suffix,
         'CPU_REQUEST': phases[phase].patroniCpuRequest,
         'CPU_LIMIT': phases[phase].patroniCpuLimit,
         'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
         'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
-        'IMAGE_REGISTRY': 'image-registry.openshift-image-registry.svc:5000',
-        'IMAGE_STREAM_NAMESPACE': phases['build'].namespace,
-        'IMAGE_NAME': 'patroni-postgres',
-        'IMAGE_TAG': '12.4-20210928',
         'REPLICAS': phases[phase].patroniReplica,
         'PVC_SIZE': phases[phase].patroniPvcSize,
         'STORAGE_CLASS': phases[phase].storageClass
@@ -68,9 +59,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix
     }
   }))
-  //}
 
-  // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -86,8 +75,6 @@ module.exports = settings => {
     }
   }))
   
-
-  //deploy backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
