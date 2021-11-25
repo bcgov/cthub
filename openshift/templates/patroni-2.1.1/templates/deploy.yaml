@@ -53,6 +53,26 @@ objects:
       type: ClusterIP
     status:
       loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      creationTimestamp: null
+      labels:
+        cluster-name: ${NAME}${SUFFIX}
+      name: ${NAME}-master${SUFFIX}-metabases
+    spec:
+      ports:
+        - port: 5432
+          protocol: TCP
+          targetPort: 5432
+      selector:
+        cluster-name: ${NAME}${SUFFIX}
+        role: master
+        app.kubernetes.io/name: patroni
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}      
   - apiVersion: apps/v1
     kind: StatefulSet
     metadata:
