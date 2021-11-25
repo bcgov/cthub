@@ -61,7 +61,7 @@ objects:
       creationTimestamp: null
       name: ${NAME}-backend${SUFFIX}
       labels:
-        shared: "true"      
+        appBuildId: ${NAME}${SUFFIX}      
     spec:
       nodeSelector: null
       output:

@@ -46,7 +46,7 @@ objects:
     creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
     labels:
-      shared: "true"    
+      appBuildId: ${NAME}${SUFFIX}
   spec:
     failedBuildsHistoryLimit: 5
     nodeSelector: null
