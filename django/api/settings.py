@@ -63,8 +63,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-AUTH_USER_MODEL = 'auth.User'
-
 ROOT_URLCONF = 'api.urls'
 
 TEMPLATES = [{
