@@ -63,8 +63,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-# Auth User
-AUTH_USER_MODEL = 'tfrs.User'
+AUTH_USER_MODEL = 'auth.User'
 
 ROOT_URLCONF = 'api.urls'
 
