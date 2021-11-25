@@ -1,13 +1,16 @@
 "use strict";
 const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
-const KeyCloakClient = require('./keycloak');
 
 // The clean tasks should be based on the following five labels added by BCDK pipeline
-// app: cthub-dev-9
-// app-name: cthub
-// env-id: '9'
-// env-name: dev
+// app: cthub-dev-45
+// template-hash: 5ee0ba9e32efa8ac4d0ed2b9923ea2be3ddda2f4
 // github-owner: bcgov
+// env-name: dev
+// app.kubernetes.io/component: database
+// app.kubernetes.io/managed-by: template
+// app-name: cthub
+// app.kubernetes.io/name: patroni
+// env-id: '45'
 // github-repo: cthub
 
 const getTargetPhases = (env, phases) => {
@@ -35,12 +38,6 @@ module.exports = settings => {
 
       const phase = phases[k];
       oc.namespace(phase.namespace);
-
-      /*** disable removing keycloak valie url entry as the new keycloak for cthub only has one client in a shared realm
-      if(k === 'dev') {
-        const kc = new KeyCloakClient(settings, oc);
-        kc.removeUris();
-      }***/
 
       let buildConfigs = oc.get("bc", {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
