@@ -59,7 +59,7 @@ objects:
       creationTimestamp: null
       labels:
         cluster-name: ${NAME}${SUFFIX}
-      name: ${NAME}-master${SUFFIX}-metabases
+      name: ${NAME}-master${SUFFIX}-metabase
     spec:
       ports:
         - port: 5432
