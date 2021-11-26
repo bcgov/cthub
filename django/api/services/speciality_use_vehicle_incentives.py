@@ -1,5 +1,6 @@
 import pandas as pd
-from api.models.speciality_use_vehicle_incentives import SpecialityUseVehicleIncentives
+from api.models.speciality_use_vehicle_incentives import \
+    SpecialityUseVehicleIncentives
 
 
 def trim_all_columns(df):
