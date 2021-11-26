@@ -3,13 +3,13 @@ import axios from 'axios';
 import React from 'react';
 import {
   Redirect,
-  Route,
   BrowserRouter as Router,
   Switch,
 } from 'react-router-dom';
 
 import settings from './app/settings';
 import IcbcDataRouter from './icbc_data/router';
+import UploadRouter from './uploads/router';
 
 const { API_BASE } = settings;
 
@@ -39,6 +39,7 @@ const App = () => {
           )}
 
           <Switch>
+            <UploadRouter />
             <IcbcDataRouter />
           </Switch>
         </Router>
