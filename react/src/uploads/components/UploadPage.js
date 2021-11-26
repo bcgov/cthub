@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import Select from '@mui/material/Select';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Box from '@material-ui/core/Box';
 import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import FileDropArea from './FileDropArea';
 
 const UploadPage = (props) => {
   const {
-    datasetList, data, uploadFiles, setUploadFiles, doUpload,
+    datasetList,
+    datasetSelected,
+    doUpload,
+    setDatasetSelected,
+    setUploadFiles,
+    uploadFiles,
   } = props;
-
   const selectionList = datasetList.map((obj) => (
-    <option key={obj} value={obj}>{obj}</option>
+    <MenuItem key={obj} value={obj}>{obj}</MenuItem>
   ));
   return (
     <>
-      <div className="row">
-        <div className="col-12 mr-2">
-          dataset to upload
-          <Select className="ml-2">
+      <Box p={3}>
+        <div id="dataset-select">
+          <span>
+            Dataset to Upload &nbsp; &nbsp;
+          </span>
+          <Select
+            value={datasetSelected}
+            style={{ minWidth: 220 }}
+            onChange={(e) => { setDatasetSelected(e.target.value); }}
+          >
             {selectionList}
           </Select>
         </div>
@@ -25,24 +37,35 @@ const UploadPage = (props) => {
           <FileDropArea
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}
-            doUpload={doUpload}
           />
         </div>
-
-      </div>
-      <div>
-        <Button
-        // disabled={uploadFiles.length === 0}
-          className="button primary"
-          onClick={() => doUpload()}
-          type="button"
-        >
-          <FileUploadIcon />
-          {' '}
-          Upload
-        </Button>
-      </div>
+        <Box pt={1}>
+          <Button
+            disabled={uploadFiles.length === 0 || !datasetSelected}
+            className="button primary"
+            onClick={() => doUpload()}
+            type="button"
+            variant="outlined"
+          >
+            {/* <FileUploadIcon /> */}
+            {' + '}
+            Upload
+          </Button>
+        </Box>
+      </Box>
     </>
   );
+};
+UploadPage.defaultProps = {
+  datasetSelected: {},
+};
+
+UploadPage.propTypes = {
+  datasetSelected: PropTypes.string,
+  datasetList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  uploadFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  doUpload: PropTypes.func.isRequired,
+  setDatasetSelected: PropTypes.func.isRequired,
 };
 export default UploadPage;
