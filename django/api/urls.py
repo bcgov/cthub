@@ -19,11 +19,16 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 
 from api.viewsets.icbc_data import IcbcViewset
+from api.viewsets.minio import MinioViewSet
 
 ROUTER = routers.SimpleRouter(trailing_slash=False)
 
 ROUTER.register(
     r'icbc-data/?$', IcbcViewset, basename='icbc-data'
+)
+
+ROUTER.register(
+    r'minio/?$', MinioViewSet, basename='minio'
 )
 
 urlpatterns = [

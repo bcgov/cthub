@@ -12,10 +12,7 @@ const keycloakContainer = () => {
   const [initializedKeycloak, setInitializedKeycloak] = useState(false);
   let globalTimeout;
 
-  const keycloakJson = window.location.hostname === 'localhost'
-    ? '/keycloak-local.json'
-    : '/keycloak.json';
-  const keycloak = Keycloak(keycloakJson);
+  const keycloak = Keycloak();
   const initOptions = {
     idpHint: 'idir',
     onLoad: 'check-sso',

@@ -156,3 +156,12 @@ REST_FRAMEWORK = {
 KEYCLOAK_CLIENT_ID = os.getenv('KEYCLOAK_CLIENT_ID')
 KEYCLOAK_REALM = os.getenv('KEYCLOAK_REALM')
 KEYCLOAK_URL = os.getenv('KEYCLOAK_URL', 'http://localhost:8080')
+
+
+MINIO_ACCESS_KEY = os.getenv('MINIO_ROOT_USER')
+MINIO_SECRET_KEY = os.getenv('MINIO_ROOT_PASSWORD')
+MINIO_BUCKET_NAME = os.getenv('MINIO_BUCKET_NAME', 'cthub')
+MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT', None)
+MINIO_USE_SSL = bool(
+    os.getenv('MINIO_USE_SSL', 'False').lower() in ['true', 1]
+)
