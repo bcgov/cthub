@@ -18,7 +18,7 @@ const UploadContainer = () => {
     // });
   };
   const doUpload = () => uploadFiles.forEach((file) => {
-    axios.get(ROUTES_UPLOADS.MINIO_URL).then((response) => {
+    axios.get(ROUTES.MINIO_URL).then((response) => {
       const { url: uploadUrl, minioObjectName: filename } = response.data;
       axios.put(uploadUrl, file, {
         headers: {

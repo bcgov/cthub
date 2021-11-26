@@ -24,15 +24,14 @@ from api.viewsets.minio import MinioViewSet
 ROUTER = routers.SimpleRouter(trailing_slash=False)
 
 ROUTER.register(
-    r'icbc-data/?$', IcbcViewset, basename='icbc-data'
+    r'icbc-data', IcbcViewset, basename='icbc-data'
 )
 
 ROUTER.register(
-    r'minio/?$', MinioViewSet, basename='minio'
+    r'minio', MinioViewSet, basename='minio'
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(ROUTER.urls)),
-    re_path(".*", TemplateView.as_view(template_name="index.html")),
 ]
