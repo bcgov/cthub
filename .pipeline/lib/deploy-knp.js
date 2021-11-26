@@ -1,7 +1,6 @@
 "use strict";
 const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
 const path = require("path");
-//const KeyCloakClient = require('./keycloak');
 
 module.exports = settings => {
   const phases = settings.phases;
@@ -11,13 +10,6 @@ module.exports = settings => {
   const oc = new OpenShiftClientX(Object.assign({namespace: phases[phase].namespace}, options));
 
   //add Valid Redirect URIs for the pull request to keycloak
-  /************
-  if(phase === 'dev') {
-    const kc = new KeyCloakClient(settings, oc);
-    kc.addUris();
-  }
-  *************/
-
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
   var objects = [];
 
