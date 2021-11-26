@@ -39,6 +39,7 @@ CORS_ORIGIN_WHITELIST = [
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
+    'tfrs.apps.ApiConfig',
     'corsheaders',
     'django_filters',
     'django.contrib.admin',
