@@ -43,7 +43,7 @@ module.exports = settings => {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
       });
-      console.log(buildConfigs);
+
       buildConfigs.forEach(bc => {
         if (bc.spec.output.to.kind == "ImageStreamTag") {
           oc.delete([`ImageStreamTag/${bc.spec.output.to.name}`], {
