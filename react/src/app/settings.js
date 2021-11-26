@@ -1,17 +1,11 @@
 /* global
   __API_BASE__,
   __ENABLE_KEYCLOAK__,
-  __KEYCLOAK_CLIENT_ID__,
-  __KEYCLOAK_REALM__,
-  __KEYCLOAK_URL__,
 */
 
 const settings = {
   API_BASE: __API_BASE__,
   ENABLE_KEYCLOAK: __ENABLE_KEYCLOAK__,
-  KEYCLOAK_CLIENT_ID: __KEYCLOAK_CLIENT_ID__,
-  KEYCLOAK_REALM: __KEYCLOAK_REALM__,
-  KEYCLOAK_URL: __KEYCLOAK_URL__,
 };
 
 export default settings;
