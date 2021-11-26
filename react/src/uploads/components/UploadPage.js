@@ -4,6 +4,8 @@ import Box from '@material-ui/core/Box';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import UploadIcon from '@mui/icons-material/Upload';
+
 import FileDropArea from './FileDropArea';
 
 const UploadPage = (props) => {
@@ -39,7 +41,7 @@ const UploadPage = (props) => {
             uploadFiles={uploadFiles}
           />
         </div>
-        <Box pt={1}>
+        <Box pt={2}>
           <Button
             disabled={uploadFiles.length === 0 || !datasetSelected}
             className="button primary"
@@ -47,8 +49,7 @@ const UploadPage = (props) => {
             type="button"
             variant="outlined"
           >
-            {/* <FileUploadIcon /> */}
-            {' + '}
+            <UploadIcon />
             Upload
           </Button>
         </Box>

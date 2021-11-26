@@ -10,6 +10,16 @@
   padding-top: 2rem;
 
 }
+#trash-button {
+  height: 15px;
+}
+.upload-list {
+  font-weight: normal;
+  
+}
+.upload-row {
+  height: 15px;
+}
 .file-upload {
   border: 2px dashed $default-link-blue;
   background: $bg-white;
