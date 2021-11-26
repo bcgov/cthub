@@ -60,8 +60,6 @@ objects:
         description: Defines how to build the application
       creationTimestamp: null
       name: ${NAME}-backend${SUFFIX}
-      labels:
-        appBuildId: ${NAME}${SUFFIX}      
     spec:
       nodeSelector: null
       output:
