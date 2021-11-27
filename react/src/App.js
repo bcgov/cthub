@@ -40,6 +40,9 @@ const App = () => {
 
           <Switch>
             <UploadRouter />
+          </Switch>
+
+          <Switch>
             <IcbcDataRouter />
           </Switch>
         </Router>

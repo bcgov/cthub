@@ -21,3 +21,4 @@ TEST-*xml
 venv/
 coverage/
 .tekton/
+minio/minio_files/cthub/

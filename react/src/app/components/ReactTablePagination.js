@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles((theme) => ({
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+
+const useStyles = makeStyles(() => ({
   pagination: {
     flexShrink: 0,
-    marginLeft: theme.spacing(2.5),
+    '& .MuiSelect-select': {
+      paddingBottom: '0.5rem',
+      paddingTop: '0.5rem',
+    },
   },
 }));
 

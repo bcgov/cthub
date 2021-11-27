@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 import sys
-import django_heroku
 
 from pathlib import Path
 
@@ -143,15 +142,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-# LOCAL_DEV = os.getenv('LOCAL_DEV', False) in ['True', 'true', True]
-# if not LOCAL_DEV:
-#     django_heroku.settings(locals())
-#     TEST_RUNNER = 'django_heroku.HerokuDiscoverRunner'
-
-#     import dj_database_url
-#     DATABASE_URL = os.environ['DATABASE_URL']
-#     DATABASES['default'] = dj_database_url.config(default=DATABASE_URL)
 
 KEYCLOAK_CLIENT_ID = os.getenv('KEYCLOAK_CLIENT_ID')
 KEYCLOAK_REALM = os.getenv('KEYCLOAK_REALM')
