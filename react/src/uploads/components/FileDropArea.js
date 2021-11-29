@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,7 +22,7 @@ const FileDropArea = (props) => {
   function FormRow(file) {
     const { name, size } = file;
     return (
-      <React.Fragment key={name} className="upload-row">
+      <React.Fragment key={name}>
         <Grid item xs={7}>
           {name}
         </Grid>
