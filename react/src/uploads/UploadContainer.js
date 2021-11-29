@@ -27,6 +27,7 @@ const UploadContainer = () => {
       }).then(() => {
         axios.post(ROUTES_UPLOAD.UPLOAD, {
           filename,
+          datasetSelected,
         });
       }).catch((error) => {
         console.error(error);

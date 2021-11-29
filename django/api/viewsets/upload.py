@@ -15,23 +15,18 @@ class UploadViewset(GenericViewSet):
  
     @action(detail=False, methods=['post'])
     def import_data(self, request):
-
         user = request.user
         filename = request.data.get('filename')
-
+        dataset_selected = request.data.get('datasetSelected')
         try:
-
             url = minio_get_object(filename)
-
             urllib.request.urlretrieve(url, filename)
-            print(url)
-            print(">>>>>>>>>>>>>>>>>>>>")
-            print(filename)
-            done = import_from_xls(filename)
-            print('(((((((((((((((((((((((())))))))))))))))))))))))))))')
-            if done:
-                os.remove(filename)
-                minio_remove_object(filename)
+            if dataset_selected:
+                if dataset_selected == 'LDV rebates':
+                    done = import_from_xls(filename)
+                if done:
+                    os.remove(filename)
+                    minio_remove_object(filename)
 
         except Exception as error:
             print('!!!!! error !!!!!!')
