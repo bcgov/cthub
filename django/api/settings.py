@@ -29,7 +29,7 @@ TESTING = 'test' in sys.argv
 
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*')]
 
-CORS_ORIGIN_ALLOW_ALL = os.getenv('CORS_ORIGIN_ALLOW_ALL', False) == 'True'
+CORS_ORIGIN_ALLOW_ALL = os.getenv('CORS_ORIGIN_ALLOW_ALL', 'False') == 'True'
 CORS_ORIGIN_WHITELIST = [
     os.getenv('CORS_ORIGIN_WHITELIST', 'https://localhost:3000')
 ]
