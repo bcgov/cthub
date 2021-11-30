@@ -2,7 +2,7 @@ import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import React, { useState, useEffect } from 'react';
-import ROUTES from './routes';
+import ROUTES_UPLOAD from './routes'
 import UploadPage from './components/UploadPage';
 
 const UploadContainer = () => {
@@ -18,12 +18,17 @@ const UploadContainer = () => {
     // });
   };
   const doUpload = () => uploadFiles.forEach((file) => {
-    axios.get(ROUTES.MINIO_URL).then((response) => {
-      const { url: uploadUrl, minioObjectName: filename } = response.data;
+    axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
+      const { url: uploadUrl, minio_object_name: filename } = response.data;
       axios.put(uploadUrl, file, {
         headers: {
           Authorization: null,
         },
+      }).then(() => {
+        axios.post(ROUTES_UPLOAD.UPLOAD, {
+          filename,
+          datasetSelected,
+        });
       }).catch((error) => {
         console.error(error);
         const { response: errorResponse } = error;

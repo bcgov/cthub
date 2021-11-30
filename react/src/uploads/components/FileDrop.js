@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import UploadIcon from '@mui/icons-material/Upload';
 import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
@@ -18,7 +19,7 @@ const FileDrop = (props) => {
     <div {...getRootProps()}>
       <input {...getInputProps()} />
       <div className="file-upload">
-        {/* <FileUploadIcon/> */}
+        <UploadIcon />
         <br />
         Drag and Drop files here or
         {' '}
