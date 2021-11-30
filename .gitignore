@@ -20,4 +20,3 @@ react/node_modules/
 TEST-*xml
 venv/
 coverage/
-.tekton/
