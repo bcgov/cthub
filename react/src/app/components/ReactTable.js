@@ -9,25 +9,25 @@ import {
 } from 'react-table';
 
 // material-ui core components
-import CircularProgress from '@material-ui/core/CircularProgress';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Popover from '@material-ui/core/Popover';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Popover from '@mui/material/Popover';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import { makeStyles } from '@mui/styles';
 
 // material-ui icons
-import FilterListIcon from '@material-ui/icons/FilterList';
-import MoreVert from '@material-ui/icons/MoreVert';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import MoreVert from '@mui/icons-material/MoreVert';
 
 // components
 import ReactTablePagination from './ReactTablePagination';
@@ -64,6 +64,7 @@ const useStyles = makeStyles(() => ({
   reactTable: {
     position: 'relative',
     '& caption': {
+      backgroundColor: 'rgba(255, 255, 255, 0.7)',
       bottom: 0,
       left: 0,
       padding: 0,
@@ -74,7 +75,6 @@ const useStyles = makeStyles(() => ({
     },
     '& caption > div': {
       alignItems: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.7)',
       display: 'flex',
       height: '100%',
       justifyContent: 'center',
@@ -288,7 +288,7 @@ const ReactTable = (props) => {
             }}
             InputProps={{
               endAdornment: (
-                <InputAdornment>
+                <InputAdornment position="start">
                   <FilterListIcon />
                 </InputAdornment>
               ),
