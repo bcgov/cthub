@@ -89,7 +89,7 @@
             - frontend
           from:
             kind: ImageStreamTag
-            name: cthub-frontend:frontendtekton
+            name: image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-frontend:frontendtekton
           lastTriggeredImage:
         type: ImageChange
       - type: ConfigChange
