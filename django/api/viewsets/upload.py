@@ -1,6 +1,5 @@
 import urllib.request
 import os
-
 from django.db.models import query
 from api.services.ldv_rebates import import_from_xls
 from api.services.minio import minio_get_object, minio_remove_object
@@ -32,11 +31,11 @@ class UploadViewset(GenericViewSet):
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
             if dataset_selected:
-                if dataset_selected == 'LDV rebates':
+                if dataset_selected == 'LDV Rebates':
                     done = import_from_xls(filename)
-                if done:
-                    os.remove(filename)
-                    minio_remove_object(filename)
+                    if done:
+                        os.remove(filename)
+                        minio_remove_object(filename)
 
         except Exception as error:
             print('!!!!! error !!!!!!')
