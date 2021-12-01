@@ -20,3 +20,4 @@ react/node_modules/
 TEST-*xml
 venv/
 coverage/
+minio/minio_files/cthub/

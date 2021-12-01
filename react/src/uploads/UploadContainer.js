@@ -1,15 +1,15 @@
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState, useEffect } from 'react';
-import ROUTES from './routes';
+import ROUTES_UPLOAD from './routes';
 import UploadPage from './components/UploadPage';
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
-  const [datasetList, setDatasetList] = useState(['LDV rebates']); //holds the array of names of datasets
+  const [datasetList, setDatasetList] = useState(['LDV rebates']); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
-  const [datasetSelected, setDatasetSelected] = useState(''); //string identifying which dataset is being uploaded
+  const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
   const refreshList = () => {
     // setLoading(true);
     // axios.get(ROUTES.LIST).then((response) => {
@@ -18,12 +18,17 @@ const UploadContainer = () => {
     // });
   };
   const doUpload = () => uploadFiles.forEach((file) => {
-    axios.get(ROUTES.MINIO_URL).then((response) => {
-      const { url: uploadUrl, minioObjectName: filename } = response.data;
+    axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
+      const { url: uploadUrl, minio_object_name: filename } = response.data;
       axios.put(uploadUrl, file, {
         headers: {
           Authorization: null,
         },
+      }).then(() => {
+        axios.post(ROUTES_UPLOAD.UPLOAD, {
+          filename,
+          datasetSelected,
+        });
       }).catch((error) => {
         console.error(error);
         const { response: errorResponse } = error;

@@ -1,4 +1,3 @@
-import urllib.request
 from keycloak import KeycloakOpenID
 
 from django.conf import settings
