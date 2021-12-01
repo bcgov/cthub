@@ -1,6 +1,6 @@
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState, useEffect } from 'react';
 import ROUTES_UPLOAD from './routes';
 import UploadPage from './components/UploadPage';
