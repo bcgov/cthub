@@ -20,5 +20,4 @@ react/node_modules/
 TEST-*xml
 venv/
 coverage/
-.tekton/
 minio/minio_files/cthub/

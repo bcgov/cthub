@@ -91,9 +91,9 @@ else
         export DEV_MODE=""
         export NODE_ENV=""
 
-        # the following two lines are added for artifactory
-        npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
-        curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
+        # the following two lines are added for artifactory, commented them out for tekton as tekton can't inject the two environment variables
+        # npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
+        # curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
         
         echo "---> Installing all dependencies"
         NODE_ENV=development npm install
