@@ -21,6 +21,10 @@ spec:
       name: backend-image
       type: string
       default: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-backend:backendtekton'
+    - description: The namespace to be deployed on
+      name: namespace
+      type: string      
+      default: 30b186-dev
   tasks:
     - name: git-clone
       params:
@@ -40,6 +44,8 @@ spec:
       params:
         - name: manifest_dir
           value: .tekton/deployment/frontend-dc.yaml
+        - name: namespace
+          value: $(params.namespace)         
       taskRef:
         kind: Task
         name: apply-manifests
