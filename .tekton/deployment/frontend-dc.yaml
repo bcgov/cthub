@@ -68,10 +68,10 @@ spec:
               port: 3000
             timeoutSeconds: 3
           resources:
-            limits:
+            requests:
               cpu: 100m
               memory: 300Mi
-            requests:
+            limits:
               cpu: 300m
               memory: 400Mi
           terminationMessagePath: /dev/termination-log
