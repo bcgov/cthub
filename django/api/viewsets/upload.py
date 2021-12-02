@@ -1,5 +1,6 @@
 import urllib.request
 import os
+from django.db.models import query
 from api.services.ldv_rebates import import_from_xls
 from api.services.speciality_use_vehicle_incentives import import_from_xls as import_suvi
 from api.services.minio import minio_get_object, minio_remove_object
@@ -8,12 +9,20 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import GenericViewSet
+from api.models.datasets import Datasets
+from api.serializers.datasets import DatasetsSerializer
 
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
-    http_method_names = ['post', 'put']
- 
+    http_method_names = ['post', 'put', 'get']
+
+    @action(detail=False, methods=['get'])
+    def datasets_list(self, request):
+        datasets = Datasets.objects.all()
+        serializer = DatasetsSerializer(datasets, many=True, read_only=True)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['post'])
     def import_data(self, request):
         user = request.user
@@ -23,10 +32,11 @@ class UploadViewset(GenericViewSet):
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
             if dataset_selected:
-                if dataset_selected == 'LDV rebates':
+                if dataset_selected == 'LDV Rebates':
                     done = import_from_xls(filename)
                 if dataset_selected == 'Specialty Use Vehicle Incentive Program':
                     done = import_suvi(filename)
+                
                 if done:
                     os.remove(filename)
                     minio_remove_object(filename)
