@@ -17,8 +17,10 @@ const UploadPage = (props) => {
     setUploadFiles,
     uploadFiles,
   } = props;
-  const selectionList = datasetList.map((obj) => (
-    <MenuItem key={obj} value={obj}>{obj}</MenuItem>
+  const selectionList = datasetList.map((obj, index) => (
+    <MenuItem key={index} value={obj.name}>
+      {obj.name}
+    </MenuItem>
   ));
   return (
     <>
@@ -63,7 +65,7 @@ UploadPage.defaultProps = {
 
 UploadPage.propTypes = {
   datasetSelected: PropTypes.string,
-  datasetList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  datasetList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   uploadFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setUploadFiles: PropTypes.func.isRequired,
   doUpload: PropTypes.func.isRequired,
