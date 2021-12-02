@@ -10,6 +10,12 @@ const UploadContainer = () => {
   const [datasetList, setDatasetList] = useState([{}]); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
   const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
+  const [replaceData, setReplaceData] = useState(false); // if true, we will replace all
+  // existing data with what is being uploaded
+
+  const handleRadioChange = (event) => {
+    setReplaceData(event.target.value);
+  };
   const refreshList = () => {
     setLoading(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
@@ -28,6 +34,7 @@ const UploadContainer = () => {
         axios.post(ROUTES_UPLOAD.UPLOAD, {
           filename,
           datasetSelected,
+          replaceData,
         });
       }).catch((error) => {
         console.error(error);
@@ -60,6 +67,9 @@ const UploadContainer = () => {
           setDatasetSelected={setDatasetSelected}
           datasetSelected={datasetSelected}
           setUploadFiles={setUploadFiles}
+          setReplaceData={setReplaceData}
+          replaceData={replaceData}
+          handleRadioChange={handleRadioChange}
         />
       </div>
     </div>

@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import GenericViewSet
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-
+from api.models.ldv_rebates import LdvRebates
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -27,11 +27,15 @@ class UploadViewset(GenericViewSet):
         user = request.user
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
+        replace_data = request.data.get('replaceData', False)
+
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
             if dataset_selected:
                 if dataset_selected == 'LDV Rebates':
+                    if replace_data:
+                        LdvRebates.objects.all().delete()
                     done = import_from_xls(filename)
                     if done:
                         os.remove(filename)
