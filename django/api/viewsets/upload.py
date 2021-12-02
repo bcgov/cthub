@@ -1,6 +1,7 @@
 import urllib.request
 import os
 from api.services.ldv_rebates import import_from_xls
+from api.services.speciality_use_vehicle_incentives import import_from_xls as import_suvi
 from api.services.minio import minio_get_object, minio_remove_object
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,6 +25,8 @@ class UploadViewset(GenericViewSet):
             if dataset_selected:
                 if dataset_selected == 'LDV rebates':
                     done = import_from_xls(filename)
+                if dataset_selected == 'Specialty Use Vehicle Incentive Program':
+                    done = import_suvi(filename)
                 if done:
                     os.remove(filename)
                     minio_remove_object(filename)
