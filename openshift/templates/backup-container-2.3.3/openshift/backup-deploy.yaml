@@ -100,13 +100,13 @@ objects:
                 - name: PATRONI_MASTER_${ENV_NAME_UPPERCASE}_METABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-metabase
-                      key: mb-db-user
+                      name: patroni-creds-${ENV_NAME_LOWERCASE}
+                      key: metabase-db-username
                 - name: PATRONI_MASTER_${ENV_NAME_UPPERCASE}_METABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-metabase
-                      key: mb-db-password
+                      name: patroni-creds-${ENV_NAME_LOWERCASE}
+                      key: metabase-db-password
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}
@@ -222,4 +222,4 @@ parameters:
     displayName: backup verification size
     description: backup verification size
     required: true
-    value: 2G
+    value: 1G
