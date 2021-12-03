@@ -44,7 +44,7 @@ const phases = {
         ssoName:'oidc.gov.bc.ca', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
         metabaseCpuRequest: '500Mi', metabaseCpuLimit: '1000Mi', metabaseMemoryRequest: '500Mi', metabaseMemoryLimit: '2Gi', metabaseReplicas: 2,
-        host: 'zeroemissionvehicles.gov.bc.ca', djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
+        host: `cthub-prod.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '1G', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 2, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `cthub-backend-prod.${ocpName}.gov.bc.ca`,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '3G',
