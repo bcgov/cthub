@@ -99,7 +99,10 @@ UploadPage.propTypes = {
   setUploadFiles: PropTypes.func.isRequired,
   doUpload: PropTypes.func.isRequired,
   setDatasetSelected: PropTypes.func.isRequired,
-  replaceData: PropTypes.string.isRequired,
+  replaceData: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]).isRequired,
   handleRadioChange: PropTypes.func.isRequired,
 };
 export default UploadPage;
