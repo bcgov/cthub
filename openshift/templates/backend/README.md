@@ -1,5 +1,4 @@
 ### Files included
-
     * backend-bc.yaml backend build config
     * backend-dc.yaml backend deployment config
     * django-secret-template.yaml create template.django-secret, it is not in pipeline and needs to run independently, it is used by backend-dc.yaml
