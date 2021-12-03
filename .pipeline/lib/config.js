@@ -43,7 +43,7 @@ const phases = {
   prod: {namespace:'30b186-prod', name: `${name}`, ssoSuffix:'', 
         ssoName:'oidc.gov.bc.ca', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
-        metabaseCpuRequest: '500Mi', metabaseCpuLimit: '1000Mi', metabaseMemoryRequest: '500Mi', metabaseMemoryLimit: '2Gi', metabaseReplicas: 2,
+        metabaseCpuRequest: '200m', metabaseCpuLimit: '400m', metabaseMemoryRequest: '750Mi', metabaseMemoryLimit: '2Gi', metabaseReplicas: 2,
         host: `cthub-prod.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '1G', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 2, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `cthub-backend-prod.${ocpName}.gov.bc.ca`,
