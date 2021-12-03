@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 export default function AlertDialog(props) {
   const {
-    open, setOpen, rightButtonText, dialogue, leftButtonText, setReplaceData,
+    open, setOpen, rightButtonText, dialogue, leftButtonText, setReplaceData, title
   } = props;
   const handleClose = (trueFalse) => {
     setReplaceData(trueFalse);
@@ -25,7 +25,7 @@ export default function AlertDialog(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Replace existing data?
+          {title}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">

@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState, useEffect } from 'react';
 import ROUTES_UPLOAD from './routes';
 import UploadPage from './components/UploadPage';
-import AlertDialog from '../app/components/Alert';
+import AlertDialog from '../app/components/AlertDialog';
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
@@ -82,6 +82,7 @@ const UploadContainer = () => {
           rightButtonText={rightButtonText}
           leftButtonText={leftButtonText}
           setReplaceData={setReplaceData}
+          title="Replace existing data?"
         />
         )}
         <UploadPage
