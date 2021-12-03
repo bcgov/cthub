@@ -145,20 +145,20 @@ objects:
             - name: MB_DB_DBNAME
               valueFrom:
                 secretKeyRef:
-                  key: mb-db-dbname
-                  name: cthub-metabase
+                  key: metabase-db-name
+                  name: patroni-creds-${ENV_NAME}
             - name: MB_DB_PORT
               value: '5432'
             - name: MB_DB_USER
               valueFrom:
                 secretKeyRef:
-                  key: mb-db-user
-                  name: cthub-metabase
+                  key: metabase-db-username
+                  name: patroni-creds-${ENV_NAME}
             - name: MB_DB_PASS
               valueFrom:
                 secretKeyRef:
-                  key: mb-db-password
-                  name: cthub-metabase
+                  key: metabase-db-password
+                  name: patroni-creds-${ENV_NAME}
             - name: MB_DB_HOST
               value: patroni-master${SUFFIX}-metabase
           resources:
