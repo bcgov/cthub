@@ -145,7 +145,7 @@ objects:
             - name: MB_DB_DBNAME
               valueFrom:
                 secretKeyRef:
-                  key: metabase-db-dbname
+                  key: metabase-db-name
                   name: patroni-creds-${ENV_NAME}
             - name: MB_DB_PORT
               value: '5432'
