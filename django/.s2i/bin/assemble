@@ -90,10 +90,13 @@ elif [[ ! -z "$ENABLE_MICROPIPENV" ]]; then
   # micropipenv detects Pipfile.lock and requirements.txt in this order
   micropipenv install --deploy
 elif [[ -f requirements.txt ]]; then
-  echo "---> Installing dependencies ..."
-  # the following line are used for artifactorym commented it out as can't pass the env variables from tekton task s2i-python
-  # pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
-  pip install -r requirements.txt
+  if [[ -z "${ARTIFACTORY_USER}" ]]; then
+    echo "---> Installing dependencies from artifactory ..."
+    pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
+  else
+    echo "---> Installing dependencies from external repo ..."
+    pip install -r requirements.txt
+  fi
 fi
 
 if [[ -f setup.py && -z "$DISABLE_SETUP_PY_PROCESSING" ]]; then
