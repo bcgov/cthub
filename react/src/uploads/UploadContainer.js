@@ -4,18 +4,27 @@ import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState, useEffect } from 'react';
 import ROUTES_UPLOAD from './routes';
 import UploadPage from './components/UploadPage';
+import AlertDialog from '../app/components/Alert';
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
   const [datasetList, setDatasetList] = useState([{}]); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
   const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
-  const [replaceData, setReplaceData] = useState(false); // if true, we will replace all
+  const [replaceData, setReplaceData] = useState('false'); // if true, we will replace all
   // existing data with what is being uploaded
-
+  const [open, setOpen] = useState(false);
+  const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
+  const leftButtonText = 'Cancel';
+  const rightButtonText = 'Replace existing data';
   const handleRadioChange = (event) => {
-    setReplaceData(event.target.value);
+    const choice = event.target.value;
+    if (choice === 'true') {
+      setOpen(true);
+    }
+    setReplaceData(choice);
   };
+
   const refreshList = () => {
     setLoading(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
@@ -23,6 +32,7 @@ const UploadContainer = () => {
       setLoading(false);
     });
   };
+
   const doUpload = () => uploadFiles.forEach((file) => {
     axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
       const { url: uploadUrl, minio_object_name: filename } = response.data;
@@ -31,10 +41,14 @@ const UploadContainer = () => {
           Authorization: null,
         },
       }).then(() => {
+        let replace = false;
+        if (replaceData === true) {
+          replace = true;
+        }
         axios.post(ROUTES_UPLOAD.UPLOAD, {
           filename,
           datasetSelected,
-          replaceData,
+          replace,
         });
       }).catch((error) => {
         console.error(error);
@@ -60,6 +74,16 @@ const UploadContainer = () => {
   return (
     <div className="row">
       <div className="col-12 mr-2">
+        {open && (
+        <AlertDialog
+          open={open}
+          setOpen={setOpen}
+          dialogue={dialogue}
+          rightButtonText={rightButtonText}
+          leftButtonText={leftButtonText}
+          setReplaceData={setReplaceData}
+        />
+        )}
         <UploadPage
           uploadFiles={uploadFiles}
           datasetList={datasetList}

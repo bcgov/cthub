@@ -30,8 +30,7 @@ class UploadViewset(GenericViewSet):
         user = request.user
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
-        replace_data = request.data.get('replaceData', False)
-
+        replace_data = request.data.get('replace', False)
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
@@ -44,7 +43,7 @@ class UploadViewset(GenericViewSet):
                 if dataset_selected == 'Specialty Use Vehicle Incentive Program':
                     import_func = import_suvi
                     model = SpecialityUseVehicleIncentives
-                if replace_data == 'true':
+                if replace_data:
                     model.objects.all().delete()
                 done = import_func(filename)
                 if done:
