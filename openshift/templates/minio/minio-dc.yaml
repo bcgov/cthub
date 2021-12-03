@@ -19,7 +19,7 @@ parameters:
   - name: PVC_SIZE
     displayName: Volume Capacity
     description: Volume space available to Minio server for files, e.g. 512Mi, 2Gi.
-    value: 5G
+    value: 10G
     required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
@@ -51,18 +51,13 @@ parameters:
     from: "[a-zA-Z0-9]{16}"
     generate: expression
     required: true      
-  - name: OCP_NAME
-    displayName: Openshift Name
-    description: Openshift Name
-    required: true
 objects:
   - apiVersion: v1
     kind: Secret
     metadata:
       name: ${NAME}-minio${SUFFIX}
-    stringData:
-       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      annotations:
+        as-copy-of: "template.minio-secret"            
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -113,7 +108,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-minio${SUFFIX}
     spec:
-      host: ${NAME}-minio${SUFFIX}.${OCP_NAME}.gov.bc.ca
+      host: ${NAME}-minio${SUFFIX}.apps.silver.devops.gov.bc.ca
       port:
         targetPort: 9000-tcp
       tls:
