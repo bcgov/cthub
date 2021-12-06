@@ -11,3 +11,4 @@ from . import vin_decoded_information
 from . import ldv_rebates
 from . import speciality_use_vehicle_incentives
 from . import datasets
+from . import charger_rebates
