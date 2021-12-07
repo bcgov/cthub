@@ -39,13 +39,6 @@ class ChargerRebates(Auditable):
         unique=False
     )
 
-    postal_code = models.CharField(
-        blank=True,
-        null=True,
-        max_length=200,
-        unique=False
-    )
-
     number_of_fast_charging_stations = models.IntegerField(
         blank=True,
         null=True
