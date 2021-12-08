@@ -5,7 +5,10 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import UploadIcon from '@mui/icons-material/Upload';
-
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 import FileDropArea from './FileDropArea';
 
 const UploadPage = (props) => {
@@ -16,6 +19,8 @@ const UploadPage = (props) => {
     setDatasetSelected,
     setUploadFiles,
     uploadFiles,
+    replaceData,
+    handleRadioChange,
   } = props;
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
@@ -36,6 +41,30 @@ const UploadPage = (props) => {
           >
             {selectionList}
           </Select>
+
+        </div>
+        <div id="replace-data-select">
+          <FormControl component="fieldset">
+            <RadioGroup
+              aria-label="Replace or add to existing data"
+              value={replaceData}
+              name="radio-buttons-group"
+              onChange={handleRadioChange}
+            >
+              <FormControlLabel
+                value
+                control={(
+                  <Radio />
+)}
+                label="Replace existing data"
+              />
+              <FormControlLabel
+                value={false}
+                control={<Radio />}
+                label="Add to existing data"
+              />
+            </RadioGroup>
+          </FormControl>
         </div>
         <div>
           <FileDropArea
@@ -70,5 +99,10 @@ UploadPage.propTypes = {
   setUploadFiles: PropTypes.func.isRequired,
   doUpload: PropTypes.func.isRequired,
   setDatasetSelected: PropTypes.func.isRequired,
+  replaceData: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]).isRequired,
+  handleRadioChange: PropTypes.func.isRequired,
 };
 export default UploadPage;

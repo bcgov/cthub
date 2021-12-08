@@ -11,6 +11,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import GenericViewSet
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
+from api.models.ldv_rebates import LdvRebates
+from api.models.speciality_use_vehicle_incentives import SpecialityUseVehicleIncentives
 
 
 class UploadViewset(GenericViewSet):
@@ -28,15 +30,22 @@ class UploadViewset(GenericViewSet):
         user = request.user
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
+        replace_data = request.data.get('replace', False)
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
             if dataset_selected:
                 done = ''
+                import_func = ''
                 if dataset_selected == 'LDV Rebates':
-                    done = import_ldv(filename)
+                    import_func = import_ldv
+                    model = LdvRebates
                 if dataset_selected == 'Specialty Use Vehicle Incentive Program':
-                    done = import_suvi(filename)
+                    import_func = import_suvi
+                    model = SpecialityUseVehicleIncentives
+                if replace_data:
+                    model.objects.all().delete()
+                done = import_func(filename)
                 if done:
                     os.remove(filename)
                     minio_remove_object(filename)
