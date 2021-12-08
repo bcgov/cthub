@@ -85,18 +85,19 @@ if [ "$NODE_ENV" != "production" ]; then
 
 else
 
-        echo "---> Installing all dependencies from artifactory"
         echo "---> Have to set DEV_MODE and NODE_ENV to empty otherwise the deployment can not be started"
         echo "---> It'll have error like can not resolve source-map-loader..."
         export DEV_MODE=""
         export NODE_ENV=""
 
         if [[ -z "${ARTIFACTORY_USER}"]]; then
+          echo "---> Installing all dependencies from external repo"
+        else
+          echo "---> Installing all dependencies from Artifactory"
           npm config set registry https://artifacts.developer.gov.bc.ca/artifactory/api/npm/npm-remote/
           curl -u $ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD https://artifacts.developer.gov.bc.ca/artifactory/api/npm/auth >> ~/.npmrc
         fi
         
-        echo "---> Installing all dependencies"
         NODE_ENV=development npm install
 
         #do not fail when there is no build script

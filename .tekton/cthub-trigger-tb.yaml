@@ -1,0 +1,12 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: cthub-trigger-tb
+spec:
+  params:
+    - name: repo-url
+      value: $(body.repository.url)
+    - name: branch
+      value: $(body.head_commit.id)
+    - name: repo-name
+      value: $(body.repository.name)
