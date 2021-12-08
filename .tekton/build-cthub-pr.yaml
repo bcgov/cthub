@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-cthub-pr
+spec:
+  pipelineRef:
+    name: build-cthub
+  params:
+    - name: repo-url
+      value: 'https://github.com/bcgov/cthub.git'
+    - name: branch
+      value: tekton3-0.1.0
+    - name: frontend-image
+      value: >-
+        image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-frontend:frontendtekton
+    - name: backend-image
+      value: >-
+        image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-backend:backendtekton    
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Mi

@@ -5,6 +5,9 @@ metadata:
   annotations:
     description: Defines how to deploy the frontend application
   creationTimestamp: null
+parameters:
+  - name: FRONTEND_IMAGE_TAG
+    required: true  
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -90,7 +93,7 @@ spec:
         from:
           kind: ImageStreamTag
           namspace: 30b186-tools
-          name: cthub-frontend:frontendtekton
+          name: cthub-frontend:${FRONTEND_IMAGE_TAG}
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange

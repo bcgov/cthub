@@ -91,11 +91,11 @@ elif [[ ! -z "$ENABLE_MICROPIPENV" ]]; then
   micropipenv install --deploy
 elif [[ -f requirements.txt ]]; then
   if [[ -z "${ARTIFACTORY_USER}" ]]; then
-    echo "---> Installing dependencies from artifactory ..."
-    pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
-  else
     echo "---> Installing dependencies from external repo ..."
     pip install -r requirements.txt
+  else
+    echo "---> Installing dependencies from artifactory ..."
+    pip install -i https://$ARTIFACTORY_USER:$ARTIFACTORY_PASSWORD@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple -r requirements.txt
   fi
 fi
 
