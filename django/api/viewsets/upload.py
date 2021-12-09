@@ -1,20 +1,24 @@
 import urllib.request
 import os
-from django.db.models import query
-from api.services.ldv_rebates import import_from_xls as import_ldv
-from api.services.speciality_use_vehicle_incentives import import_from_xls as import_suvi
-from api.services.public_charging import import_from_xls as import_public_charging
-from api.services.minio import minio_get_object, minio_remove_object
-from rest_framework.response import Response
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+
 from api.models.datasets import Datasets
-from api.serializers.datasets import DatasetsSerializer
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
-from api.models.speciality_use_vehicle_incentives import SpecialityUseVehicleIncentives
+from api.models.speciality_use_vehicle_incentives import \
+    SpecialityUseVehicleIncentives
+from api.serializers.datasets import DatasetsSerializer
+from api.services.ldv_rebates import import_from_xls as import_ldv
+from api.services.minio import minio_get_object, minio_remove_object
+from api.services.public_charging import import_from_xls as \
+    import_public_charging
+from api.services.speciality_use_vehicle_incentives import \
+    import_from_xls as import_suvi
 
 
 class UploadViewset(GenericViewSet):
@@ -29,7 +33,6 @@ class UploadViewset(GenericViewSet):
 
     @action(detail=False, methods=['post'])
     def import_data(self, request):
-        user = request.user
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
         replace_data = request.data.get('replace', False)
@@ -42,7 +45,8 @@ class UploadViewset(GenericViewSet):
                 if dataset_selected == 'LDV Rebates':
                     import_func = import_ldv
                     model = LdvRebates
-                if dataset_selected == 'Specialty Use Vehicle Incentive Program':
+                if dataset_selected == \
+                        'Specialty Use Vehicle Incentive Program':
                     import_func = import_suvi
                     model = SpecialityUseVehicleIncentives
                 if dataset_selected == 'Public Charging':

@@ -5,4 +5,4 @@
 logging-format-style=old
 
 [MESSAGES CONTROL]
-disable=import-error, missing-docstring
+disable=import-error, missing-docstring, broad-except
