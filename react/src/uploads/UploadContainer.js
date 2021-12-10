@@ -61,9 +61,11 @@ const UploadContainer = () => {
       console.error(error);
     });
   });
+
   useEffect(() => {
     refreshList(true);
   }, []);
+
   if (loading) {
     return (
       <div>
@@ -71,6 +73,7 @@ const UploadContainer = () => {
       </div>
     );
   }
+
   return (
     <div className="row">
       <div className="col-12 mr-2">

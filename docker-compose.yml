@@ -1,10 +1,17 @@
 version: "3.9"
 
 services:
+  redis:
+    image: redis:latest
+    volumes:
+      - redis:/data
   db:
     image: postgres
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=postgres
+      - POSTGRES_MULTIPLE_DATABASES=superset
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     healthcheck:
@@ -32,6 +39,52 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+  superset:
+    env_file: ./superset.env
+    image: apache/superset:latest-dev
+    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    user: "root"
+    ports:
+      - 8088:8088
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./superset:/app/docker
+      - superset_home:/app/superset_home
+  superset-init:
+    image: apache/superset:latest-dev
+    command: ["/app/docker/docker-init.sh"]
+    env_file: ./superset.env
+    depends_on:
+      - db
+      - redis
+    user: "root"
+    volumes:
+      - ./superset:/app/docker
+      - superset_home:/app/superset_home
+  superset-worker:
+    image: apache/superset:latest-dev
+    command: ["/app/docker/docker-bootstrap.sh", "worker"]
+    env_file: ./superset.env
+    depends_on:
+      - db
+      - redis
+    user: "root"
+    volumes:
+      - ./superset:/app/docker
+      - superset_home:/app/superset_home
+  superset-worker-beat:
+    image: apache/superset:latest-dev
+    command: ["/app/docker/docker-bootstrap.sh", "beat"]
+    env_file: ./superset.env
+    depends_on:
+      - db
+      - redis
+    user: "root"
+    volumes:
+      - ./superset:/app/docker
+      - superset_home:/app/superset_home
   api:
     build: ./django
     command: >
@@ -40,6 +93,7 @@ services:
     env_file:
       - keycloak.env
       - minio.env
+      - decoder.env
     environment: 
       - ALLOWED_HOSTS=localhost
       - CORS_ORIGIN_ALLOW_ALL=False
@@ -72,3 +126,9 @@ services:
       - ./react:/web
     ports:
       - 3000:3000
+
+volumes:
+  superset_home:
+    external: false
+  redis:
+    external: false

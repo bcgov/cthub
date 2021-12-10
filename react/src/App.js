@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Redirect,
   BrowserRouter as Router,
-  Switch,
 } from 'react-router-dom';
 
 import settings from './app/settings';
@@ -37,15 +36,10 @@ const App = () => {
           {redirect && redirect !== '' && (
             <Redirect to={redirect} />
           )}
-          <Switch>
-            <UploadRouter />
-          </Switch>
-          <Switch>
-            <IcbcDataRouter />
-          </Switch>
-          <Switch>
-            <DashboardRouter />
-          </Switch>
+
+          <UploadRouter />
+          <IcbcDataRouter />
+          <DashboardRouter />
         </Router>
       </div>
     </div>

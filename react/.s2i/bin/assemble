@@ -90,7 +90,7 @@ else
         export DEV_MODE=""
         export NODE_ENV=""
 
-        if [[ -z "${ARTIFACTORY_USER}"]]; then
+        if [[ -z "${ARTIFACTORY_USER}" ]]; then
           echo "---> Installing all dependencies from external repo"
         else
           echo "---> Installing all dependencies from Artifactory"

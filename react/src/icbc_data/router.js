@@ -1,16 +1,17 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import IcbcDataContainer from './IcbcDataContainer';
 
 const Router = () => (
-  <>
+  <Switch>
     <Route
       exact
       path="/icbc"
-      component={IcbcDataContainer}
-    />
-  </>
+    >
+      <IcbcDataContainer />
+    </Route>
+  </Switch>
 );
 
 export default Router;

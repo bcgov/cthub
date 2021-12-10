@@ -10,6 +10,16 @@ module.exports = {
     hot: isDevelopment,
   },
   devtool: 'source-map',
+  resolve: {
+    alias: {
+      process: 'process/browser',
+    },
+    fallback: {
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+      util: require.resolve('util/'),
+    },
+  },
   entry: path.resolve(__dirname, 'src', 'index.js'),
   mode: isDevelopment ? 'development' : 'production',
   module: {
@@ -63,6 +73,10 @@ module.exports = {
     publicPath: '/',
   },
   plugins: [
+    new Webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser',
+    }),
     new CopyWebpackPlugin({
       patterns: [{
         from: './src/keycloak-source.json',
