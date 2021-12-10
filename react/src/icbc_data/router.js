@@ -7,7 +7,7 @@ const Router = () => (
   <Switch>
     <Route
       exact
-      path="/"
+      path="/icbc"
     >
       <IcbcDataContainer />
     </Route>
