@@ -93,6 +93,7 @@ services:
     env_file:
       - keycloak.env
       - minio.env
+      - decoder.env
     environment: 
       - ALLOWED_HOSTS=localhost
       - CORS_ORIGIN_ALLOW_ALL=False
