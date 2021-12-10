@@ -10,6 +10,7 @@ import {
 import settings from './app/settings';
 import IcbcDataRouter from './icbc_data/router';
 import UploadRouter from './uploads/router';
+import DashboardRouter from './dashboard/router';
 
 const { API_BASE } = settings;
 
@@ -37,11 +38,12 @@ const App = () => {
           {redirect && redirect !== '' && (
             <Redirect to={redirect} />
           )}
-
+          <Switch>
+            <DashboardRouter />
+          </Switch>
           <Switch>
             <UploadRouter />
           </Switch>
-
           <Switch>
             <IcbcDataRouter />
           </Switch>

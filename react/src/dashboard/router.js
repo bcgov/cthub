@@ -1,14 +1,14 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import IcbcDataContainer from './IcbcDataContainer';
+import DashboardContainer from './DashboardContainer';
 
 const Router = () => (
   <>
     <Route
       exact
-      path="/icbc"
-      component={IcbcDataContainer}
+      path="/"
+      component={DashboardContainer}
     />
   </>
 );
