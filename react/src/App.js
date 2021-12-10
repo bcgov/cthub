@@ -32,7 +32,6 @@ const App = () => {
           </a>
         </div>
       </header>
-
       <div className="App-body">
         <Router>
           {redirect && redirect !== '' && (
