@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Redirect,
   BrowserRouter as Router,
-  Switch,
 } from 'react-router-dom';
 
 import settings from './app/settings';
@@ -38,13 +37,8 @@ const App = () => {
             <Redirect to={redirect} />
           )}
 
-          <Switch>
-            <UploadRouter />
-          </Switch>
-
-          <Switch>
-            <IcbcDataRouter />
-          </Switch>
+          <UploadRouter />
+          <IcbcDataRouter />
         </Router>
       </div>
     </div>
