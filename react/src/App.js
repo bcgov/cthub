@@ -38,13 +38,13 @@ const App = () => {
             <Redirect to={redirect} />
           )}
           <Switch>
-            <DashboardRouter />
-          </Switch>
-          <Switch>
             <UploadRouter />
           </Switch>
           <Switch>
             <IcbcDataRouter />
+          </Switch>
+          <Switch>
+            <DashboardRouter />
           </Switch>
         </Router>
       </div>
