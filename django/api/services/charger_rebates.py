@@ -11,7 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
-    df = pd.read_excel(excel_file, 'Raw Data')
+    df = pd.read_excel(excel_file, 'Updated')
     df.drop(df.columns.difference([
         "Organization",
         "MLA",
@@ -26,16 +26,19 @@ def import_from_xls(excel_file):
     ]), 1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
-    df['B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)'].replace(
-        to_replace=['$', ''],
-        value=True,
-        inplace=True
-    )
-    df['B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)'].replace(
-        to_replace=[',', ''],
-        value=True,
-        inplace=True
-    )
+    # df['B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)'].replace(
+    #     to_replace=['$', ''],
+    #     value=True,
+    #     inplace=True
+    # )
+    # df['B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)'].replace(
+    #     to_replace=[',', ''],
+    #     value=True,
+    #     inplace=True
+    # )
+
+    # quit()
+
     df.fillna('')
 
     for _, row in df.iterrows():

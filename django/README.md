@@ -26,3 +26,15 @@ If you need to change a migration you can back up by doing the following:
 4. Delete table if necessary
 5. Re-run migration
 > `python manage.py makemigrations`
+
+
+## Data Loads
+Copy the spreadsheet into the _api_ docker container.
+```bash
+docker cp 'EV_Fast-Charging Stations_20210520.xlsx' cthub_api_1:/tmp/
+```
+
+Log into the docker container and run the following command.
+```bash
+python manage.py import_charger_rebates '/tmp/EV_Fast-Charging Stations_20210520.xlsx'
+```
