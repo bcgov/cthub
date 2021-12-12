@@ -51,9 +51,11 @@ class ChargerRebates(Auditable):
         unique=False
     )
 
-    expected_in_service_date = models.DateField(
+    expected_in_service_date = models.CharField(
         blank=True,
-        null=True
+        null=True,
+        max_length=100,
+        unique=False
     )
 
     announced = models.CharField(
