@@ -10,6 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 from api.models.datasets import Datasets
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
+from api.models.charger_rebates import ChargerRebates
 from api.models.speciality_use_vehicle_incentives import \
     SpecialityUseVehicleIncentives
 from api.serializers.datasets import DatasetsSerializer
@@ -42,6 +43,9 @@ class UploadViewset(GenericViewSet):
             if dataset_selected:
                 done = ''
                 import_func = ''
+                if dataset_selected == 'EV Charging Rebates':
+                    import_func = import_ldv  # this needs to change when service is ready
+                    model = ChargerRebates
                 if dataset_selected == 'LDV Rebates':
                     import_func = import_ldv
                     model = LdvRebates
