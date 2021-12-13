@@ -11,7 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
-    df = pd.read_excel(excel_file, 'Updated')
+    df = pd.read_excel(excel_file, 'Updated', header=2)
     df.drop(df.columns.difference([
         "Organization",
         "MLA",
@@ -39,7 +39,8 @@ def import_from_xls(excel_file):
 
     # quit()
 
-    df.fillna('')
+    # df.fillna('')
+    df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
 
     for _, row in df.iterrows():
         try:
