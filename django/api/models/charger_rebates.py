@@ -39,11 +39,9 @@ class ChargerRebates(Auditable):
         unique=False
     )
 
-    number_of_fast_charging_stations = models.CharField(
+    number_of_fast_charging_stations = models.IntegerField(
         blank=True,
-        null=True,
-        max_length=100,
-        unique=False
+        null=True
     )
 
     in_service_date = models.CharField(
@@ -53,11 +51,9 @@ class ChargerRebates(Auditable):
         unique=False
     )
 
-    expected_in_service_date = models.CharField(
+    expected_in_service_date = models.DateField(
         blank=True,
-        null=True,
-        max_length=100,
-        unique=False
+        null=True
     )
 
     announced = models.CharField(
@@ -67,11 +63,11 @@ class ChargerRebates(Auditable):
         unique=False
     )
 
-    rebate_paid = models.CharField(
+    rebate_paid = models.DecimalField(
         blank=True,
         null=True,
-        max_length=200,
-        unique=False
+        max_digits=20,
+        decimal_places=2
     )
 
     notes = models.CharField(
