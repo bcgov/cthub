@@ -13,7 +13,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Log into database to inspect the new table
-docker exec -t -i cthub_db_1 psql -U postgres
+docker-compose exec db psql -U postgre
 # run this: \d <new_table_name>
 ```
 
