@@ -33,6 +33,7 @@ Copy the spreadsheet into the _api_ docker container.
 ```bash
 docker cp 'EV_Fast-Charging Stations_20210520.xlsx' cthub_api_1:/tmp/
 ```
+This can also be done by temporarily placing the Excel file in the _django_ folder. This location is mounted onto the container.
 
 Log into the docker container and run the following command.
 ```bash
