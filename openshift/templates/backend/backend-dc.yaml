@@ -226,7 +226,10 @@ objects:
                 - name: LOCAL_DEV
                   value: "false"
                 - name: MINIO_ENDPOINT
-                  value: ${NAME}-minio-${ENV_NAME}.apps.silver.devops.gov.bc.ca
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-minio-${ENV_NAME}
+                      key: MINIO_ENDPOINT
                 - name: MINIO_USE_SSL
                   value: "true"
                 - name: MINIO_ROOT_USER

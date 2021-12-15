@@ -10,10 +10,12 @@ from rest_framework.viewsets import GenericViewSet
 from api.models.datasets import Datasets
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
+from api.models.charger_rebates import ChargerRebates
 from api.models.speciality_use_vehicle_incentives import \
     SpecialityUseVehicleIncentives
 from api.serializers.datasets import DatasetsSerializer
 from api.services.ldv_rebates import import_from_xls as import_ldv
+from api.services.charger_rebates import import_from_xls as import_charger_rebates
 from api.services.minio import minio_get_object, minio_remove_object
 from api.services.public_charging import import_from_xls as \
     import_public_charging
@@ -42,6 +44,9 @@ class UploadViewset(GenericViewSet):
             if dataset_selected:
                 done = ''
                 import_func = ''
+                if dataset_selected == 'EV Charging Rebates':
+                    import_func = import_charger_rebates
+                    model = ChargerRebates
                 if dataset_selected == 'LDV Rebates':
                     import_func = import_ldv
                     model = LdvRebates
