@@ -15,6 +15,7 @@ from api.models.speciality_use_vehicle_incentives import \
     SpecialityUseVehicleIncentives
 from api.serializers.datasets import DatasetsSerializer
 from api.services.ldv_rebates import import_from_xls as import_ldv
+from api.services.charger_rebates import import_from_xls as import_charger_rebates
 from api.services.minio import minio_get_object, minio_remove_object
 from api.services.public_charging import import_from_xls as \
     import_public_charging
@@ -44,7 +45,7 @@ class UploadViewset(GenericViewSet):
                 done = ''
                 import_func = ''
                 if dataset_selected == 'EV Charging Rebates':
-                    import_func = import_ldv  # this needs to change when service is ready
+                    import_func = import_charger_rebates
                     model = ChargerRebates
                 if dataset_selected == 'LDV Rebates':
                     import_func = import_ldv
