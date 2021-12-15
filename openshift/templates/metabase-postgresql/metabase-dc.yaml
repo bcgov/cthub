@@ -11,22 +11,22 @@ parameters:
     displayName: null
     description: sample is -dev-97    
   - name: CPU_REQUEST
-    value: 50M
+    value: 130m
     displayName: Requested CPU
     description: Requested CPU
     required: true    
   - name: CPU_LIMIT
-    value: 200M
+    value: 260m
     displayName: CPU upper limit
     description: CPU upper limit
     required: true
   - name: MEMORY_REQUEST
-    value: 50M
+    value: 820Mi
     displayName: Requested memory
     description: Requested memory
     required: true
   - name: MEMORY_LIMIT
-    value: 200M
+    value: 1640Mi
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
@@ -175,7 +175,7 @@ objects:
                 scheme: HTTP
               initialDelaySeconds: 180
               timeoutSeconds: 5
-              periodSeconds: 10
+              periodSeconds: 30
               successThreshold: 1
               failureThreshold: 10              
           terminationMessagePath: /dev/termination-log

@@ -8,6 +8,24 @@ const ocpName = 'apps.silver.devops'
 //if work directly on bcgov repo, the value is bcgov
 //if work on forked developer repo, the value is the developer's GitHub Id
 //without this line of code, the pr deployment cann't removed when the pr is closed
+
+/*
+Resource usage base:
+
+Name        CPU         Memory
+backend     40m          520M
+frontend    70m         500M
+superset    1m          180M
+metabase    130m         820M
+patroni     70m         410M
+redis       2m          20M
+Minio       3m          150M
+backup      1m          20M
+
+Set the cpu usage 20m as the lowest
+Set the limit as two times of request
+
+*/
 options.git.owner='bcgov'
 
 const phases = {
@@ -33,9 +51,9 @@ const phases = {
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
         host: `cthub-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logontest.gov.bc.ca',
         metabaseCpuRequest: '200m', metabaseCpuLimit: '300m', metabaseMemoryRequest: '500M', metabaseMemoryLimit: '2G', metabaseReplicas: 1,
-        frontendCpuRequest: '200m', frontendCpuLimit: '400m', frontendMemoryRequest: '500M', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
-        backendCpuRequest: '200m', backendCpuLimit: '500m', backendMemoryRequest: '500M', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 2, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `cthub-backend-test.${ocpName}.gov.bc.ca`,
-        minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '3G',
+        frontendCpuRequest: '100m', frontendCpuLimit: '200m', frontendMemoryRequest: '600Mi', frontendMemoryLimit: '1200Mi', frontendReplicas: 1, frontendMinReplicas: 1, frontendMaxReplicas: 3,
+        backendCpuRequest: '50m', backendCpuLimit: '100m', backendMemoryRequest: '520Mi', backendMemoryLimit: '1Gi', backendHealthCheckDelay: 30, backendReplicas: 1, backendMinReplicas: 1, backendMaxReplicas: 3, backendHost: `cthub-backend-test.${ocpName}.gov.bc.ca`,
+        minioCpuRequest: '30m', minioCpuLimit: '100m', minioMemoryRequest: '150Mi', minioMemoryLimit: '300Mi', minioPvcSize: '3G',
         schemaspyCpuRequest: '20m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
         patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '5G', patroniReplica: 2, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
