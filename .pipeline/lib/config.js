@@ -14,9 +14,9 @@ Resource usage base:
 
 Name        CPU         Memory
 backend     40m          520M
-frontend    30m         420M
+frontend    70m         500M
 superset    1m          180M
-metabase    10m         820M
+metabase    130m         820M
 patroni     70m         410M
 redis       2m          20M
 Minio       3m          150M
