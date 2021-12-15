@@ -197,22 +197,22 @@ parameters:
     displayName: Resources CPU Request
     description: The resources CPU request (in cores) for this build.
     required: true
-    value: 100m
+    value: 350m
   - name: CPU_LIMIT
     displayName: Resources CPU Limit
     description: The resources CPU limit (in cores) for this build.
     required: true
-    value: 200m
+    value: 70m
   - name: MEMORY_REQUEST
     displayName: Resources Memory Request
     description: The resources Memory request (in Mi, Gi, etc) for this build.
     required: true
-    value: 100M
+    value: 50Mi
   - name: MEMORY_LIMIT
     displayName: Resources Memory Limit
     description: The resources Memory limit (in Mi, Gi, etc) for this build.
     required: true
-    value: 200M
+    value: 100Mi
   - name: BACKUP_PVC_SIZE
     displayName: backup size
     description: backup size

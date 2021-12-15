@@ -36,9 +36,9 @@ oc -n 30b186-test process -f ./backup-deploy.yaml \
   -p BACKUP_VOLUME_NAME=backup-test \
   -p VERIFICATION_VOLUME_NAME=backup-verification-test \
   -p VERIFICATION_VOLUME_MOUNT_PATH=/var/lib/pgsql/data \
-  -p CPU_REQUEST=100m \
-  -p CPU_LIMIT=200m \
-  -p MEMORY_REQUEST=100M \
-  -p MEMORY_LIMIT=300M \
+  -p CPU_REQUEST=35m \
+  -p CPU_LIMIT=70m \
+  -p MEMORY_REQUEST=50Mi \
+  -p MEMORY_LIMIT=100Mi \
   | oc create -f - -n 30b186-test
 
