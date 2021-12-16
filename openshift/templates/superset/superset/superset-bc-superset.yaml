@@ -39,7 +39,7 @@ objects:
       source:
         contextDir: openshift/templates/superset/superset
         git:
-          ref: superset-0.1.0
+          ref: superset2-0.1.0
           uri: https://github.com/bcgov/cthub.git
         type: Git
       strategy:
