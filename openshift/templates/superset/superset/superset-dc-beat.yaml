@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: superset-dc-worker
+  name: superset-dc-beat
 parameters:
   - name: ENV_NAME
     required: true
@@ -37,8 +37,8 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app: superset-worker
-    name: superset-worker
+      app: superset-beat
+    name: superset-beat
   spec:
     strategy:
       type: Recreate
@@ -52,23 +52,23 @@ objects:
     revisionHistoryLimit: 10
     test: false
     selector:
-      app: superset-worker
+      app: superset-beat
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: superset-worker
+          app: superset-beat
       spec:
         volumes:
           - name: superset-home
             persistentVolumeClaim:
               claimName: superset-home
         containers:
-          - name: superset-worker
+          - name: superset-beat
             image: >-
               image-registry.openshift-image-registry.svc:5000/30b186-tools/superset:20211213
-            args: ["worker"]
-            resources: 
+            args: ["beat"]
+            resources:
               limits:
                 cpu: ${CPU_LIMIT}
                 memory: ${MEMORY_LIMIT}
@@ -118,57 +118,9 @@ objects:
             volumeMounts:
               - name: superset-home
                 mountPath: /app/superset_home
-          # - name: superset-beat
-          #   image: >-
-          #     image-registry.openshift-image-registry.svc:5000/30b186-tools/superset:20211213
-          #   args: ["beat"]
-          #   resources: {}
-          #   env:
-          #     - name: COMPOSE_PROJECT_NAME
-          #       value: superset
-          #     - name: DATABASE_DB
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-name
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_HOST
-          #       value: patroni-master-test
-          #     - name: DATABASE_USER
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-username
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_PASSWORD
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-password
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_PORT
-          #       value: '5432'
-          #     - name: DATABASE_DIALECT
-          #       value: postgresql
-          #     - name: PYTHONPATH
-          #       value: '/app/pythonpath:/app/docker/pythonpath_dev'
-          #     - name: REDIS_HOST
-          #       value: localhost
-          #     - name: REDIS_PORT
-          #       value: '6379'
-          #     - name: FLASK_ENV
-          #       value: production
-          #     - name: SUPERSET_ENV
-          #       value: production
-          #     - name: SUPERSET_LOAD_EXAMPLES
-          #       value: 'no'
-          #     - name: CYPRESS_CONFIG
-          #       value: 'false'
-          #     - name: SUPERSET_PORT
-          #       value: '8088'
-          #   volumeMounts:
-          #     - name: superset-home
-          #       mountPath: /app/superset_home
-          #   terminationMessagePath: /dev/termination-log
-          #   terminationMessagePolicy: File
-          #   imagePullPolicy: Always            
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            imagePullPolicy: Always            
         restartPolicy: Always
         terminationGracePeriodSeconds: 30
         dnsPolicy: ClusterFirst
