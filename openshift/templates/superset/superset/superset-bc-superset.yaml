@@ -28,7 +28,13 @@ objects:
           name: superset:20211213
           namespace: 30b186-tools
       postCommit: {}
-      resources: {}
+      resources: 
+        limits:
+          cpu: '1'
+          memory: 500Mi
+        requests:
+          cpu: 500m
+          memory: 250Mi        
       runPolicy: Serial
       source:
         contextDir: openshift/templates/superset/superset
