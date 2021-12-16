@@ -1,0 +1,55 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: superset-redis-bc
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the redis image
+      creationTimestamp: null
+      name: redis
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      creationTimestamp: null
+      name: redis
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: redis:6.2.6
+          namespace: 30b186-tools
+      postCommit: {}
+      resources:
+        limits:
+          cpu: 40m
+          memory: 100Mi
+        requests:
+          cpu: 20m
+          memory: 50Mi
+      runPolicy: Serial
+      source:
+        contextDir: openshift/templates/superset/redis
+        git:
+          ref: superset-0.1.0
+          uri: https://github.com/bcgov/cthub.git
+        type: Git
+      strategy:
+        dockerStrategy:
+          forcePull: true
+          noCache: true
+          pullSecret:
+            name: artifacts-pull-default-idxprm
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers: []
+    status:
+      lastVersion: 0

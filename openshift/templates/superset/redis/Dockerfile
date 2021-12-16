@@ -1,0 +1,1 @@
+FROM artifacts.developer.gov.bc.ca/docker-remote/redis:6.2.6
