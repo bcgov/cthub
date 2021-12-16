@@ -20,24 +20,13 @@ def import_from_xls(excel_file):
         "Address",
         "Number of Fast Charging Stations",
         "In service date",
+        "Expected in service date",
         "Announced?",
         "B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)",
         "Notes",
     ]), 1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
-    # df['B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)'].replace(
-    #     to_replace=['$', ''],
-    #     value=True,
-    #     inplace=True
-    # )
-    # df['B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)'].replace(
-    #     to_replace=[',', ''],
-    #     value=True,
-    #     inplace=True
-    # )
-
-    # quit()
 
     # df.fillna('')
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
@@ -46,12 +35,12 @@ def import_from_xls(excel_file):
         try:
             ChargerRebates.objects.create(
                 organization=row["Organization"],
-                region=row["MLA"],
-                city=row["Region"],
-                address=row["City"],
-                number_of_fast_charging_stations=row["Address"],
-                in_service_date=row["Number of Fast Charging Stations"],
-                expected_in_service_date=row["In service date"],
+                region=row["Region"],
+                city=row["City"],
+                address=row["Address"],
+                number_of_fast_charging_stations=row["Number of Fast Charging Stations"],
+                in_service_date=row["In service date"],
+                expected_in_service_date=row["Expected in service date"],
                 announced=row["Announced?"],
                 rebate_paid=row["B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)"],
                 notes=row["Notes"]
