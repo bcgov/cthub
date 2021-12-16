@@ -31,11 +31,6 @@ parameters:
       The number of replicas to use.
     displayName: REPLICAS
     value: "1"    
-  - name: UID
-    description: |
-      The UID the celery work will run under
-    displayName: UID
-    required: true
 objects:
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
@@ -114,8 +109,6 @@ objects:
                 value: 'false'
               - name: SUPERSET_PORT
                 value: '8088'
-              - name: UID
-                value: ${UID}
             volumeMounts:
               - name: superset-home
                 mountPath: /app/superset_home
