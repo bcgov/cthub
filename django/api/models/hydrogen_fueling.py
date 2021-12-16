@@ -68,15 +68,11 @@ class HydrogrenFueling(EffectiveDates, Auditable):
         null=True,
         blank=True
     )
-    bar_700 = models.CharField(
-        blank=True,
-        max_length=200,
-        null=True
+    bar_700 = models.BooleanField(
+        default=False
     )
-    bar_350 = models.CharField(
-        blank=True,
-        max_length=200,
-        null=True
+    bar_350 = models.BooleanField(
+        default=False
     )
     status = models.CharField(
         blank=True,
