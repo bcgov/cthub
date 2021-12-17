@@ -33,56 +33,49 @@ parameters:
     displayName: REPLICAS
     value: "1"    
 objects:
-# - apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: cthub-superset
-#     labels:
-#       app: cthub-superset
-#       service: cthub-superset
-# - apiVersion: v1
-#   kind: Service
-#   metadata:
-#     annotations:
-#       openshift.io/generated-by: OpenShiftWebConsole
-#     creationTimestamp: null
-#     labels:
-#       app: cthub-superset
-#     name: cthub-superset
-#   spec:
-#     ports:
-#     - name: superset-web
-#       port: 8080
-#       protocol: TCP
-#       targetPort: 8080
-#     selector:
-#       deploymentconfig: cthub-superset
-#     sessionAffinity: None
-#     type: ClusterIP
-#   status:
-#     loadBalancer: {}
-# - apiVersion: route.openshift.io/v1
-#   kind: Route
-#   metadata:
-#     annotations:
-#       openshift.io/host.generated: "true"
-#     creationTimestamp: null
-#     labels:
-#       app: cthub-superset
-#     name: cthub-superset
-#   spec:
-#     host: superset-${ENV_NAME}.apps.silver.devops.gov.bc.ca
-#     path: /
-#     port:
-#       targetPort: superset-web
-#     tls:
-#       insecureEdgeTerminationPolicy: Redirect
-#       termination: edge
-#     to:
-#       kind: Service
-#       name: cthub-superset
-#       weight: 100
-#     wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: cthub-superset
+    name: cthub-superset
+  spec:
+    ports:
+    - name: superset-web
+      port: 8088
+      protocol: TCP
+      targetPort: 8088
+    selector:
+      deploymentconfig: cthub-superset
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: cthub-superset
+    name: cthub-superset
+  spec:
+    host: superset-${ENV_NAME}.apps.silver.devops.gov.bc.ca
+    path: /
+    port:
+      targetPort: superset-web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: cthub-superset
+      weight: 100
+    wildcardPolicy: None
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
@@ -181,105 +174,6 @@ objects:
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
             imagePullPolicy: Always
-          # - name: superset-worker
-          #   image: >-
-          #     image-registry.openshift-image-registry.svc:5000/30b186-tools/superset:20211213
-          #   args: ["worker"]
-          #   resources: {}
-          #   env:
-          #     - name: COMPOSE_PROJECT_NAME
-          #       value: superset
-          #     - name: DATABASE_DB
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-name
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_HOST
-          #       value: patroni-master-test
-          #     - name: DATABASE_USER
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-username
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_PASSWORD
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-password
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_PORT
-          #       value: '5432'
-          #     - name: DATABASE_DIALECT
-          #       value: postgresql
-          #     - name: PYTHONPATH
-          #       value: '/app/pythonpath:/app/docker/pythonpath_dev'
-          #     - name: REDIS_HOST
-          #       value: localhost
-          #     - name: REDIS_PORT
-          #       value: '6379'
-          #     - name: FLASK_ENV
-          #       value: production
-          #     - name: SUPERSET_ENV
-          #       value: production
-          #     - name: SUPERSET_LOAD_EXAMPLES
-          #       value: 'no'
-          #     - name: CYPRESS_CONFIG
-          #       value: 'false'
-          #     - name: SUPERSET_PORT
-          #       value: '8088'
-          #   volumeMounts:
-          #     - name: superset-home
-          #       mountPath: /app/superset_home
-          # - name: superset-beat
-          #   image: >-
-          #     image-registry.openshift-image-registry.svc:5000/30b186-tools/superset:20211213
-          #   args: ["beat"]
-          #   resources: {}
-          #   env:
-          #     - name: COMPOSE_PROJECT_NAME
-          #       value: superset
-          #     - name: DATABASE_DB
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-name
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_HOST
-          #       value: patroni-master-test
-          #     - name: DATABASE_USER
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-username
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_PASSWORD
-          #       valueFrom:
-          #         secretKeyRef:
-          #           key: superset-db-password
-          #           name: patroni-creds-${ENV_NAME}
-          #     - name: DATABASE_PORT
-          #       value: '5432'
-          #     - name: DATABASE_DIALECT
-          #       value: postgresql
-          #     - name: PYTHONPATH
-          #       value: '/app/pythonpath:/app/docker/pythonpath_dev'
-          #     - name: REDIS_HOST
-          #       value: localhost
-          #     - name: REDIS_PORT
-          #       value: '6379'
-          #     - name: FLASK_ENV
-          #       value: production
-          #     - name: SUPERSET_ENV
-          #       value: production
-          #     - name: SUPERSET_LOAD_EXAMPLES
-          #       value: 'no'
-          #     - name: CYPRESS_CONFIG
-          #       value: 'false'
-          #     - name: SUPERSET_PORT
-          #       value: '8088'
-          #   volumeMounts:
-          #     - name: superset-home
-          #       mountPath: /app/superset_home
-          #   terminationMessagePath: /dev/termination-log
-          #   terminationMessagePolicy: File
-          #   imagePullPolicy: Always            
         restartPolicy: Always
         terminationGracePeriodSeconds: 30
         dnsPolicy: ClusterFirst

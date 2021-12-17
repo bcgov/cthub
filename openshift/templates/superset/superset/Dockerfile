@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/apache/superset:latest-dev
+FROM artifacts.developer.gov.bc.ca/docker-remote/apache/superset:latest
 USER root
 # RUN pip install --upgrade pip \
 #    pip install psycopg2-binary sqlalchemy-redshift
