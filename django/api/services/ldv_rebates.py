@@ -12,35 +12,6 @@ def trim_all_columns(df):
 
 def import_from_xls(excel_file):
     df = pd.read_excel(excel_file, 'Raw Data')
-    df.drop(df.columns.difference([
-        "CASL Consent",
-        "DATE APPROVED",
-        "Submission ID",
-        "Submission Date",
-        "Company Name",
-        "City",
-        "Applicant Name",
-        "Applicant Address 1",
-        "Applicant Address 2",
-        "Applicant City",
-        "Applicant Postal Code",
-        "Applicant Phone",
-        "Applicant Email",
-        "Applicant Use",
-        "Applicant Type",
-        "Business Name",
-        "Business Number",
-        "Drivers License",
-        "Province",
-        "MSRP",
-        "Other Incentives",
-        "Document Type",
-        "Vehicle",
-        "Incentive Amount",
-        "VIN#",
-        "Delivered",
-        "Consent to Contact",
-    ]), 1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df['CASL Consent'].replace(
