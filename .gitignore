@@ -21,3 +21,4 @@ TEST-*xml
 venv/
 coverage/
 minio/minio_files/cthub/
+decoder.env

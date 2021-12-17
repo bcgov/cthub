@@ -13,15 +13,18 @@ from api.models.public_charging import PublicCharging
 from api.models.charger_rebates import ChargerRebates
 from api.models.speciality_use_vehicle_incentives import \
     SpecialityUseVehicleIncentives
+from api.models.hydrogen_fueling import HydrogrenFueling
 from api.serializers.datasets import DatasetsSerializer
 from api.services.ldv_rebates import import_from_xls as import_ldv
-from api.services.charger_rebates import import_from_xls as import_charger_rebates
+from api.services.hydrogen_fueling import import_from_xls as \
+    import_hydrogen_fueling
+from api.services.charger_rebates import import_from_xls as \
+    import_charger_rebates
 from api.services.minio import minio_get_object, minio_remove_object
 from api.services.public_charging import import_from_xls as \
     import_public_charging
 from api.services.speciality_use_vehicle_incentives import \
     import_from_xls as import_suvi
-
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -50,6 +53,9 @@ class UploadViewset(GenericViewSet):
                 if dataset_selected == 'LDV Rebates':
                     import_func = import_ldv
                     model = LdvRebates
+                if dataset_selected == 'Hydrogen Fueling':
+                    import_func = import_hydrogen_fueling
+                    model = HydrogrenFueling
                 if dataset_selected == \
                         'Specialty Use Vehicle Incentive Program':
                     import_func = import_suvi
