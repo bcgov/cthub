@@ -1,0 +1,19 @@
+apiVersion: ops.gov.bc.ca/v1alpha1
+kind: SysdigTeam
+metadata:
+  name: 30b186-sysdigteam
+  namespace: 30b186-tools
+spec:
+  team:
+    description: The Sysdig Team for 30b186-tools
+    users:
+    - name: emailAddress
+      role: ROLE_TEAM_MANAGER
+    - name: emailAddress
+      role: ROLE_TEAM_EDIT
+    - name: emailAddress
+      role: ROLE_TEAM_STANDARD
+    - name: emailAddress
+      role: ROLE_TEAM_READ
+    - name: emailAddress
+      role: ROLE_TEAM_READ
