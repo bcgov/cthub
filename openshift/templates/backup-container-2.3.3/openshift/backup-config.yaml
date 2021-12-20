@@ -1,0 +1,23 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: backup-conf
+parameters:
+  - name: ENV_NAME
+    displayName: env name
+    description: env name, dev, test or prod
+    value: dev
+    required: true
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      creationTimestamp: null
+      name: backup-conf
+    data:
+      backup.conf: |
+        postgres=patroni-master-${ENV_NAME}:5432/cthub
+        postgres=patroni-master-${ENV_NAME}-metabase:5432/metabase
+        0 19 * * * default ./backup.sh -s
+        0 22 * * * default ./backup.sh -s -v all

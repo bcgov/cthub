@@ -1,0 +1,40 @@
+/*
+Base styling for "App"
+ie General Container
+*/
+
+.App {
+  .App-header {
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+    -ms-flex-pack: center;
+    align-items: center;
+    background-color: $bg-white;
+    border-bottom: 2px solid $bg-primary;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    width: 100%;
+
+    .container {
+      margin: 0 auto;
+      // max-width: 1280px;
+      padding: 0 1rem;
+      width: 100%;
+    }
+
+    .logo {
+      background: url('../static/logo.png') center center no-repeat;
+      background-size: 100% auto;
+      height: 100px;
+      width: 200px;
+    }
+  }
+
+  .App-body {
+    margin: 1rem auto 0;
+    // max-width: 1280px;
+    padding: 0 1rem;
+  }
+}

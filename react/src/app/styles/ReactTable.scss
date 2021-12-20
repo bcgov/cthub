@@ -1,0 +1,69 @@
+/*
+Base styling for any React Table
+*/
+.ReactTable {
+  border-color: $default-table-border-color;
+  color: $default-table-color;
+  font-size: 0.85rem;
+
+  .pagination-bottom {
+    border-top: 1px solid $default-table-border-color !important;
+
+    .-pagination {
+      .-btn {
+        background-color: $bg-alt-black;
+        color: $default-table-color;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+  
+        &:not([disabled]):hover {
+          opacity: 0.65;
+        }
+      }
+    }
+  }
+
+  .rt-thead {
+    &.-header .rt-th:hover {
+      opacity: 0.65;
+    }
+
+    &.-headerGroups {
+      border-bottom: none;
+
+      .rt-th {
+        padding-bottom: 0.75rem;
+        padding-top: 0.75rem;
+      }
+    }
+
+    .rt-th {
+      background-color: $bg-alt-black;
+      padding: 0.5rem;
+
+      &.-sort-asc {
+        box-shadow: inset 0 3px 0 0 $highlight !important;
+      }
+
+      &.-sort-desc {
+        box-shadow: inset 0 -3px 0 0 $highlight !important;
+      }
+    } 
+  }
+
+  .rt-tr-group {
+    border-bottom-color: $default-table-border-color !important;
+
+    &:hover {
+      .rt-td {
+        background-color: $default-table-color;
+        color: $bg-alt-black;
+      }
+    }
+
+    .rt-td {
+      padding: 1rem 0.5rem;
+    }
+  }
+}

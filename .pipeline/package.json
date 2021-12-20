@@ -7,9 +7,15 @@
   },
   "scripts": {
     "build": "node build.js",
+    "build-metabase": "node build-metabase.js",
+    "build-patroni": "node build-patroni.js",
+    "clean-tools": "node clean-tools.js",
     "clean": "node clean.js",
     "deploy": "node deploy.js",
     "deploy-unittest": "node deploy-unittest.js",
+    "deploy-metabase": "node deploy-metabase.js",
+    "deploy-patroni": "node deploy-patroni.js",
+    "deploy-knp": "node deploy-knp.js",
     "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
   },
   "repository": {

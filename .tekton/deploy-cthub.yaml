@@ -1,0 +1,59 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: deploy-cthub
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the git repo url, https://github.com/bcgov/cthub.git
+      name: repo-url
+      type: string
+      default: https://github.com/bcgov/cthub.git
+    - description: the git branch name
+      name: branch
+      type: string
+      default: tekton-0.1.0
+    - description: where the frontend image push to
+      name: frontend-image
+      type: string
+      default: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-frontend:frontendtekton'
+    - description: where the backend image push to 
+      name: backend-image
+      type: string
+      default: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-backend:backendtekton'
+    - description: The namespace to be deployed on
+      name: namespace
+      type: string      
+      default: 30b186-dev
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.branch)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-data  
+    - name: apply-manifests
+      runAfter: 
+        - git-clone
+      params:
+        - name: manifest_dir
+          value: .tekton/deployment/frontend-dc.yaml
+        - name: namespace
+          value: $(params.namespace)         
+      taskRef:
+        kind: Task
+        name: apply-manifests
+      workspaces:
+        - name: source
+          workspace: shared-data
+  workspaces:
+    - description: |
+        This workspace will receive the cloned git repo and be passed
+        to the next Task for the repo's README.md file to be read.      
+      name: shared-data
