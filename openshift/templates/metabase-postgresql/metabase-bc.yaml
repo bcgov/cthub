@@ -33,7 +33,7 @@ objects:
     source:
       contextDir: openshift/templates/metabase
       git:
-        ref: superset2-0.2.0
+        ref: release-0.2.0
         uri: https://github.com/bcgov/cthub.git
       type: Git
     strategy:
