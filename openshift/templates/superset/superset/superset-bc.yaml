@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: superset-superset-bc
+  name: superset-bc
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -28,12 +28,18 @@ objects:
           name: superset:20211213
           namespace: 30b186-tools
       postCommit: {}
-      resources: {}
+      resources: 
+        limits:
+          cpu: '1'
+          memory: 500Mi
+        requests:
+          cpu: 500m
+          memory: 250Mi        
       runPolicy: Serial
       source:
         contextDir: openshift/templates/superset/superset
         git:
-          ref: superset-0.1.0
+          ref: superset2-0.1.0
           uri: https://github.com/bcgov/cthub.git
         type: Git
       strategy:

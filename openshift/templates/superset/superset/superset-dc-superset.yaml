@@ -8,22 +8,22 @@ parameters:
     value: test
     required: true
   - name: CPU_REQUEST
-    value: 50M
+    value: 200m
     displayName: Requested CPU
     description: Requested CPU
     required: true    
   - name: CPU_LIMIT
-    value: 200M
+    value: 400m
     displayName: CPU upper limit
     description: CPU upper limit
     required: true
   - name: MEMORY_REQUEST
-    value: 50M
+    value: 700Mi
     displayName: Requested memory
     description: Requested memory
     required: true
   - name: MEMORY_LIMIT
-    value: 500M
+    value: 1400Mi
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
@@ -33,56 +33,49 @@ parameters:
     displayName: REPLICAS
     value: "1"    
 objects:
-# - apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: cthub-superset
-#     labels:
-#       app: cthub-superset
-#       service: cthub-superset
-# - apiVersion: v1
-#   kind: Service
-#   metadata:
-#     annotations:
-#       openshift.io/generated-by: OpenShiftWebConsole
-#     creationTimestamp: null
-#     labels:
-#       app: cthub-superset
-#     name: cthub-superset
-#   spec:
-#     ports:
-#     - name: superset-web
-#       port: 8080
-#       protocol: TCP
-#       targetPort: 8080
-#     selector:
-#       deploymentconfig: cthub-superset
-#     sessionAffinity: None
-#     type: ClusterIP
-#   status:
-#     loadBalancer: {}
-# - apiVersion: route.openshift.io/v1
-#   kind: Route
-#   metadata:
-#     annotations:
-#       openshift.io/host.generated: "true"
-#     creationTimestamp: null
-#     labels:
-#       app: cthub-superset
-#     name: cthub-superset
-#   spec:
-#     host: superset-${ENV_NAME}.apps.silver.devops.gov.bc.ca
-#     path: /
-#     port:
-#       targetPort: superset-web
-#     tls:
-#       insecureEdgeTerminationPolicy: Redirect
-#       termination: edge
-#     to:
-#       kind: Service
-#       name: cthub-superset
-#       weight: 100
-#     wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: superset
+    name: superset
+  spec:
+    ports:
+    - name: superset-web
+      port: 8088
+      protocol: TCP
+      targetPort: 8088
+    selector:
+      app: superset
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: superset
+    name: superset
+  spec:
+    host: superset-${ENV_NAME}.apps.silver.devops.gov.bc.ca
+    path: /
+    port:
+      targetPort: superset-web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: superset
+      weight: 100
+    wildcardPolicy: None
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
@@ -112,7 +105,7 @@ objects:
       activeDeadlineSeconds: 21600
     triggers:
       - type: ConfigChange
-    replicas: 1
+    replicas: ${{REPLICAS}}
     revisionHistoryLimit: 10
     test: false
     selector:
@@ -128,13 +121,19 @@ objects:
             persistentVolumeClaim:
               claimName: superset-home
         containers:
-          - name: superset
+          - name: superset-app-gunicorn
             image: >-
               image-registry.openshift-image-registry.svc:5000/30b186-tools/superset:20211213
             ports:
               - containerPort: 8088
                 protocol: TCP
-            resources: {}
+            resources:
+              limits:
+                cpu: ${CPU_LIMIT}
+                memory: ${MEMORY_LIMIT}
+              requests:
+                cpu: ${CPU_REQUEST}
+                memory: ${MEMORY_REQUEST}                
             env:
               - name: COMPOSE_PROJECT_NAME
                 value: superset
@@ -162,7 +161,7 @@ objects:
               - name: PYTHONPATH
                 value: '/app/pythonpath:/app/docker/pythonpath_dev'
               - name: REDIS_HOST
-                value: localhost
+                value: redis
               - name: REDIS_PORT
                 value: '6379'
               - name: FLASK_ENV
