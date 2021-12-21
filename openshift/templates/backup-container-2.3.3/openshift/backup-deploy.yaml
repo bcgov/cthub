@@ -107,6 +107,16 @@ objects:
                     secretKeyRef:
                       name: patroni-creds-${ENV_NAME_LOWERCASE}
                       key: metabase-db-password
+                - name: PATRONI_MASTER_${ENV_NAME_UPPERCASE}_SUPERSET_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: patroni-creds-${ENV_NAME_LOWERCASE}
+                      key: superset-db-username
+                - name: PATRONI_MASTER_${ENV_NAME_UPPERCASE}_SUPERSET_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: patroni-creds-${ENV_NAME_LOWERCASE}
+                      key: superset-db-password                      
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}
