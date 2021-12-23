@@ -1,0 +1,85 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cthub-prbased
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the git repo url
+      name: repo-url
+      type: string
+    - description: the git event name from webhook
+      name: git-event
+      type: string
+    - description: the release branch name
+      name: release-branch
+      type: string
+    - description: ref
+      name: ref
+      type: string
+    - description: revision
+      name: revision
+      type: string
+    - description: where the frontend image push to
+      name: frontend-image
+      type: string
+    - description: where the backend image push to
+      name: backend-image
+      type: string
+  tasks:
+    - name: verify-push-on-release-branch
+      params:
+        - name: git-event
+          value: $(params.git-event)
+        - name: release-branch
+          value: $(params.release-branch)
+        - name: ref
+          value: $(params.ref)
+      taskRef:
+        kind: Task
+        name: verify-push-on-release-branch
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.revision)
+      runAfter:
+        - verify-push-on-release-branch
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      when:
+        - input: $(tasks.verify-push-on-release-branch.results.isreleasebranch)
+          operator: in
+          values:
+            - 'yes'
+      workspaces:
+        - name: output
+          workspace: shared-data
+    - name: git-cli
+      params:
+        - name: GIT_SCRIPT
+          value: |
+            git version
+            pwd
+            ls -la
+            env
+            echo $(params.ref)
+            echo "done33"
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: git-cli
+      workspaces:
+        - name: input
+          workspace: shared-data
+        - name: source
+          workspace: shared-data    
+
+  workspaces:
+    - description: |
+        This workspace will receive the cloned git repo and be passed
+        to the next Task for the repo's README.md file to be read.      
+      name: shared-data
