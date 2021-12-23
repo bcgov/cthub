@@ -1,7 +1,7 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: nodejs-oc-bc
+  name: nodejs-oc
   namespace: 30b186-tools
 spec:
   nodeSelector: null
