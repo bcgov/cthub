@@ -4,12 +4,14 @@ import React from 'react';
 import {
   Redirect,
   BrowserRouter as Router,
+  Route,
+  Switch,
 } from 'react-router-dom';
 
 import settings from './app/settings';
 import IcbcDataRouter from './icbc_data/router';
 import UploadRouter from './uploads/router';
-import DashboardRouter from './dashboard/router';
+import DashboardContainer from './dashboard/DashboardContainer';
 
 const { API_BASE } = settings;
 
@@ -37,9 +39,13 @@ const App = () => {
             <Redirect to={redirect} />
           )}
 
-          <UploadRouter />
-          <IcbcDataRouter />
-          <DashboardRouter />
+          <Switch>
+            {IcbcDataRouter()}
+            {UploadRouter()}
+            <Route>
+              <DashboardContainer />
+            </Route>
+          </Switch>
         </Router>
       </div>
     </div>
