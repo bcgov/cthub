@@ -11,7 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
-    df = pd.read_excel(excel_file, 'Updated', header=2)
+    df = pd.read_excel(excel_file, 'Data Fleets')
     df.drop(df.columns.difference([
         "Current Stage",
         "Rebate Value",
