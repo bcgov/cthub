@@ -49,16 +49,32 @@ def import_from_xls(excel_file):
     for _, row in df.iterrows():
         try:
             ChargerRebates.objects.create(
-                organization=row["Organization"],
-                region=row["Region"],
-                city=row["City"],
-                address=row["Address"],
-                number_of_fast_charging_stations=row["Number of Fast Charging Stations"],
-                in_service_date=row["In service date"],
-                expected_in_service_date=row["Expected in service date"],
-                announced=row["Announced?"],
-                rebate_paid=row["B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)"],
-                notes=row["Notes"]
+                current_stage=row["Current Stage"],
+                rebate_value=row["Rebate Value"],
+                legal_name_of_organization_fleet =row["Legal Name of your Organization/Fleet: "],
+                business_category=row["Your business Category"],
+                city=row["City:*"],
+                postal_code=row["Postal Code:*"],
+                applicant_first_name=row["Applicant First Name"],
+                applicant_last_name =row["Applicant Last Name"],
+                email_address=row["Email Address:*"],
+                fleet_size_all=row["Fleet Size All"],
+                fleet_size_light_duty=row["Fleet Size Light-duty"],
+                total_number_of_evs=row["Total number of EVs?"],
+                total_number_of_light_duty_evs=row["Total number of light-duty EVs?"],
+                phev=row["PHEV's"],
+                evse=row["EVSE's?"],
+                average_daily_travel_distance=row["Average daily travel distance?"],
+                component_being_applyied_for=row["Which component are you applying for?*"],
+                estimated_cost=row["Estimated cost"],
+                type_of_charger_being_installing=row["Which type of charger are you installing?"],
+                number_of_Level_2_Charging_Stations_being_applying_for=row["How many Level 2 Charging Stations are you applying for"],
+                number_of_level_3_dc_fast_charging_stations_being_applying_for=row["How many Level 3/DC Fast Charging Stations are you applying for"],
+                application_form_fleets_completion_date_time=row['"Application Form Fleets" completion date/time'],
+                pre_approval_date=row["Pre-Approval Date"],
+                deadline=row["Deadline"],
+                application_number=row["Application Number"],
+                potential_rebate=row["Potential Rebate"]
             )
         except Exception as error:
             print(error)
