@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: cthub-prbased
+  name: build-cthub
   namespace: 30b186-tools
 spec:
   params:
@@ -57,6 +57,19 @@ spec:
       workspaces:
         - name: output
           workspace: shared-data
+    - name: oc-deploy-dev
+      params:
+        - name: SCRIPT
+          value: |
+            oc projects      
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      workspaces:
+        - name: source
+          workspace: shared-data
     - name: git-cli
       params:
         - name: GIT_SCRIPT
@@ -76,8 +89,7 @@ spec:
         - name: input
           workspace: shared-data
         - name: source
-          workspace: shared-data    
-
+          workspace: shared-data
   workspaces:
     - description: |
         This workspace will receive the cloned git repo and be passed

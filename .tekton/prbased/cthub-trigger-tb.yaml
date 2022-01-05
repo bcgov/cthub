@@ -1,0 +1,17 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: cthub-trigger-tb
+  namespace: 30b186-tools
+spec:
+  params:
+    - name: repo-url
+      value: $(body.repository.url)
+    - name: git-event
+      value: $(header.X-GitHub-Event)
+    - name: release-branch
+      value: prbased-teckton-0.2.0
+    - name: ref
+      value: $(body.ref)
+    - name: revision
+      value: $(body.head_commit.id)
