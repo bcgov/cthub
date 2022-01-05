@@ -13,7 +13,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Log into database to inspect the new table
-docker-compose exec db psql -U postgre
+docker-compose exec db psql -U postgres
 # run this: \d <new_table_name>
 ```
 

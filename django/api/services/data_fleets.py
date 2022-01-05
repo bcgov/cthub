@@ -1,5 +1,5 @@
 import pandas as pd
-from api.models.charger_rebates import ChargerRebates
+from api.models.data_fleets import DataFleets
 
 
 def trim_all_columns(df):
@@ -48,7 +48,7 @@ def import_from_xls(excel_file):
 
     for _, row in df.iterrows():
         try:
-            ChargerRebates.objects.create(
+            DataFleets.objects.create(
                 current_stage=row["Current Stage"],
                 rebate_value=row["Rebate Value"],
                 legal_name_of_organization_fleet =row["Legal Name of your Organization/Fleet: "],

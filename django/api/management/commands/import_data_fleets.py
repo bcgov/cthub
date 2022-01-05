@@ -2,14 +2,14 @@ import json
 from os import path
 from django.core.management import BaseCommand
 
-from api.services.hydrogen_fleets import import_from_xls
+from api.services.data_fleets import import_from_xls
 
 
 class Command(BaseCommand):
     """
     This command takes in an excel file and will parse and create records
     """
-    help = 'Loads file into the ldv rebates table'
+    help = 'Loads file into the data fleets table'
 
     def add_arguments(self, parser):
         """
