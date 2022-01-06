@@ -65,7 +65,10 @@ spec:
         - git-clone
       taskRef:
         kind: Task
-        name: bcdk-build        
+        name: bcdk-build       
+      workspaces:
+        - name: source
+          workspace: shared-data         
     # - name: oc-deploy-dev
     #   params:
     #     - name: SCRIPT
