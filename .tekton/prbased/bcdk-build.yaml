@@ -17,4 +17,11 @@ spec:
       resources: {}
       script: |
         #!/usr/bin/env bash
+        cd /source
+        pwd
+        ls -la
         oc projects
+  workspaces:
+    - name: source
+      description: the folder where the project was checked out
+      mountPath: /source
