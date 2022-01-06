@@ -21,3 +21,4 @@ spec:
     - name: source
       description: the folder where the project was checked out
       mountPath: /source
+      readOnly: false
