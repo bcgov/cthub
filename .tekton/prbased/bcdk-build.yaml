@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: bcdk-build
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the pull-request number
+      name: pull-request
+      type: string
+  results:
+    - description: The product of the two provided integers
+      name: isreleasebranch
+  steps:
+    - image: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/nodejs-oc:latest'
+      name: build-pull-request
+      resources: {}
+      script: |
+        #!/usr/bin/env bash
+        oc projects

@@ -57,19 +57,28 @@ spec:
       workspaces:
         - name: output
           workspace: shared-data
-    - name: oc-deploy-dev
+    - name: bcdk-build
       params:
-        - name: SCRIPT
-          value: |
-            oc projects      
+        - name: pull-request
+          value: '73'
       runAfter:
         - git-clone
       taskRef:
-        kind: ClusterTask
-        name: openshift-client
-      workspaces:
-        - name: source
-          workspace: shared-data
+        kind: Task
+        name: bcdk-build        
+    # - name: oc-deploy-dev
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         oc projects      
+    #   runAfter:
+    #     - git-clone
+    #   taskRef:
+    #     kind: ClusterTask
+    #     name: openshift-client
+    #   workspaces:
+    #     - name: source
+    #       workspace: shared-data
     - name: git-cli
       params:
         - name: GIT_SCRIPT
