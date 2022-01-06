@@ -82,26 +82,26 @@ spec:
     #   workspaces:
     #     - name: source
     #       workspace: shared-data
-    - name: git-cli
-      params:
-        - name: GIT_SCRIPT
-          value: |
-            git version
-            pwd
-            ls -la
-            env
-            echo $(params.ref)
-            echo "done33"
-      runAfter:
-        - git-clone
-      taskRef:
-        kind: ClusterTask
-        name: git-cli
-      workspaces:
-        - name: input
-          workspace: shared-data
-        - name: source
-          workspace: shared-data
+    # - name: git-cli
+    #   params:
+    #     - name: GIT_SCRIPT
+    #       value: |
+    #         git version
+    #         pwd
+    #         ls -la
+    #         env
+    #         echo $(params.ref)
+    #         echo "done33"
+    #   runAfter:
+    #     - git-clone
+    #   taskRef:
+    #     kind: ClusterTask
+    #     name: git-cli
+    #   workspaces:
+    #     - name: input
+    #       workspace: shared-data
+    #     - name: source
+    #       workspace: shared-data
   workspaces:
     - description: |
         This workspace will receive the cloned git repo and be passed

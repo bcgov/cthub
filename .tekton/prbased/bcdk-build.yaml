@@ -15,6 +15,7 @@ spec:
       script: |
         #!/usr/bin/env bash
         cd /source/.pipeline
+        npm install
         npm run build --pr="$(inputs.params.pull-request)" --env=build
   workspaces:
     - name: source
