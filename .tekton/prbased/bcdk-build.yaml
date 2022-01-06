@@ -8,19 +8,14 @@ spec:
     - description: the pull-request number
       name: pull-request
       type: string
-  results:
-    - description: The product of the two provided integers
-      name: isreleasebranch
   steps:
     - image: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/nodejs-oc:latest'
       name: build-pull-request
       resources: {}
       script: |
         #!/usr/bin/env bash
-        cd /source
-        pwd
-        ls -la
-        oc projects
+        cd /source/.pipeline
+        npm run build --pr="$(inputs.params.pull-request)" --env=build
   workspaces:
     - name: source
       description: the folder where the project was checked out
