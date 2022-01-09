@@ -46,10 +46,10 @@ def import_from_xls(excel_file):
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
 
-    # df.fillna('')
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
 
     for _, row in df.iterrows():
+        if row["Publicly Announced"] == '': continue # Skip rows without this field
         try:
             ARCProjectTracking.objects.create(
                 funding_call=row["Funding Call"],
