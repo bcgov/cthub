@@ -19,8 +19,7 @@ spec:
         cd pipeline
         pwd
         ls -la
-        which npm
-        npm install
+        echo "$(inputs.params.pull-request)"
         ./npmw ci
         ./npmw run build --pr="$(inputs.params.pull-request)" --env=build
   workspaces:
