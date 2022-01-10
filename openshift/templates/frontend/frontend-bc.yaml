@@ -60,8 +60,8 @@ objects:
     source:
       git:
         ref: prbased-teckton-0.2.0
-        uri: "https://github.com/bcgov/tttttt"
-      type: Git
+        uri: 'https://github.com/bcgov/cthub.git'
+        type: Git
       contextDir: react
     strategy:
       sourceStrategy:
