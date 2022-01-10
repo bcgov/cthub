@@ -61,7 +61,7 @@ objects:
       git:
         ref: ${GIT_REF}
         uri: ${GIT_URL}
-        type: Git
+      type: Git
       contextDir: react
     strategy:
       sourceStrategy:
