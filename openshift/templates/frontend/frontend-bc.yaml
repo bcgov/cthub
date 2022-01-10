@@ -59,7 +59,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        ref: ${GIT_REF}
+        ref: "${GIT_REF}"
         uri: 'https://github.com/bcgov/cthub.git'
       type: Git
       contextDir: react
