@@ -49,6 +49,7 @@ class UploadViewset(GenericViewSet):
                 status=403,
                 content="You do not have permission to upload data."
             )
+
         else:
             try:
                 url = minio_get_object(filename)

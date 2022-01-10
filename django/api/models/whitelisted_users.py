@@ -1,7 +1,6 @@
 from django.db import models
 from auditable.models import Auditable
 
-
 class WhitelistedUsers(Auditable):
     user = models.CharField(
         blank=False,
