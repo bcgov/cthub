@@ -21,7 +21,12 @@ spec:
         ls -la
         echo "$(inputs.params.pull-request)"
         ./npmw ci
-        ./npmw run build -- --pr=$(inputs.params.pull-request) --env=build
+        ls -la
+        ls -la node_modules
+        which oc
+        oc version
+        echo "./npmw run build -- --pr=$(inputs.params.pull-request)"
+        DEBUG=* ./npmw run build -- --pr=$(inputs.params.pull-request)
   workspaces:
     - name: source
       description: the folder where the project was checked out
