@@ -60,7 +60,7 @@ objects:
     source:
       git:
         ref: ${GIT_REF}
-        uri: 'https://github.com/bcgov/cthub.git'
+        uri: 'https://github.com/bcgov/dddd'
       type: Git
       contextDir: react
     strategy:
