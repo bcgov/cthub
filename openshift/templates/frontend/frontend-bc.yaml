@@ -72,6 +72,6 @@ objects:
         type: Git
         git:
           ref: 'refs/pull/80/head'
-          uri: 'https://github.com/bcgov/cthub.git'
+          uri: https://github.com/bcgov/cthub.git
         contextDir: react
       runPolicy: Serial
