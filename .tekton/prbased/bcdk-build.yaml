@@ -15,10 +15,10 @@ spec:
       script: |
         #!/usr/bin/env bash
         cd /source
+        ls -la
         git status
         cd pipeline
         pwd
-        ls -la
         echo "$(inputs.params.pull-request)"
         which oc
         oc version
