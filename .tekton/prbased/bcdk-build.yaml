@@ -15,6 +15,7 @@ spec:
       script: |
         #!/usr/bin/env bash
         cd /source
+        git status
         cp -r .pipeline pipeline
         cd pipeline
         pwd
@@ -34,7 +35,8 @@ spec:
         which npm
         npm --version
         npm install
-        DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
+        # DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
+        DEBUG=* npm run build -- --pr=80
   workspaces:
     - name: source
       description: the folder where the project was checked out
