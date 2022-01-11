@@ -1,8 +1,7 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  creationTimestamp: null
-  name: frontend
+  name: frontend-bc
 parameters:
   - name: NAME
     displayName:
@@ -43,6 +42,8 @@ objects:
   metadata:
     name: cthub-frontend-build-80
     namespace: 30b186-tools
+    labels:
+      kuanapp: cthub-test-label
   spec:
     nodeSelector: null
     output:
