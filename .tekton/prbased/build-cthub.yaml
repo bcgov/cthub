@@ -60,7 +60,7 @@ spec:
     - name: bcdk-build
       params:
         - name: pull-request
-          value: '73'
+          value: '80'
       runAfter:
         - git-clone
       taskRef:
