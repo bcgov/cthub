@@ -48,6 +48,12 @@ objects:
           memory: 200M
       successfulBuildsHistoryLimit: 5
       failedBuildsHistoryLimit: 5
+      source:
+        type: Git
+        git:
+          ref: "refs/pull/80/head"
+          uri: "https://github.com/bcgov/cthub.git"
+        contextDir: react
       strategy:
         type: Source
         sourceStrategy:
@@ -68,10 +74,4 @@ objects:
                   key: password
           forcePull: true
       postCommit: {}
-      source:
-        type: Git
-        git:
-          ref: 'refs/pull/80/head'
-          uri: https://github.com/bcgov/cthub.git
-        contextDir: react
       runPolicy: Serial
