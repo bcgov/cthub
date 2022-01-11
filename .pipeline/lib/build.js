@@ -13,6 +13,7 @@ module.exports = settings => {
   // The building of your cool app goes here ▼▼▼
 
   // build frontend
+  /*
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-bc.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -21,8 +22,8 @@ module.exports = settings => {
       'GIT_URL': oc.git.http_url,
       'GIT_REF': oc.git.ref
     }
-  }))
-/*
+  }))*/
+
   //build backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-bc.yaml`, {
     'param':{
@@ -33,7 +34,7 @@ module.exports = settings => {
       'GIT_REF': oc.git.ref
     }
   }))
-*/
+
   oc.applyRecommendedLabels(
     objects,
     phases[phase].name,
