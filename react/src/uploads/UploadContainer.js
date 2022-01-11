@@ -15,6 +15,7 @@ const UploadContainer = () => {
   const [replaceData, setReplaceData] = useState('false'); // if true, we will replace all
   const [alertContent, setAlertContent] = useState();
   const [alert, setAlert] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState('');
   // existing data with what is being uploaded
   const [open, setOpen] = useState(false);
   const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
@@ -52,9 +53,14 @@ const UploadContainer = () => {
           filename,
           datasetSelected,
           replace,
+        }).then(() => {
+          setAlertContent('Data has been successfully uploaded.');
+          setAlertSeverity('success');
+          setAlert(true);
         }).catch((error) => {
           const { response: errorResponse } = error;
           setAlertContent(errorResponse.data);
+          setAlertSeverity('error');
           setAlert(true);
         });
       }).finally(() => {
@@ -80,7 +86,8 @@ const UploadContainer = () => {
   return (
     <div className="row">
       <div className="col-12 mr-2">
-        {alert && alertContent && <Alert severity="error">{alertContent}</Alert>}
+        {alert && alertContent && alertSeverity
+        && <Alert severity={alertSeverity}>{alertContent}</Alert>}
         {open && (
         <AlertDialog
           open={open}
