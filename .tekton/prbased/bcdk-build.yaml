@@ -25,6 +25,8 @@ spec:
         ls -la node_modules
         which oc
         oc version
+        which Git
+        git version
         which node
         node --version
         echo "./npmw run build -- --pr=$(inputs.params.pull-request)"
