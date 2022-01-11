@@ -6,7 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
+from django.utils.decorators import method_decorator
+from api.decorators.whitelisted_users import check_whitelist
 from api.models.datasets import Datasets
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
@@ -38,50 +39,42 @@ class UploadViewset(GenericViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
+    @method_decorator(check_whitelist())
     def import_data(self, request):
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
         replace_data = request.data.get('replace', False)
-        user = request.user
-        whitelisted_users = WhitelistedUsers.objects.filter(user=user)
-        if not whitelisted_users:
-            return HttpResponse(
-                status=403,
-                content="You do not have permission to upload data."
-            )
-        else:
-            try:
-                url = minio_get_object(filename)
-                urllib.request.urlretrieve(url, filename)
-                if dataset_selected:
-                    done = ''
-                    import_func = ''
-                    if dataset_selected == 'EV Charging Rebates':
-                        import_func = import_charger_rebates
-                        model = ChargerRebates
-                    if dataset_selected == 'LDV Rebates':
-                        import_func = import_ldv
-                        model = LdvRebates
-                    if dataset_selected == 'Hydrogen Fueling':
-                        import_func = import_hydrogen_fueling
-                        model = HydrogrenFueling
-                    if dataset_selected == \
-                            'Specialty Use Vehicle Incentive Program':
-                        import_func = import_suvi
-                        model = SpecialityUseVehicleIncentives
-                    if dataset_selected == 'Public Charging':
-                        import_func = import_public_charging
-                        model = PublicCharging
-                    if replace_data:
-                        model.objects.all().delete()
-                    done = import_func(filename)
-                    if done:
-                        os.remove(filename)
-                        minio_remove_object(filename)
+        try:
+            url = minio_get_object(filename)
+            urllib.request.urlretrieve(url, filename)
+            if dataset_selected:
+                done = ''
+                import_func = ''
+                if dataset_selected == 'EV Charging Rebates':
+                    import_func = import_charger_rebates
+                    model = ChargerRebates
+                if dataset_selected == 'LDV Rebates':
+                    import_func = import_ldv
+                    model = LdvRebates
+                if dataset_selected == 'Hydrogen Fueling':
+                    import_func = import_hydrogen_fueling
+                    model = HydrogrenFueling
+                if dataset_selected == \
+                        'Specialty Use Vehicle Incentive Program':
+                    import_func = import_suvi
+                    model = SpecialityUseVehicleIncentives
+                if dataset_selected == 'Public Charging':
+                    import_func = import_public_charging
+                    model = PublicCharging
+                if replace_data:
+                    model.objects.all().delete()
+                done = import_func(filename)
+                if done:
+                    os.remove(filename)
+                    minio_remove_object(filename)
 
-            except Exception as error:
-                print('!!!!! error !!!!!!')
-                print(error)
-                return Response(status=400)
-
-            return Response('success!', status=status.HTTP_201_CREATED)
+        except Exception as error:
+            print('!!!!! error !!!!!!')
+            print(error)
+            return Response(status=400)
+        return Response('success!', status=status.HTTP_201_CREATED)

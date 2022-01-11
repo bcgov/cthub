@@ -37,6 +37,13 @@ const UploadContainer = () => {
     });
   };
 
+  const showError = (error) => {
+    const { response: errorResponse } = error;
+    setAlertContent(errorResponse.data.detail);
+    setAlertSeverity('error');
+    setAlert(true);
+  };
+
   const doUpload = () => uploadFiles.forEach((file) => {
     axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
       const { url: uploadUrl, minio_object_name: filename } = response.data;
@@ -58,16 +65,14 @@ const UploadContainer = () => {
           setAlertSeverity('success');
           setAlert(true);
         }).catch((error) => {
-          const { response: errorResponse } = error;
-          setAlertContent(errorResponse.data);
-          setAlertSeverity('error');
-          setAlert(true);
+          showError(error);
         });
       }).finally(() => {
         setUploadFiles([]);
       });
     }).catch((error) => {
-      console.error(error);
+      const { response: errorResponse } = error;
+      showError(error);
     });
   });
 
