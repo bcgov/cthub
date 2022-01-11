@@ -25,7 +25,7 @@ spec:
         ls -la node_modules
         which oc
         oc version
-        which Git
+        which git
         git version
         which node
         node --version
