@@ -24,6 +24,9 @@ spec:
         ls -la node_modules
         which oc
         oc version
+        oc project
+        oc project 30b186-tools
+        oc project
         which git
         git version
         which node
