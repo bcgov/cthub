@@ -20,7 +20,6 @@ spec:
         pwd
         ls -la
         echo "$(inputs.params.pull-request)"
-        ./npmw ci
         ls -la
         ls -la node_modules
         which oc
@@ -29,8 +28,10 @@ spec:
         git version
         which node
         node --version
-        echo "./npmw run build -- --pr=$(inputs.params.pull-request)"
-        DEBUG=* ./npmw run build -- --pr=$(inputs.params.pull-request)
+        which npm
+        npm --version
+        npm install
+        DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
   workspaces:
     - name: source
       description: the folder where the project was checked out
