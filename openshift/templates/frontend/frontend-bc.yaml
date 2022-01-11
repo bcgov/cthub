@@ -42,6 +42,8 @@ objects:
   kind: BuildConfig
   metadata:
     name: ${NAME}-frontend${SUFFIX}
+    labels:
+      app: build-frontend
   spec:
     failedBuildsHistoryLimit: 5
     output:
