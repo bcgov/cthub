@@ -2,6 +2,8 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: frontend-bc
+  labels:
+    testlabel: kuan
 parameters:
   - name: NAME
     displayName: null
