@@ -14,7 +14,7 @@ spec:
       resources: {}
       script: |
         #!/usr/bin/env bash
-        cd /source
+        cd /tmp/source
         ls -la
         git status
         cd pipeline
@@ -38,5 +38,5 @@ spec:
   workspaces:
     - name: source
       description: the folder where the project was checked out
-      mountPath: /source
+      mountPath: /tmp/source
       readOnly: false
