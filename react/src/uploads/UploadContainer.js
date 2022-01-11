@@ -52,11 +52,11 @@ const UploadContainer = () => {
           filename,
           datasetSelected,
           replace,
+        }).catch((error) => {
+          const { response: errorResponse } = error;
+          setAlertContent(errorResponse.data);
+          setAlert(true);
         });
-      }).catch((error) => {
-        console.error(error);
-        const { response: errorResponse } = error;
-        console.log(errorResponse.data);
       }).finally(() => {
         setUploadFiles([]);
       });
@@ -80,7 +80,7 @@ const UploadContainer = () => {
   return (
     <div className="row">
       <div className="col-12 mr-2">
-        {alert && <Alert severity='error'>{alertContent}</Alert>}
+        {alert && alertContent && <Alert severity="error">{alertContent}</Alert>}
         {open && (
         <AlertDialog
           open={open}
