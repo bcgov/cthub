@@ -41,6 +41,12 @@ spec:
         pipelineRef:
           name: build-cthub
         serviceAccountName: pipeline
+        taskRunSpecs:
+        - pipelineTaskName: bcdk-build
+          taskPodTemplate:
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 65532
         workspaces:
           - name: shared-data
             volumeClaimTemplate:
