@@ -14,10 +14,10 @@ spec:
       resources: {}
       script: |
         #!/usr/bin/env bash
-        cd /tmp/source
+        cd /source
         ls -la
         git status
-        cd pipeline
+        cd ./pipeline
         pwd
         echo "$(inputs.params.pull-request)"
         which oc
@@ -38,17 +38,5 @@ spec:
   workspaces:
     - name: source
       description: the folder where the project was checked out
-      mountPath: /tmp/source
+      mountPath: /source
       readOnly: false
----
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  generateName: bcdk-build-
-spec:
-  taskRef:
-    name: bcdk-build
-  podTemplate:
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 65532
