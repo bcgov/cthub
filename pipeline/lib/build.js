@@ -23,7 +23,7 @@ module.exports = settings => {
       'GIT_REF': oc.git.ref
     }
   }))
-
+/*
   //build backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-bc.yaml`, {
     'param':{

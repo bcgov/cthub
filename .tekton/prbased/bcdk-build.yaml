@@ -16,13 +16,10 @@ spec:
         #!/usr/bin/env bash
         cd /source
         git status
-        cp -r .pipeline pipeline
         cd pipeline
         pwd
         ls -la
         echo "$(inputs.params.pull-request)"
-        ls -la
-        ls -la node_modules
         which oc
         oc version
         oc project
@@ -35,6 +32,7 @@ spec:
         which npm
         npm --version
         npm install
+        ls -la
         # DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
         DEBUG=* npm run build -- --pr=80
   workspaces:
