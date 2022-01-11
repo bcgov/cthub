@@ -42,6 +42,11 @@ spec:
           name: build-cthub
         serviceAccountName: pipeline
         taskRunSpecs:
+        - pipelineTaskName: git-clone
+          taskPodTemplate:
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 65532        
         - pipelineTaskName: bcdk-build
           taskPodTemplate:
             securityContext:
