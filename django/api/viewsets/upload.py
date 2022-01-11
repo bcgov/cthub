@@ -1,6 +1,5 @@
 import urllib.request
 import os
-from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -14,7 +13,6 @@ from api.models.public_charging import PublicCharging
 from api.models.charger_rebates import ChargerRebates
 from api.models.speciality_use_vehicle_incentives import \
     SpecialityUseVehicleIncentives
-from api.models.whitelisted_users import WhitelistedUsers
 from api.models.hydrogen_fueling import HydrogrenFueling
 from api.serializers.datasets import DatasetsSerializer
 from api.services.ldv_rebates import import_from_xls as import_ldv
