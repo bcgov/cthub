@@ -17,7 +17,7 @@ spec:
         cd /source
         ls -la
         git status
-        cd ./pipeline
+        cd .pipeline
         pwd
         echo "$(inputs.params.pull-request)"
         which oc
