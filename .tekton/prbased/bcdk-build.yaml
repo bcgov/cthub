@@ -18,7 +18,6 @@ spec:
         ls -la
         git status
         cd .pipeline
-        cp OpenShiftClientX.js node_modules/@bcgov/pipeline-cli/lib
         pwd
         echo "$(inputs.params.pull-request)"
         which oc
@@ -38,6 +37,7 @@ spec:
         npm --version
         npm install
         ls -la
+        cp OpenShiftClientX.js node_modules/@bcgov/pipeline-cli/lib
         DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
   workspaces:
     - name: source
