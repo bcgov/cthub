@@ -1,12 +1,12 @@
 import urllib.request
 import os
-
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
+from django.utils.decorators import method_decorator
+from api.decorators.whitelisted_users import check_whitelist
 from api.models.datasets import Datasets
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
@@ -49,6 +49,7 @@ class UploadViewset(GenericViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
+    @method_decorator(check_whitelist())
     def import_data(self, request):
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
@@ -98,5 +99,4 @@ class UploadViewset(GenericViewSet):
             print('!!!!! error !!!!!!')
             print(error)
             return Response(status=400)
-
         return Response('success!', status=status.HTTP_201_CREATED)

@@ -55,9 +55,9 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(
                 'Invalid Token'
             )
+        return user_info.get('preferred_username'), None
 
         # user = None
-
     #     if 'user_id' not in user_info:
     #         # try email
     #         if 'email' in user_info:
