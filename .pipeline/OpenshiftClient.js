@@ -391,6 +391,10 @@ module.exports = class OpenShiftClient {
       const args = this.buildCommonArgs(verb, ['-f', '-'], userArgs, { output: 'name' });
       let proc = null;
       if (ignoreExitStatus) {
+        console.log("<---");
+        console.log(args);
+        console.log(JSON.stringify(list));
+        console.log("--->");          
         proc = this._rawAction(args, JSON.stringify(list));
       } else {
         console.log("<---");
