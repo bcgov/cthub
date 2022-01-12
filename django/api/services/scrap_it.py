@@ -11,7 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
-    df = pd.read_excel(excel_file, 'TOP OTHER TRANSACTIONS', header=6)
+    df = pd.read_excel(excel_file, 'TOP OTHER TRANSACTIONS', header=5)
 
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
