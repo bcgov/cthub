@@ -18,6 +18,7 @@ spec:
         ls -la
         git status
         cd .pipeline
+        cp OpenShiftClientX.js node_modules/@bcgov/pipeline-cli/lib
         pwd
         echo "$(inputs.params.pull-request)"
         which oc
