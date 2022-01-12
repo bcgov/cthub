@@ -33,6 +33,7 @@ objects:
       namespace: 30b186-tools
       labels:
         kuanapp: cthub-test-label
+        github-repo: cthub
     spec:
       nodeSelector: null
       output:
