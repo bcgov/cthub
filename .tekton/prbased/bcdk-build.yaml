@@ -17,6 +17,7 @@ spec:
         cd /source
         ls -la
         git status
+        git log > gitlog.txt
         cd .pipeline
         pwd
         echo "$(inputs.params.pull-request)"
