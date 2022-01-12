@@ -13,7 +13,7 @@ class ARCProjectTracking(Auditable):
 
     proponent = models.CharField(
         blank=True,
-        null=False,
+        null=True,
         max_length=500,
         unique=False
     )
