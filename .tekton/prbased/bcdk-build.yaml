@@ -18,8 +18,10 @@ spec:
         ls -la
         git status
         git log > gitlog.txt
+        head gitlog.txt
         cd .pipeline
         pwd
+        cat ./lib/build.js
         echo "$(inputs.params.pull-request)"
         which oc
         oc version
@@ -32,8 +34,14 @@ spec:
         node --version
         which npm
         npm --version
+        npm install -g npm
+        hash -r
+        which npm
+        npm --version
+        rm package-lock.json
         npm install
         ls -la
+        cp ./OpenshiftClient.js node_modules/@bcgov/pipeline-cli/lib
         # DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
         DEBUG=* npm run build -- --pr=80
   workspaces:
