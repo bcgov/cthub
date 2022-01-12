@@ -116,7 +116,7 @@ class OpenShiftClientX extends OpenShiftClient {
     const envLabels = {
       'env-name': envName,
       'env-id': envId,
-      'github-repo': 'cthub',
+      'github-repo': this.git.repository.substr(this.git.repository.lastIndexOf("/")+1),
       'github-owner': this.git.owner,
     };
     const allLabels = {
