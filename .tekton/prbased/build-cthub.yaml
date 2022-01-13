@@ -20,12 +20,6 @@ spec:
     - description: revision
       name: revision
       type: string
-    - description: where the frontend image push to
-      name: frontend-image
-      type: string
-    - description: where the backend image push to
-      name: backend-image
-      type: string
   tasks:
     - name: verify-push-on-release-branch
       params:

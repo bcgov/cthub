@@ -14,31 +14,13 @@ spec:
       resources: {}
       script: |
         #!/usr/bin/env bash
-        cd /source
-        ls -la
-        git status
-        cd .pipeline
-        pwd
-        echo "$(inputs.params.pull-request)"
-        which oc
-        oc version
-        oc project
+        cd /source/.pipeline
         oc project 30b186-tools
-        oc project
-        which git
-        git version
-        which node
-        node --version
-        which npm
-        npm --version
         npm install -g npm
         hash -r
-        which npm
-        npm --version
         npm install
-        ls -la
         cp OpenShiftClientX.js node_modules/@bcgov/pipeline-cli/lib
-        DEBUG=* npm run build -- --pr=$(inputs.params.pull-request)
+        npm run build -- --pr=$(inputs.params.pull-request)
   workspaces:
     - name: source
       description: the folder where the project was checked out

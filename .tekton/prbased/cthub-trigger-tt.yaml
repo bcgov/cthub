@@ -32,12 +32,6 @@ spec:
             value: $(tt.params.ref)
           - name: revision
             value: $(tt.params.revision)
-          - name: frontend-image
-            value: >-
-              image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-frontend:$(tt.params.release-branch)
-          - name: backend-image
-            value: >-
-              image-registry.openshift-image-registry.svc:5000/30b186-tools/cthub-backend:$(tt.params.release-branch)
         pipelineRef:
           name: build-cthub
         serviceAccountName: pipeline
