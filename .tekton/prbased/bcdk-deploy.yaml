@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: bcdk-deploy
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the pull-request number
+      name: pull-request
+      type: string
+  steps:
+    - image: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/nodejs-oc:latest'
+      name: deploy-pull-request-dev
+      resources: {}
+      script: |
+        #!/usr/bin/env bash
+        cd /source/.pipeline
+        oc project 30b186-tools
+        npm run deploy -- --pr=$(inputs.params.pull-request) --env=dev
+  workspaces:
+    - name: source
+      description: the folder where the project was checked out
+      mountPath: /source
+      readOnly: false

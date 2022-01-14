@@ -15,6 +15,8 @@ spec:
       name: ref
     - description: revision from trigger binding
       name: revision
+    - description: the pull request number to build
+      name: pull-request
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -32,6 +34,8 @@ spec:
             value: $(tt.params.ref)
           - name: revision
             value: $(tt.params.revision)
+          - name: pull-request
+            value: $(tt.params.pull-request)
         pipelineRef:
           name: build-cthub
         serviceAccountName: pipeline
