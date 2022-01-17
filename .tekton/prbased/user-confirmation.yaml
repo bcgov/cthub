@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: user-confirmation
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the Event name send fom GutHub webhook
+      name: question
+      type: string
+  results:
+    - description: The user input value yes or no
+      name: useranswer
+  steps:
+    - image: 'bash:latest'
+      name: userconfirmation
+      resources: {}
+      script: |
+        #!/usr/bin/env bash
+        while true; do
+            read -p "$(inputs.params.question)" yn
+            case $yn in
+                yes) break;;
+                no) break;;
+            esac
+        done
+        echo -n $yn | tee $(results.useranswer.path)

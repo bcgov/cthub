@@ -66,10 +66,12 @@ spec:
       workspaces:
         - name: source
           workspace: shared-data    
-    - name: bcdk-deploy
+    - name: bcdk-deploy-dev
       params:
         - name: pull-request
           value: $(params.pull-request)
+        - name: env-name
+          value: dev
       runAfter:
         - bcdk-build
       taskRef:
@@ -77,7 +79,27 @@ spec:
         name: bcdk-deploy       
       workspaces:
         - name: source
-          workspace: shared-data                 
+          workspace: shared-data
+    - name: bcdk-deploy-test-confirmation
+      params:
+        - name: question
+          value: "Do you want to deploy on Test environment? please answer yes or no: "
+      runAfter:
+        - bcdk-deploy-dev
+      taskRef:
+        kind: Task
+        name: user-confirmation
+    - name: ready-deploy-test
+      runAfter:
+        - bcdk-deploy-test-confirmation
+      taskRef:
+        kind: Task
+        name: echo-reached-here     
+      when:
+        - input: $(tasks.bcdk-deploy-test-confirmation.useranswer)
+          operator: in
+          values:
+            - 'yes'
     # - name: oc-deploy-dev
     #   params:
     #     - name: SCRIPT

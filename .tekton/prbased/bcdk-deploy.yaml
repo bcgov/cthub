@@ -8,15 +8,18 @@ spec:
     - description: the pull-request number
       name: pull-request
       type: string
+    - description: the environment name, dev, test or prod
+      name: env-name
+      type: string
   steps:
     - image: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/nodejs-oc:latest'
-      name: deploy-pull-request-dev
+      name: deploy-pull-request
       resources: {}
       script: |
         #!/usr/bin/env bash
         cd /source/.pipeline
         oc project 30b186-tools
-        npm run deploy -- --pr=$(inputs.params.pull-request) --env=dev
+        npm run deploy -- --pr=$(inputs.params.pull-request) --env=$(inputs.params.env-name)
   workspaces:
     - name: source
       description: the folder where the project was checked out
