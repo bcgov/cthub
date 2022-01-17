@@ -14,7 +14,7 @@ django/.coverage
 django/staticfiles/
 django/venv/
 node_modules/
-package-lock.json
+react/package-lock.json
 public/static/
 react/node_modules/
 TEST-*xml

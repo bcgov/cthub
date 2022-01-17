@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: bcdk-build
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the pull-request number
+      name: pull-request
+      type: string
+  steps:
+    - image: 'image-registry.openshift-image-registry.svc:5000/30b186-tools/nodejs-oc:latest'
+      name: build-pull-request
+      resources: {}
+      script: |
+        #!/usr/bin/env bash
+        cd /source/.pipeline
+        oc project 30b186-tools
+        npm install -g npm
+        hash -r
+        npm install
+        cp OpenShiftClientX.js node_modules/@bcgov/pipeline-cli/lib
+        npm run build -- --pr=$(inputs.params.pull-request)
+  workspaces:
+    - name: source
+      description: the folder where the project was checked out
+      mountPath: /source
+      readOnly: false

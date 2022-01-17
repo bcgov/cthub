@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: verify-push-on-release-branch
+  namespace: 30b186-tools
+spec:
+  params:
+    - description: the Event name send fom GutHub webhook
+      name: git-event
+      type: string
+    - description: the relase branch name is supposed to be build
+      name: release-branch
+      type: string
+    - description: the value of the ref in the payload body
+      name: ref
+      type: string
+  results:
+    - description: The product of the two provided integers
+      name: isreleasebranch
+  steps:
+    - image: 'bash:latest'
+      name: isreleasebranch
+      resources: {}
+      script: |
+        #!/usr/bin/env bash
+        gitEvent="$(inputs.params.git-event)"
+        releaseBranch="$(inputs.params.release-branch)"
+        ref="$(inputs.params.ref)"
+        echo "gitEvent=${gitEvent}"
+        echo "releaseBranch=${releaseBranch}"
+        echo "ref=${ref}"
+        isPushOnReleaseBranch=no
+        if [ "${gitEvent}" = "push" ]; then
+          echo "Received a push event"
+          echo "The pushed branch is on ${ref}"
+          if [[ "${ref}" == *"${releaseBranch}" ]]; then
+            echo "Return yes to continue the pipeline run"
+            isPushOnReleaseBranch=yes
+          fi
+        fi
+        echo -n $isPushOnReleaseBranch | tee $(results.isreleasebranch.path)

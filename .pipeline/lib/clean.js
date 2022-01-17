@@ -32,6 +32,9 @@ module.exports = settings => {
   const options = settings.options;
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
   const target_phases = getTargetPhases(options.env, phases);
+  const github_repo = oc.git.repository.substr(oc.git.repository.lastIndexOf("/")+1);
+  
+  console.log("github_repo=${github_repo}");
 
   target_phases.forEach(k => {
 
@@ -42,7 +45,7 @@ module.exports = settings => {
       oc.namespace(phase.namespace);
 
       let deploymentConfigs = oc.get("dc", {
-        selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+        selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${github_repo},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
       });
       deploymentConfigs.forEach(dc => {
@@ -68,7 +71,7 @@ module.exports = settings => {
         "delete",
         ["Secret,configmap,endpoints,RoleBinding,role,ServiceAccount,Endpoints,service,route"],
         {
-          selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+          selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${github_repo},github-owner=${oc.git.owner}`,
           wait: "true",
           namespace: phase.namespace,
         }
@@ -76,7 +79,7 @@ module.exports = settings => {
 
       //get all statefulsets before they are deleted
       const statefulsets = oc.get("statefulset", {
-        selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+        selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${github_repo},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
       });   
       //remove all the PVCs associated with each statefulset, after they get deleted by above delete all operation
@@ -116,7 +119,7 @@ module.exports = settings => {
 
       //remove all PR's network policies
       const knps = oc.get("networkpolicies", {
-        selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+        selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${github_repo},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
       });   
       knps.forEach(knp => {
