@@ -19,5 +19,6 @@ objects:
       backup.conf: |
         postgres=patroni-master-${ENV_NAME}:5432/cthub
         postgres=patroni-master-${ENV_NAME}-metabase:5432/metabase
+        postgres=patroni-master-${ENV_NAME}-superset:5432/superset
         0 19 * * * default ./backup.sh -s
         0 22 * * * default ./backup.sh -s -v all

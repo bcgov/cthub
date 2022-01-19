@@ -1,17 +1,16 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 import UploadContainer from './UploadContainer';
 
-const Router = () => (
-  <Switch>
-    <Route
-      exact
-      path="/upload"
-    >
-      <UploadContainer />
-    </Route>
-  </Switch>
-);
+const Router = () => ([
+  <Route
+    exact
+    key="route-upload"
+    path="/upload"
+  >
+    <UploadContainer />
+  </Route>,
+]);
 
 export default Router;

@@ -6,7 +6,6 @@ import DashboardContainer from './DashboardContainer';
 const Router = () => (
   <>
     <Route
-      exact
       path="/"
       component={DashboardContainer}
     />

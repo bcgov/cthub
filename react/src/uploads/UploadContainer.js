@@ -1,6 +1,7 @@
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import React, { useState, useEffect } from 'react';
 import ROUTES_UPLOAD from './routes';
 import UploadPage from './components/UploadPage';
@@ -12,6 +13,9 @@ const UploadContainer = () => {
   const [loading, setLoading] = useState(false);
   const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
   const [replaceData, setReplaceData] = useState('false'); // if true, we will replace all
+  const [alertContent, setAlertContent] = useState();
+  const [alert, setAlert] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState('');
   // existing data with what is being uploaded
   const [open, setOpen] = useState(false);
   const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
@@ -33,6 +37,13 @@ const UploadContainer = () => {
     });
   };
 
+  const showError = (error) => {
+    const { response: errorResponse } = error;
+    setAlertContent(errorResponse.data.detail);
+    setAlertSeverity('error');
+    setAlert(true);
+  };
+
   const doUpload = () => uploadFiles.forEach((file) => {
     axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
       const { url: uploadUrl, minio_object_name: filename } = response.data;
@@ -49,16 +60,19 @@ const UploadContainer = () => {
           filename,
           datasetSelected,
           replace,
+        }).then(() => {
+          setAlertContent('Data has been successfully uploaded.');
+          setAlertSeverity('success');
+          setAlert(true);
+        }).catch((error) => {
+          showError(error);
         });
-      }).catch((error) => {
-        console.error(error);
-        const { response: errorResponse } = error;
-        console.log(errorResponse.data);
       }).finally(() => {
         setUploadFiles([]);
       });
     }).catch((error) => {
-      console.error(error);
+      const { response: errorResponse } = error;
+      showError(error);
     });
   });
 
@@ -77,6 +91,8 @@ const UploadContainer = () => {
   return (
     <div className="row">
       <div className="col-12 mr-2">
+        {alert && alertContent && alertSeverity
+        && <Alert severity={alertSeverity}>{alertContent}</Alert>}
         {open && (
         <AlertDialog
           open={open}
