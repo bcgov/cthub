@@ -28,7 +28,13 @@ objects:
         name: metabase:v0.44.0
         namespace: 30b186-tools
     postCommit: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: '2'
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 200Mi
     runPolicy: Serial
     source:
       contextDir: openshift/templates/metabase-postgresql
