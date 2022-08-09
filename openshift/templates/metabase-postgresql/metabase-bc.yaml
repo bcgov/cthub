@@ -31,7 +31,7 @@ objects:
     resources: {}
     runPolicy: Serial
     source:
-      contextDir: openshift/templates/metabase
+      contextDir: openshift/templates/metabase-postgresql
       git:
         ref: rebuid-metabase-on-prod-0.2.0
         uri: https://github.com/bcgov/cthub.git
