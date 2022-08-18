@@ -4,12 +4,6 @@ metadata:
   creationTimestamp: null
   name: metabase-dc
 parameters:
-  - name: ENV_NAME
-    value: 
-    required: true
-  - name: SUFFIX
-    displayName: null
-    description: sample is -dev-97    
   - name: CPU_REQUEST
     value: 130m
     displayName: Requested CPU
@@ -31,81 +25,10 @@ parameters:
     description: Memory upper limit
     required: true
   - name: REPLICAS
-    description: |
-      The number of replicas to use.
+    description: The number of replicas to use
     displayName: REPLICAS
     value: "1"    
 objects:
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: metabase
-    labels:
-      app: metabase
-      service: metabase
-- apiVersion: v1
-  kind: Service
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: null
-    labels:
-      app: metabase
-    name: metabase
-  spec:
-    ports:
-    - name: metabase-web
-      port: 3000
-      protocol: TCP
-      targetPort: 3000
-    selector:
-      deploymentconfig: metabase
-    sessionAffinity: None
-    type: ClusterIP
-  status:
-    loadBalancer: {}
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    annotations:
-      openshift.io/host.generated: "true"
-    creationTimestamp: null
-    labels:
-      app: metabase
-    name: metabase
-  spec:
-    host: metabase-${ENV_NAME}.apps.silver.devops.gov.bc.ca
-    path: /
-    port:
-      targetPort: metabase-web
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: edge
-    to:
-      kind: Service
-      name: metabase
-      weight: 100
-    wildcardPolicy: None
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      cluster-name: patroni${SUFFIX}
-    name: patroni-master${SUFFIX}-metabase
-  spec:
-    ports:
-      - port: 5432
-        protocol: TCP
-        targetPort: 5432
-    selector:
-      cluster-name: patroni${SUFFIX}
-      role: master
-      app.kubernetes.io/name: patroni
-    sessionAffinity: None
-    type: ClusterIP
-  status:
-    loadBalancer: {}    
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -146,21 +69,21 @@ objects:
               valueFrom:
                 secretKeyRef:
                   key: metabase-db-name
-                  name: patroni-creds-${ENV_NAME}
+                  name: patroni-creds-prod
             - name: MB_DB_PORT
               value: '5432'
             - name: MB_DB_USER
               valueFrom:
                 secretKeyRef:
                   key: metabase-db-username
-                  name: patroni-creds-${ENV_NAME}
+                  name: patroni-creds-prod
             - name: MB_DB_PASS
               valueFrom:
                 secretKeyRef:
                   key: metabase-db-password
-                  name: patroni-creds-${ENV_NAME}
+                  name: patroni-creds-prod
             - name: MB_DB_HOST
-              value: patroni-master${SUFFIX}-metabase
+              value: patroni-master-prod-metabase
           resources:
             limits:
               cpu: ${CPU_LIMIT}
