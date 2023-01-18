@@ -1,7 +1,7 @@
 ---
 name: Spike
 about: Research options prior to development work
-title: SPIKE
+title: Spike
 labels: ''
 assignees: ''
 

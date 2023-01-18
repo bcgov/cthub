@@ -1,7 +1,7 @@
 ---
 name: Bug
 about: An undesirable behaviour that needs correction
-title: BUG
+title: Bug
 labels: ''
 assignees: ''
 

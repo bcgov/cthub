@@ -1,7 +1,7 @@
 ---
 name: Task
 about: Any work that does not directly impact the user
-title: TASK
+title: Task
 labels: ''
 assignees: ''
 
