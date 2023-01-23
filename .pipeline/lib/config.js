@@ -27,6 +27,7 @@ Set the limit as two times of request
 
 */
 options.git.owner='bcgov'
+options.git.repository='cthub'
 
 const phases = {
 
