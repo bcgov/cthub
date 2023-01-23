@@ -132,16 +132,6 @@ objects:
                       fieldPath: metadata.namespace
                 - name: PATRONI_KUBERNETES_LABELS
                   value: '{"cluster-name": "${NAME}${SUFFIX}", "app.kubernetes.io/name": "patroni"}'
-                - name: PATRONI_SUPERUSER_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      key: superuser-username
-                      name: ${NAME}-creds${SUFFIX}
-                - name: PATRONI_SUPERUSER_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: superuser-password
-                      name: ${NAME}-creds${SUFFIX}
                 - name: PATRONI_REPLICATION_USERNAME
                   valueFrom:
                     secretKeyRef:

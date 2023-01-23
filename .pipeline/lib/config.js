@@ -1,7 +1,7 @@
 'use strict';
 const options= require('@bcgov/pipeline-cli').Util.parseArguments()
 const changeId = options.pr //aka pull-request
-const version = '1.0.0'
+const version = '0.2.0'
 const name = 'cthub'
 const ocpName = 'apps.silver.devops'
 
@@ -35,9 +35,9 @@ const phases = {
           version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`, ocpName: `${ocpName}`},
 
   dev: {namespace:'30b186-dev', transient:true, name: `${name}`, ssoSuffix:'-dev', 
-        ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
-        instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
-        host: `cthub-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest7.gov.bc.ca',
+        ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: '-dev', 
+        instance: `${name}-dev`  , version:`${version}`, tag:`dev-${version}`, 
+        host: `cthub-dev.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest7.gov.bc.ca',
         metabaseCpuRequest: '200m', metabaseCpuLimit: '300m', metabaseMemoryRequest: '500Mi', metabaseMemoryLimit: '2Gi', metabaseReplicas: 1,
         frontendCpuRequest: '400m', frontendCpuLimit: '800m', frontendMemoryRequest: '600Mi', frontendMemoryLimit: '1200Mi', frontendReplicas: 1,
         backendCpuRequest: '50m', backendCpuLimit: '100m', backendMemoryRequest: '520Mi', backendMemoryLimit: '1Gi', backendHealthCheckDelay: 30, backendHost: `cthub-backend-dev-${changeId}.${ocpName}.gov.bc.ca`, backendReplicas: 1,
