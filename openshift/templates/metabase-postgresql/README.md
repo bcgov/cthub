@@ -23,3 +23,7 @@ When create database connection in Metabase console, use the patroni master serv
 ```
 curl [patroni master service name].e52f12-[env].svc.cluster.local:5432
 ```
+
+## Notes
+* Use metabase-dc-spilo.yaml to deploy metabase with spilo
+* Use metabase-dc.yaml to deploy metabase with patroni v12
