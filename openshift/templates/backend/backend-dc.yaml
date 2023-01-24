@@ -49,6 +49,10 @@ parameters:
   - name: REPLICAS
     value: '1'
     required: true
+  - name: DB_HOST
+    displayName: database host 
+    description: database host 
+    required: true       
 objects:
   - apiVersion: v1
     kind: Secret
@@ -191,7 +195,8 @@ objects:
                 - name: DB_ENGINE
                   value: django.db.backends.postgresql
                 - name: DB_HOST
-                  value: patroni-master${SUFFIX}
+                  value: ${DB_HOST}
+                  #value: patroni-master${SUFFIX}
                 - name: DB_NAME
                   value: cthub
                 - name: DB_PASSWORD

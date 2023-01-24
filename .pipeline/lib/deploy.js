@@ -50,7 +50,8 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
       'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
       'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
-      'REPLICAS':  phases[phase].backendReplicas
+      'REPLICAS':  phases[phase].backendReplicas,
+      'DB_HOST': phases[phase].dbHost
     }
   })) 
 
