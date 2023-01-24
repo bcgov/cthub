@@ -197,14 +197,16 @@ objects:
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: patroni-creds${SUFFIX}
+                      #name: patroni-creds${SUFFIX}
+                      name: cthub-patroni-app
                       key: app-db-password
                 - name: DB_PORT
                   value: "5432"
                 - name: DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: patroni-creds${SUFFIX}
+                      name: cthub-patroni-app
+                      #name: patroni-creds${SUFFIX}
                       key: app-db-username
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg.py
