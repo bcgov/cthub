@@ -51,3 +51,26 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
 
 # License
 The code is a fork from Richard's personal project. Please do not clone, copy or replicate this project unless you're authorized to do so.
+
+
+# List of Dev Work | What to do before bringing in a new ticket into a Sprint
+
+This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.  
+
+**Team Rule* Do not bring in ticket After Friday 
+
+1. Help another Dev - see if other Devs need help to finish their ticket 
+
+2. PR Reviews – linked to the task above 
+
+3. Writing additional tests – for both tront and back end 
+
+4. Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first 
+
+5. Learning time: 
+
+- Take the opportunity to familiarize yourself with business logic, tech (anything around work we do) 
+
+- New learning and applying it to our work 
+
+- Innovation work 
