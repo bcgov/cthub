@@ -50,6 +50,19 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
         )
 
         # Get the user from the keycloak server based on the token
+        print(
+            "identity_provider: {identity_provider}, idir_username: {idir_username}, email: {email}, preferred_username: {preferred_username}".format(
+                identity_provider=token_info.get(
+                    "identity_provider", "no identity_provider"
+                ),
+                idir_username=token_info.get("idir_username", "no idir_username"),
+                email=token_info.get("email", "no email"),
+                preferred_username=token_info.get(
+                    "preferred_username", "no preferred_username"
+                ),
+            )
+        )
+
         user_info = keycloak_openid.userinfo(token)
         if user_info.get('user_id') != token_info.get('user_id'):
             raise exceptions.AuthenticationFailed(
