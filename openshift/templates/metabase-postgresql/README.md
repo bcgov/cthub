@@ -27,3 +27,4 @@ curl [patroni master service name].e52f12-[env].svc.cluster.local:5432
 ## Notes
 * Use metabase-dc-spilo.yaml to deploy metabase with spilo
 * Use metabase-dc.yaml to deploy metabase with patroni v12
+* Grant permission to metabaseuser after Postgresql 15, GRANT ALL ON SCHEMA public TO metabaseuser, otherwise metabase will fail from v0.45.0 as it needs to create a new table
