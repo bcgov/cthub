@@ -25,7 +25,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: metabase:v0.44.0
+        name: metabase:v0.47.7
         namespace: 30b186-tools
     postCommit: {}
     resources:
@@ -39,7 +39,7 @@ objects:
     source:
       contextDir: openshift/templates/metabase-postgresql
       git:
-        ref: rebuid-metabase-on-prod-0.2.0
+        ref: metabase-upgrade-0.2.0
         uri: https://github.com/bcgov/cthub.git
       type: Git
     strategy:
