@@ -1,2 +1,2 @@
-FROM metabase/metabase:v0.44.7.3
+FROM metabase/metabase:v0.45.0
 EXPOSE 3000
