@@ -44,7 +44,7 @@ serviceAccount:
 # if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > /tmp/bootstrap; fi
 bootstrapScript: |
   #!/bin/bash
-
+  if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > /tmp/bootstrap; fi
   
 # -- The name of the secret which we will use to generate a superset_config.py file
 # Note: this secret must have the key superset_config.py in it and can include other files as well
@@ -96,7 +96,6 @@ extraSecretEnv: {}
   # GOOGLE_SECRET: ...
 
 # -- Extra files to mount on `/app/pythonpath`
-extraConfigs: {}
   # import_datasources.yaml: |
   #     databases:
   #     - allow_file_upload: true
@@ -108,9 +107,25 @@ extraConfigs: {}
   #         }"
   #       sqlalchemy_uri: example://example-db.local
   #       tables: []
+extraConfigs: {}
 
 # -- Extra files to mount on `/app/pythonpath` as secrets
-extraSecrets: {}
+extraSecrets: 
+  custom_sso_security_manager.py: |
+    import logging
+    from superset.security import SupersetSecurityManager
+
+    class CustomSsoSecurityManager(SupersetSecurityManager):
+
+        def oauth_user_info(self, provider, response=None):
+            logging.info("Oauth2 provider: {0}.".format(provider))
+            if provider == 'egaSSO':
+                # As example, this line request a GET to base_url + '/' + userDetails with Bearer  Authentication,
+                # and expects that authorization server checks the token, and response with user details
+                me = self.appbuilder.sm.oauth_remotes[provider].get('userDetails').data
+                logging.info("user_data: {0}".format(me))
+                return { 'name' : me['name'], 'email' : me['email'], 'id' : me['user_name'], 'username' : me['user_name'], 'first_name':'', 'last_name':''}
+  
 
 extraVolumes: []
   # - name: customConfig
@@ -131,25 +146,47 @@ extraVolumeMounts: []
 # -- A dictionary of overrides to append at the end of superset_config.py - the name does not matter
 # WARNING: the order is not guaranteed
 # Files can be passed as helm --set-file configOverrides.my-override=my-file.py
-configOverrides: {}
-  # enable_oauth: |
-  #   from flask_appbuilder.security.manager import (AUTH_DB, AUTH_OAUTH)
-  #   AUTH_TYPE = AUTH_OAUTH
-  #   OAUTH_PROVIDERS = [
-  #       {
-  #           "name": "keycloak",
-  #           "icon": "fa-key",
-  #           "token_key": "access_token",
-  #           "remote_app": {
-  #               "client_id": "cthub-on-gold-cluster-3974",
-  #               "client_secret": None,
-  #               "api_base_url": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect",
-  #               "access_token_url": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
-  #               "authorize_url": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth",
-  #               "request_token_url": None,
-  #           }
-  #       }
-  #   ]
+configOverrides: 
+  enable_oauth: |
+
+    from flask_appbuilder.security.manager import AUTH_OAUTH
+
+    # Set the authentication type to OAuth
+    AUTH_TYPE = AUTH_OAUTH
+
+    OAUTH_PROVIDERS = [
+        {   'name':'egaSSO',
+            'token_key':'access_token', # Name of the token in the response of access_token_url
+            'icon':'fa-address-card',   # Icon for the provider
+            'remote_app': {
+                'client_id':'cthub-on-gold-cluster-3974',  # Client Id (Identify Superset application)
+                'client_secret': None, # Secret for this Client Id (Identify Superset application)
+                'client_kwargs':{
+                    'scope': 'read'               # Scope for the Authorization
+                },
+                'access_token_method':'POST',    # HTTP Method to call access_token_url
+                'access_token_params':{        # Additional parameters for calls to access_token_url
+                    'client_id':'cthub-on-gold-cluster-3974'
+                },
+                'jwks_uri': None, # may be required to generate token
+                'access_token_headers':{    # Additional headers for calls to access_token_url
+                    'Authorization': 'Basic Base64EncodedClientIdAndSecret'
+                },
+                'api_base_url':'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect',
+                'access_token_url':'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token',
+                'authorize_url':'hhttps://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/auth'
+            }
+        }
+      ]
+    
+    # Will allow user self registration, allowing to create Flask users from Authorized User
+    AUTH_USER_REGISTRATION = True
+
+    # The default user self registration role
+    AUTH_USER_REGISTRATION_ROLE = "Public"
+
+    from custom_sso_security_manager import CustomSsoSecurityManager
+    CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
 
   # extend_timeout: |
   #    # Extend timeout to allow long running queries.
@@ -196,16 +233,20 @@ configMountPath: "/app/pythonpath"
 extraConfigMountPath: "/app/configs"
 
 image:
-  repository: apachesuperset.docker.scarf.sh/apache/superset
-  tag: ""
-  pullPolicy: IfNotPresent
+  #repository: apachesuperset.docker.scarf.sh/apache/superset
+  repository: image-registry.openshift-image-registry.svc:5000/30b186-dev/superset
+  #tag: ""
+  tag: 3.0.1-authlib
+  # pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 
 initImage:
   repository: apache/superset
   tag: dockerize
-  pullPolicy: IfNotPresent
+  # pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 service:
   type: ClusterIP
@@ -353,17 +394,7 @@ supersetNode:
      cpu: 100m
      memory: 250Mi
   podSecurityContext: {}
-    # fsGroup: 1010180000
   containerSecurityContext: {}
-    # runAsUser: 1010180000
-    # runAsGroup: 1010180000
-    # runAsNonRoot: true
-    # allowPrivilegeEscalation: false
-    # seccompProfile:
-    #   type: RuntimeDefault
-    # capabilities:
-    #   drop:
-    #     - ALL
   strategy: {}
     # type: RollingUpdate
     # rollingUpdate:
@@ -385,7 +416,7 @@ supersetWorker:
   command:
     - "/bin/sh"
     - "-c"
-    - "pwd; ls -l; . {{ .Values.configMountPath }}/superset_bootstrap.sh; pip install authlib==1.2.0 -t /tmp; celery --app=superset.tasks.celery_app:app worker"
+    - ". {{ .Values.configMountPath }}/superset_bootstrap.sh; celery --app=superset.tasks.celery_app:app worker"
   # -- If true, forces deployment to reload on each upgrade
   forceReload: false
   # -- Init container
@@ -423,23 +454,8 @@ supersetWorker:
     requests:
       cpu: 200m
       memory: 2Gi
-  podSecurityContext: 
-    runAsUser: 1010180000
-    runAsGroup: 0
-    runAsNonRoot: true
-    fsGroup: 1010180000
-  containerSecurityContext:
-    runAsUser: 1010180000
-    runAsGroup: 0
-    runAsNonRoot: true
-    allowPrivilegeEscalation: true
-    # seccompProfile:
-    #   type: RuntimeDefault
-    # capabilities:
-    #   add:
-    #     - SETGID
-    #     - SETUID
-
+  podSecurityContext: {}
+  containerSecurityContext: {}
   strategy: {}
     # type: RollingUpdate
     # rollingUpdate:
@@ -506,16 +522,8 @@ supersetCeleryBeat:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
-  podSecurityContext:
-    fsGroup: 1010180000
-  containerSecurityContext:
-    runAsUser: 1010180000
-    runAsGroup: 1010180000
-    runAsNonRoot: true
-    allowPrivilegeEscalation: false
-    seccompProfile:
-      type: RuntimeDefault
-
+  podSecurityContext: {}
+  containerSecurityContext: {}
 
 supersetCeleryFlower:
   # -- Enables a Celery flower deployment (management UI to monitor celery jobs)
@@ -596,17 +604,7 @@ supersetCeleryFlower:
     #  cpu: 100m
     #  memory: 128Mi
   podSecurityContext: {}
-    # fsGroup: 1010180000
   containerSecurityContext: {}
-    # runAsUser: 1010180000
-    # runAsGroup: 1010180000
-    # runAsNonRoot: true
-    # allowPrivilegeEscalation: false
-    # seccompProfile:
-    #   type: RuntimeDefault
-    # capabilities:
-    #   drop:
-    #     - ALL
 
 supersetWebsockets:
   # -- This is only required if you intend to use `GLOBAL_ASYNC_QUERIES` in `ws` mode
@@ -662,17 +660,7 @@ supersetWebsockets:
   podLabels: {}
   strategy: {}
   podSecurityContext: {}
-    # fsGroup: 1010180000
   containerSecurityContext: {}
-    # runAsUser: 1010180000
-    # runAsGroup: 1010180000
-    # runAsNonRoot: true
-    # allowPrivilegeEscalation: false
-    # seccompProfile:
-    #   type: RuntimeDefault
-    # capabilities:
-    #   drop:
-    #     - ALL
   startupProbe:
     httpGet:
       path: /health
