@@ -195,7 +195,7 @@ objects:
         - metabase
         from:
           kind: ImageStreamTag
-          name: metabase:v0.44.0
+          name: metabase:v0.47.7
           namespace: 30b186-tools
         lastTriggeredImage: 
       type: ImageChange
