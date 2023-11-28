@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from api.models.speciality_use_vehicle_incentives import \
     SpecialityUseVehicleIncentives
 
@@ -36,9 +37,14 @@ def import_from_xls(excel_file):
         "Model",
     ]), 1, inplace=True)
     df = trim_all_columns(df)
+    ## find the columns that contain numbers and replace blank balues with 0
+    num_columns = df.select_dtypes(include=np.number).columns.tolist()
+    num_columns.remove('Applicant Name')
+    df[num_columns] = df[num_columns].fillna(0)
+    ## all other columns get a null value
+    df = df.fillna('')
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df['Applicant Type'] = df.apply(lambda row: applicant_type(row), axis=1)
-    df.fillna('')
 
     for _, row in df.iterrows():
         try:
