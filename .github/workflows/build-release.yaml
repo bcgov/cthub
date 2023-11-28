@@ -70,7 +70,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev    
 
       - name: Run BCDK deployment on CTHUB Dev environment
         run: |
@@ -97,7 +97,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
 
       - name: Ask for approval for CTHUB Test deployment
         uses: trstringer/manual-approval@v1.6.0
@@ -132,7 +132,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-prod
 
       - name: Ask for approval for CTHUB Prod deployment
         uses: trstringer/manual-approval@v1.6.0
