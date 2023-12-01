@@ -35,7 +35,7 @@ class HydrogenFleets(Auditable):
         unique=False
     )
 
-    steet_address = models.CharField(
+    street_address = models.CharField(
         blank=True,
         null=True,
         max_length=250,

@@ -1,5 +1,5 @@
 import pandas as pd
-from api.models.charger_rebates import ChargerRebates
+from api.models.hydrogen_fleets import HydrogenFleets
 
 
 def trim_all_columns(df):
@@ -16,7 +16,7 @@ def import_from_xls(excel_file):
         "Application #",
         "Fleet #",
         "Application Date",
-        "Organization Name"
+        "Organization Name",
         "Fleet Name",
         "Street Address",
         "City",
@@ -28,16 +28,13 @@ def import_from_xls(excel_file):
         "Purchase Date",
         "Dealer Name",
         "Rebate Amount"
-    ]), 1, inplace=True)
+    ]), axis=1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
-
-    # df.fillna('')
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
-
     for _, row in df.iterrows():
         try:
-            ChargerRebates.objects.create(
+            HydrogenFleets.objects.create(
                 application_number=row["Application #"],
                 fleet_number=row["Fleet #"],
                 application_date=row["Application Date"],
@@ -55,6 +52,6 @@ def import_from_xls(excel_file):
                 rebate_amount=row["Rebate Amount"]
             )
         except Exception as error:
-            print(error)
+            print("error: ", error)
             print(row)
     return True
