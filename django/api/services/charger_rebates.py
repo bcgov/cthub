@@ -24,7 +24,7 @@ def import_from_xls(excel_file):
         "Announced?",
         "B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)",
         "Notes",
-    ]), 1, inplace=True)
+    ]), axis=1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
 

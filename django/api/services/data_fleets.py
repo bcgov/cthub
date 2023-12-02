@@ -39,7 +39,7 @@ def import_from_xls(excel_file):
         "Deadline",
         "Application Number",
         "Potential Rebate"
-    ]), 1, inplace=True)
+    ]), axis=1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
 

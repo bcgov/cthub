@@ -35,7 +35,7 @@ def import_from_xls(excel_file):
         "Total Purchase Price (pre-tax)",
         "Manufacturer",
         "Model",
-    ]), 1, inplace=True)
+    ]), axis=1, inplace=True)
     df = trim_all_columns(df)
     ## find the columns that contain numbers and replace blank balues with 0
     num_columns = df.select_dtypes(include=np.number).columns.tolist()
