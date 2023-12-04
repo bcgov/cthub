@@ -29,7 +29,7 @@ def import_from_xls(excel_file):
         "On-Road/Off-Road",
         "Fuel Type",
         "Publicly Announced"
-    ]), 1, inplace=True)
+    ]), axis=1, inplace=True)
 
     df['Publicly Announced'].replace(
         to_replace=['No', 'N'],
