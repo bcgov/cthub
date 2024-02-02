@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 1 #starting count, ie headers
     df = pd.read_excel(excel_file, 'Project_Tracking')
 
     df.drop(df.columns.difference([
@@ -48,9 +49,10 @@ def import_from_xls(excel_file):
 
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
 
-    for _, row in df.iterrows():
-        if row["Publicly Announced"] == '': continue # Skip rows without this field
-        try:
+    try:
+        for _, row in df.iterrows():
+            if row["Publicly Announced"] == '': continue # Skip rows without this field
+            row_count += 1
             ARCProjectTracking.objects.create(
                 funding_call=row["Funding Call"],
                 proponent=row["Proponent"],
@@ -68,7 +70,6 @@ def import_from_xls(excel_file):
                 fuel_type=row["Fuel Type"],
                 publicly_announced=row["Publicly Announced"]
             )
-        except Exception as error:
-            print(error)
-            print(row)
+    except Exception as error:
+        return (error, 'data', row_count)
     return True
