@@ -36,9 +36,9 @@ def import_from_xls(excel_file):
         value=True,
         inplace=True
     )
-    for _, row in df.iterrows():
-        row_count +=1
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count +=1
             HydrogrenFueling.objects.create(
                 station_number=row["Station Number"],
                 rfp_close_date=row["RFP Close Date"],
@@ -59,6 +59,6 @@ def import_from_xls(excel_file):
                 opening_date=row["Opening Date"],
                 total_capital_cost=row["Total Capital Cost"]  
             )
-        except Exception as error:
-            return (error,'data',row_count)  
+    except Exception as error:
+        return (error,'data',row_count)  
     return True
