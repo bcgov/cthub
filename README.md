@@ -5,25 +5,8 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
 - Make sure Docker is installed and running
 - In your terminal, go to your project folder and execute the following: 
   - ```docker-compose up```
-- You'll have to make an edit to your host file
-  - Mac Users
-    - Edit ```/private/etc/hosts```
-    - Add this line:
-      - ```127.0.0.1 keycloak```
-  - Windows Users
-    - Edit ```c:\windows\system32\drivers\etc\hosts```
-    - Add this line:
-      - ```127.0.0.1 keycloak```
-- Navigate to ```http://localhost:3000/```
-- Login with:
-  - username: ```user```
-  - password: ```1234```
 
 ## Useful Docker Commands
-- To access keycloak:
-  - Navigate to ```http://localhost:8080/```
-    - username: ```admin```
-    - password: ```admin```
 
 - To access postgres:
   - Go to your project folder in your terminal
