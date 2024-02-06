@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
 from api.decorators.whitelisted_users import check_whitelist
 from api.models.datasets import Datasets
@@ -54,10 +55,15 @@ class UploadViewset(GenericViewSet):
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
         replace_data = request.data.get('replace', False)
+        error = ''
+        done = ''
+        records_inserted = 0
+        starting_count = 0
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
             if dataset_selected:
+                model = ''
                 done = ''
                 import_func = ''
                 if dataset_selected == 'EV Charging Rebates':
@@ -89,14 +95,45 @@ class UploadViewset(GenericViewSet):
                     import_func = import_hydrogen_fleets
                     model = HydrogenFleets
                 if replace_data:
+                    starting_count = 0
                     model.objects.all().delete()
+                else:
+                    starting_count = model.objects.all().count()
                 done = import_func(filename)
                 if done:
                     os.remove(filename)
                     minio_remove_object(filename)
-
         except Exception as error:
-            print('!!!!! error !!!!!!')
-            print(error)
-            return Response(status=400)
-        return Response('success!', status=status.HTTP_201_CREATED)
+            done = (error, 'file')
+        final_count = model.objects.all().count()
+        records_inserted = final_count - starting_count
+        if done != True:
+            try:
+                error_location = done[1]
+                error = done[0]
+                error_row = 0
+                error_msg = "There was an error. Please check your file and ensure you have the correctly named worksheets, column names, and data types in cells and reupload. Error: {}".format(error)
+                if len(done) > 2:
+                    error_row = done[2]
+                error_type = type(error).__name__
+                field_names = [f.name for f in model._meta.fields]   
+                if error_location == 'data':
+                    if error_type in (type(LookupError), type(KeyError), 'KeyError') :
+                        error_msg = "Please make sure you've uploaded a file with the correct data including the correctly named columns. There was an error finding: {}. This dataset requires the following columns: {}".format(error, field_names)
+                    elif error_type == type(ValueError):
+                        ## note for next batch of scripts, possibly add str(type(ValueError)) 
+                        ## to this but check for impacts to other exceptions
+                        error_msg = "{} on row {}. Please make sure you've uploaded a file with the correct data.".format(error, error_row)
+                    elif isinstance(error, ValidationError):
+                        error_msg ="Issue with cell value on row {}. {}".format(error_row, str(error)[2:-2])
+                elif error_location == 'file':
+                    error_msg = "{}. Please make sure you've uploaded a file with the correct data including the correctly named worksheets.".format(error)
+                if error_msg[-1] != '.':
+                    error_msg+='.'
+                error_msg += " {} records inserted.".format(records_inserted)
+                return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as error:
+                print(error)
+                return Response('There was an issue!', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("{} records inserted.".format(records_inserted), status=status.HTTP_201_CREATED)

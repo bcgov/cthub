@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 3 ##starts at 3 because of the headers!
     df = pd.read_excel(excel_file, 'Updated', header=2)
     df.drop(df.columns.difference([
         "Organization",
@@ -30,9 +31,9 @@ def import_from_xls(excel_file):
 
     # df.fillna('')
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
-
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count += 1
             ChargerRebates.objects.create(
                 organization=row["Organization"],
                 region=row["Region"],
@@ -45,7 +46,8 @@ def import_from_xls(excel_file):
                 rebate_paid=row["B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)"],
                 notes=row["Notes"]
             )
-        except Exception as error:
-            print(error)
-            print(row)
+    except Exception as error:
+        if isinstance(error, list):
+            error = error[0]
+        return (error,'data', row_count)
     return True

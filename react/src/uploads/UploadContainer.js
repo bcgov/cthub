@@ -39,7 +39,7 @@ const UploadContainer = () => {
 
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent(errorResponse.data.detail);
+    setAlertContent(errorResponse.data);
     setAlertSeverity('error');
     setAlert(true);
   };
@@ -60,8 +60,8 @@ const UploadContainer = () => {
           filename,
           datasetSelected,
           replace,
-        }).then(() => {
-          setAlertContent('Data has been successfully uploaded.');
+        }).then((postResponse) => {
+          setAlertContent(`Data has been successfully uploaded. ${postResponse.data}`);
           setAlertSeverity('success');
           setAlert(true);
         }).catch((error) => {
