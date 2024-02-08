@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 1
     df = pd.read_excel(excel_file, 'Raw Data')
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
@@ -47,8 +48,8 @@ def import_from_xls(excel_file):
     )
     df.fillna('')
 
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
             LdvRebates.objects.create(
                 casl_consent=row["CASL Consent"],
                 date_approved=row["DATE APPROVED"],
@@ -78,7 +79,6 @@ def import_from_xls(excel_file):
                 delivered=row["Delivered"],
                 consent_to_contact=row["Consent to Contact"]
             )
-        except Exception as error:
-            print(error)
-            print(row)
+    except Exception as error:
+        return (error,'data',row_count)
     return True
