@@ -11,7 +11,7 @@ MINIO = Minio(
 )
 
 def get_refined_object_name(object_name):
-    prefix = MINIO['PREFIX']
+    prefix = settings.MINIO_PREFIX
     if prefix:
         return prefix + '/' + object_name
     return object_name
