@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 1
     df = pd.read_excel(excel_file, 'Fleets')
     df.drop(df.columns.difference([
         "Application #",
@@ -32,8 +33,9 @@ def import_from_xls(excel_file):
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count += 1
             HydrogenFleets.objects.create(
                 application_number=row["Application #"],
                 fleet_number=row["Fleet #"],
@@ -51,7 +53,6 @@ def import_from_xls(excel_file):
                 dealer_name=row["Dealer Name"],
                 rebate_amount=row["Rebate Amount"]
             )
-        except Exception as error:
-            print("error: ", error)
-            print(row)
+    except Exception as error:
+        return (error,'data',row_count)
     return True

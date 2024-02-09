@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 6
     df = pd.read_excel(excel_file, 'TOP OTHER TRANSACTIONS', header=5)
 
     df = trim_all_columns(df)
@@ -18,9 +19,10 @@ def import_from_xls(excel_file):
 
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
 
-    for _, row in df.iterrows():
-        if row["VIN"] == '': continue # Skip rows without this field
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count += 1
+            if row["VIN"] == '': continue # Skip rows without this field
             ScrapIt.objects.create(
                 approval_number=row["Approval Num"],
                 application_received_date=row["App Recv'd Date"],
@@ -34,7 +36,6 @@ def import_from_xls(excel_file):
                 budget_code=row["Budget Code"],
                 scrap_date=row["Scrap Date"]
             )
-        except Exception as error:
-            print(error)
-            print(row)
+    except Exception as error:
+        return (error,'data',row_count)
     return True

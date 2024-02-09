@@ -22,6 +22,7 @@ def applicant_type(row):
 
 
 def import_from_xls(excel_file):
+    row_count = 1
     df = pd.read_excel(excel_file, 'Sheet1')
     df.drop(df.columns.difference([
         "Approvals",
@@ -46,8 +47,9 @@ def import_from_xls(excel_file):
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df['Applicant Type'] = df.apply(lambda row: applicant_type(row), axis=1)
 
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count += 1
             SpecialityUseVehicleIncentives.objects.create(
                 approvals=row["Approvals"],
                 date=row["Date"],
@@ -60,7 +62,6 @@ def import_from_xls(excel_file):
                 manufacturer=row["Manufacturer"],
                 model=row["Model"],
             )
-        except Exception as error:
-            print(error)
-            print(row)
+    except Exception as error:
+        return (error,'data',row_count)  
     return True

@@ -51,8 +51,8 @@ def import_from_xls(excel_file):
 
     try:
         for _, row in df.iterrows():
-            if row["Publicly Announced"] == '': continue # Skip rows without this field
             row_count += 1
+            if row["Publicly Announced"] == '': continue # Skip rows without this field
             ARCProjectTracking.objects.create(
                 funding_call=row["Funding Call"],
                 proponent=row["Proponent"],

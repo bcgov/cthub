@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 1
     df = pd.read_excel(excel_file, 'Data Fleets')
     df.drop(df.columns.difference([
         "Current Stage",
@@ -47,6 +48,7 @@ def import_from_xls(excel_file):
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
 
     for _, row in df.iterrows():
+        row_count += 1
         try:
             DataFleets.objects.create(
                 current_stage=row["Current Stage"],
@@ -77,6 +79,5 @@ def import_from_xls(excel_file):
                 potential_rebate=row["Potential Rebate"]
             )
         except Exception as error:
-            print(error)
-            print(row)
+            return (error,'data',row_count) 
     return True

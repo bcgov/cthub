@@ -28,8 +28,6 @@ def import_from_xls(excel_file):
     ]), axis=1, inplace=True)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
-
-    # df.fillna('')
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc' else x.fillna(''))
     try:
         for _, row in df.iterrows():

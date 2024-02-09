@@ -107,6 +107,7 @@ class UploadViewset(GenericViewSet):
             done = (error, 'file')
         final_count = model.objects.all().count()
         records_inserted = final_count - starting_count
+        records_inserted_msg = "{} records inserted. This table currently contains {} records.".format(records_inserted, final_count)
         if done != True:
             try:
                 error_location = done[1]
@@ -120,7 +121,7 @@ class UploadViewset(GenericViewSet):
                 if error_location == 'data':
                     if error_type in (type(LookupError), type(KeyError), 'KeyError') :
                         error_msg = "Please make sure you've uploaded a file with the correct data including the correctly named columns. There was an error finding: {}. This dataset requires the following columns: {}".format(error, field_names)
-                    elif error_type == type(ValueError):
+                    elif error_type == 'ValueError' or type(ValueError):
                         ## note for next batch of scripts, possibly add str(type(ValueError)) 
                         ## to this but check for impacts to other exceptions
                         error_msg = "{} on row {}. Please make sure you've uploaded a file with the correct data.".format(error, error_row)
@@ -130,10 +131,10 @@ class UploadViewset(GenericViewSet):
                     error_msg = "{}. Please make sure you've uploaded a file with the correct data including the correctly named worksheets.".format(error)
                 if error_msg[-1] != '.':
                     error_msg+='.'
-                error_msg += " {} records inserted.".format(records_inserted)
+                error_msg += records_inserted_msg
                 return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
             except Exception as error:
                 print(error)
                 return Response('There was an issue!', status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("{} records inserted.".format(records_inserted), status=status.HTTP_201_CREATED)
+            return Response(records_inserted_msg, status=status.HTTP_201_CREATED)
