@@ -53,6 +53,10 @@ parameters:
     displayName: database host 
     description: database host 
     required: true       
+  - name: MINIO_BUCKET_NAME
+    displayName: minio bucket name
+    description: minio bucket name
+    required: true       
 objects:
   - apiVersion: v1
     kind: Secret
@@ -245,7 +249,11 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-minio-${ENV_NAME}
-                      key: MINIO_ROOT_PASSWORD                  
+                      key: MINIO_ROOT_PASSWORD
+                - name: MINIO_BUCKET_NAME
+                  value: ${MINIO_BUCKET_NAME}
+                - name: MINIO_PREFIX
+                  value: cthub-docs
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:
