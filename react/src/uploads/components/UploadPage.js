@@ -21,6 +21,7 @@ const UploadPage = (props) => {
     uploadFiles,
     replaceData,
     handleRadioChange,
+    downloadSpreadsheet,
   } = props;
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
@@ -41,6 +42,7 @@ const UploadPage = (props) => {
           >
             {selectionList}
           </Select>
+          <Button onClick={downloadSpreadsheet}>Download Spreadsheet</Button>
 
         </div>
         <div id="replace-data-select">
