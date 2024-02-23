@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
+from django.http import HttpResponse
 from api.decorators.whitelisted_users import check_whitelist
 from api.models.datasets import Datasets
 from api.models.ldv_rebates import LdvRebates
@@ -38,6 +39,7 @@ from api.services.public_charging import import_from_xls as \
     import_public_charging
 from api.services.speciality_use_vehicle_incentives import \
     import_from_xls as import_suvi
+from api.services.datasheet_template_generator import generate_template
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -138,3 +140,21 @@ class UploadViewset(GenericViewSet):
                 return Response('There was an issue!', status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(records_inserted_msg, status=status.HTTP_201_CREATED)
+        
+    
+    @action(detail=False, methods=['get'])
+    def download_dataset(self, request):
+        dataset_name = request.GET.get('datasetSelected')
+        if not dataset_name:
+            return HttpResponse("Dataset name is required.", status=400)
+        
+        try:
+            excel_file = generate_template(dataset_name)
+            response = HttpResponse(
+                excel_file.read(),
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            response['Content-Disposition'] = f'attachment; filename="{dataset_name}.xlsx"'
+            return response
+        except ValueError as e:
+            return HttpResponse(str(e), status=400)
