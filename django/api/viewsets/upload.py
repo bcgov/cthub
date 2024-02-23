@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
-from api.decorators.whitelisted_users import check_whitelist
+from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
@@ -50,7 +50,7 @@ class UploadViewset(GenericViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
-    @method_decorator(check_whitelist())
+    @method_decorator(check_upload_permission())
     def import_data(self, request):
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')

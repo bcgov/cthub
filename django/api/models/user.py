@@ -1,8 +1,8 @@
 from django.db import models
 from auditable.models import Auditable
 
-class WhitelistedUsers(Auditable):
-    user = models.CharField(
+class User(Auditable):
+    idir = models.CharField(
         blank=False,
         null=False,
         unique=True,
@@ -10,4 +10,5 @@ class WhitelistedUsers(Auditable):
     )
 
     class Meta:
-        db_table = 'whitelisted_users'
+        db_table = 'user'
+    db_table_comment = "Contains the list of users in the system "

@@ -16,6 +16,8 @@ from . import public_charging
 from . import hydrogen_fueling
 from . import hydrogen_fleets
 from . import data_fleets
-from . import whitelisted_users
 from . import arc_project_tracking
 from . import scrap_it
+from . import user
+from . import permission
+from . import user_permission
