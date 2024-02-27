@@ -75,7 +75,6 @@ const UploadContainer = () => {
       showError(error);
     });
   });
-  console.log(datasetSelected)
   const downloadSpreadsheet = () => {
     axios.get(ROUTES_UPLOAD.DOWNLOAD_SPREADSHEET, {
       params: {
