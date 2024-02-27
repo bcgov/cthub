@@ -75,6 +75,27 @@ const UploadContainer = () => {
       showError(error);
     });
   });
+  const downloadSpreadsheet = () => {
+    axios.get(ROUTES_UPLOAD.DOWNLOAD_SPREADSHEET, {
+      params: {
+        datasetSelected: datasetSelected
+      },
+      responseType: 'blob'
+    }).then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.setAttribute('download', `${datasetSelected}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }).catch((error) => {
+      showError(error);
+    });
+  };
 
   useEffect(() => {
     refreshList(true);
@@ -114,6 +135,7 @@ const UploadContainer = () => {
           setReplaceData={setReplaceData}
           replaceData={replaceData}
           handleRadioChange={handleRadioChange}
+          downloadSpreadsheet={downloadSpreadsheet}
         />
       </div>
     </div>
