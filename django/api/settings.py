@@ -159,6 +159,7 @@ MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT', None)
 MINIO_USE_SSL = bool(
     os.getenv('MINIO_USE_SSL', 'False').lower() in ['true', 1]
 )
+MINIO_PREFIX = os.getenv('MINIO_PREFIX')
 
 
 DECODER_ACCESS_KEY = os.getenv('DECODER_ACCESS_KEY')
