@@ -4,8 +4,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import React, { useState, useEffect } from 'react';
 import ROUTES_UPLOAD from './routes';
+import ROUTES_USERS from '../users/routes';
 import UploadPage from './components/UploadPage';
 import AlertDialog from '../app/components/AlertDialog';
+import UsersContainer from '../users/UsersContainer';
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
@@ -18,6 +20,7 @@ const UploadContainer = () => {
   const [alertSeverity, setAlertSeverity] = useState('');
   // existing data with what is being uploaded
   const [open, setOpen] = useState(false);
+  const [adminUser, setAdminUser] = useState(false);
   const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
   const leftButtonText = 'Cancel';
   const rightButtonText = 'Replace existing data';
@@ -34,6 +37,12 @@ const UploadContainer = () => {
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
       setDatasetList(response.data);
       setLoading(false);
+      axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
+        const permissions = currentUserResp.data.user_permissions.map((each) => each.description);
+        if (permissions.includes('admin')) {
+          setAdminUser(true);
+        }
+      });
     });
   };
 
@@ -137,6 +146,8 @@ const UploadContainer = () => {
           handleRadioChange={handleRadioChange}
           downloadSpreadsheet={downloadSpreadsheet}
         />
+        {adminUser
+        && <UsersContainer />}
       </div>
     </div>
   );
