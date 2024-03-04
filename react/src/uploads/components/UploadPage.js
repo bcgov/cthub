@@ -33,7 +33,9 @@ const UploadPage = (props) => {
       <Box p={3}>
         <div id="dataset-select">
           <span>
-            Dataset to Upload &nbsp; &nbsp;
+            <h3>
+              Select Program &nbsp; &nbsp;
+            </h3>
           </span>
           <Select
             value={datasetSelected}
