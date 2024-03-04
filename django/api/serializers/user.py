@@ -13,14 +13,11 @@ class UserSerializer(ModelSerializer):
     Default Serializer for User
     """
     user_permissions = SerializerMethodField()
-    idir = SerializerMethodField()
 
     def get_user_permissions(self, obj):
         user_permission = UserPermission.objects.filter(user_id=obj.id)
         permissions = PermissionSerializer(user_permission, read_only=True, many=True)
         return permissions.data
-    def get_idir(self, obj):
-        return obj.idir
 
     class Meta:
         model = User
