@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import { Box, Button } from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
 import { useDropzone } from 'react-dropzone';
 
@@ -25,7 +24,7 @@ const FileDrop = (props) => {
         {' '}
         <br />
         <Box p={2}>
-          <Button variant="outlined">browse to select a file from your machine to upload.</Button>
+          <Button className="text-button">browse to select a file from your machine to upload.</Button>
         </Box>
         {dropMessage && (
           <div>{dropMessage}</div>

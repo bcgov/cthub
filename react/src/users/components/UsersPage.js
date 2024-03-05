@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
+import {
+  Box, Button, Grid, TextField, Checkbox,
+} from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
-import TextField from '@mui/material/TextField';
 
 const UsersPage = (props) => {
   const { users, userUpdates, setUserUpdates } = props;
@@ -28,28 +26,28 @@ const UsersPage = (props) => {
     return (
       <Grid container key={user.idir}>
         <Grid item className="permissions">
-          <input type="checkbox" className="checkbox" name="uploader" id="uploader" checked={userPerms.uploader} onChange={(event) => { handleRadioChange(event); }} />
-          <input type="checkbox" className="checkbox" name="admin" id="admin" checked={userPerms.admin} onChange={(event) => { handleRadioChange(event); }} />
+          <Checkbox className="checkbox" name="uploader" id="uploader" color="default" checked={userPerms.uploader} onChange={(event) => { handleRadioChange(event); }} />
+          <Checkbox className="checkbox" name="admin" id="admin" color="default" checked={userPerms.admin} onChange={(event) => { handleRadioChange(event); }} />
         </Grid>
-        <Grid item width="20%" paddingLeft={2}>
+        <Grid item md={2} paddingLeft={2}>
           <span>{user.idir}</span>
         </Grid>
         <Grid item>
-          <ClearIcon padding={0} sx={{color: 'red' }} />
+          <ClearIcon padding={0} sx={{ color: 'red' }} />
         </Grid>
       </Grid>
     );
   };
   return (
-    <Paper variant="outlined">
+    <>
       <Box p={3}>
         <div>
           <h2>Admin</h2>
         </div>
         <Grid container>
-          <Box display="flex" flexDirection="row" className="add-user-box" alignItems="center" padding={2} justifyContent="space-evenly">
-            <Grid container alignItems="center" justifyContent="space-around">
-              <Grid item spacing={3}>
+          <Box display="flex" md={6} flexDirection="row" className="add-user-box" alignItems="center" padding={2} justifyContent="space-evenly">
+            <Grid container alignItems="center" justifyContent="space-around" spacing={2}>
+              <Grid item>
                 <h3>
                   IDIR Username
                 </h3>
@@ -58,7 +56,7 @@ const UsersPage = (props) => {
                 <TextField className="user-input" type="text" />
               </Grid>
               <Grid item>
-                <Button variant="contained" className="button-dark-blue" >
+                <Button variant="contained" className="button-dark-blue">
                   Add User
                 </Button>
               </Grid>
@@ -84,7 +82,7 @@ const UsersPage = (props) => {
           </Box>
         </Grid>
       </Box>
-    </Paper>
+    </>
   );
 };
 UsersPage.propTypes = {

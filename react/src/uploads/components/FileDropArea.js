@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, Grid } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import FileDrop from './FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
 
@@ -30,7 +28,6 @@ const FileDropArea = (props) => {
           {getFileSize(size)}
         </Grid>
         <Grid item xs={2} className="upload-row">
-
           <Button
             className="delete"
             onClick={() => {
@@ -39,17 +36,17 @@ const FileDropArea = (props) => {
             type="button"
             id="trash-button"
           >
-            <DeleteIcon />
+            <ClearIcon padding={0} sx={{ color: 'red' }} />
           </Button>
         </Grid>
       </React.Fragment>
     );
   }
   return (
-    <div className="bordered">
+    <div>
       <div>
         <div className="content">
-          <Box p={3}>
+          <Box p={2}>
             <FileDrop
               setFiles={setUploadFiles}
             />
