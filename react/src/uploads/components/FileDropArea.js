@@ -20,8 +20,8 @@ const FileDropArea = (props) => {
   function FormRow(file) {
     const { name, size } = file;
     return (
-      <React.Fragment key={name}>
-        <Grid item xs={7}>
+      <Grid container alignItems="center" key={name}>
+        <Grid item xs={7} className="upload-row">
           {name}
         </Grid>
         <Grid item xs={3} className="upload-row">
@@ -39,7 +39,7 @@ const FileDropArea = (props) => {
             <ClearIcon padding={0} sx={{ color: 'red' }} />
           </Button>
         </Grid>
-      </React.Fragment>
+      </Grid>
     );
   }
   return (
@@ -56,10 +56,10 @@ const FileDropArea = (props) => {
         <Box className="upload-list" pt={3} rb={2}>
           <Grid container direction="row">
             <Grid item xs={7}>
-              Filename
+              <h3>Filename</h3>
             </Grid>
             <Grid item xs={3}>
-              Size
+              <h3>Size</h3>
             </Grid>
             <Grid item xs={2} />
             {uploadFiles.map((file) => (

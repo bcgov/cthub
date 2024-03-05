@@ -20,7 +20,9 @@
   
 }
 .upload-row {
-  height: 15px;
+  background-color: $default-background-grey;
+  padding: .5rem;
+  margin: .5rem;
 }
 .file-upload {
   border: 1px dashed $button-background-blue;
