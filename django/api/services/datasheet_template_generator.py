@@ -1,47 +1,53 @@
 import pandas as pd
 from io import BytesIO
-from api.services.spreadsheet_uploader_prep import DATASET_COLUMNS
+from api.constants import *
 
 def generate_template(dataset_name):
     """
     Generates an Excel spreadsheet template for a specified dataset.
     """
-    if dataset_name not in DATASET_COLUMNS:
+    dataset_column_enum_map = {
+        'ARC Project Tracking': ARCProjectTrackingColumns,
+        'EV Charging Rebates': EVChargingRebatesColumns,
+        'Data Fleets': DataFleetsColumns,
+        'Hydrogen Fleets': HydrogenFleetsColumns,
+        'Hydrogen Fueling': HydrogenFuelingColumns,
+        'LDV Rebates': LDVRebatesColumns,
+        'Public Charging': PublicChargingColumns,
+        'Scrap It': ScrapItColumns,
+        'Specialty Use Vehicle Incentive Program': SpecialtyUseVehicleIncentiveProgramColumns,
+    }
+
+    if dataset_name not in dataset_column_enum_map:
         raise ValueError(f"Dataset '{dataset_name}' is not supported.")
 
-    columns = DATASET_COLUMNS[dataset_name]
+    columns = [column.value for column in dataset_column_enum_map[dataset_name]]
+
     df = pd.DataFrame(columns=columns)
 
     excel_buffer = BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-        sheet_name = dataset_name
+        sheet_name = dataset_name.replace(" ", "_")
         start_row = 0
-        if dataset_name == 'ARC Project Tracking':
-            sheet_name = 'Project_Tracking'
 
-        if dataset_name == 'Specialty Use Vehicle Incentive Program':
-            sheet_name= 'Sheet1'
+        custom_sheet_names = {
+            'ARC Project Tracking': 'Project_Tracking',
+            'Specialty Use Vehicle Incentive Program': 'Sheet1',
+            'Public Charging': 'Project_applications',
+            'LDV Rebates': 'Raw Data',
+            'EV Charging Rebates': 'Updated',
+            'Hydrogen Fueling': 'Station_Tracking',
+            'Hydrogen Fleets': 'Fleets',
+            'Scrap It': 'TOP OTHER TRANSACTIONS',
+        }
+        custom_start_rows = {
+            'Public Charging': 2,
+            'EV Charging Rebates': 2,
+            'Scrap It': 5,
+        }
 
-        if dataset_name == 'Public Charging':
-            sheet_name= 'Project_applications'
-            start_row = 2
-
-        if dataset_name == 'LDV Rebates':
-            sheet_name='Raw Data'
-
-        if dataset_name == 'EV Charging Rebates':
-            sheet_name = 'Updated'
-            start_row = 2
-
-        if dataset_name == 'Hydrogen Fueling':
-            sheet_name = 'Station_Tracking'
-
-        if dataset_name == 'Hydrogen Fleets':
-            sheet_name = 'Fleets'
-
-        if dataset_name == 'Scrap It':
-            sheet_name = 'TOP OTHER TRANSACTIONS'
-            start_row = 5
+        sheet_name = custom_sheet_names.get(dataset_name, sheet_name)
+        start_row = custom_start_rows.get(dataset_name, start_row)
 
         df.to_excel(writer, sheet_name=sheet_name, startrow=start_row, index=False)
 

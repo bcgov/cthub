@@ -39,7 +39,8 @@ from api.services.speciality_use_vehicle_incentives import \
     import_from_xls as import_suvi
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
-from api.services.spreadsheet_uploader_prep import *
+from api.constants import *
+from api.services.spreadsheet_uploader_prep import prepare_arc_project_tracking
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -58,6 +59,8 @@ class UploadViewset(GenericViewSet):
         DATASET_CONFIG = {
         'ARC Project Tracking': {
             'model': ARCProjectTracking,
+            'columns': ARCProjectTrackingColumns,
+            'column_mapping': ArcProjectTrackingColumnMapping,
             'sheet_name': 'Project_Tracking',
             'preparation_functions': [prepare_arc_project_tracking]
         }
@@ -75,6 +78,8 @@ class UploadViewset(GenericViewSet):
             if not config:
                 return Response(f"Dataset '{dataset_selected}' is not supported.", status=status.HTTP_400_BAD_REQUEST)
             model = config['model']
+            columns = config.get('columns')
+            mapping = config.get('column_mapping')
             sheet_name = config.get('sheet_name', 'Sheet1')  # Default to 'Sheet1' if not specified
             preparation_functions = config.get('preparation_functions', [])
             validation_functions = config.get('validation_functions', [])
@@ -89,22 +94,22 @@ class UploadViewset(GenericViewSet):
                 model=model,
                 preparation_functions=preparation_functions,
                 validation_functions=validation_functions,
-                dataset_columns=DATASET_COLUMNS,
-                column_mapping=COLUMN_MAPPING,
+                dataset_columns=columns,
+                column_mapping_enum=mapping,
                 field_types=FIELD_TYPES
             )
 
-
-            os.remove(filename)
-            minio_remove_object(filename)
-
             if not result['success']:
-                return Response(result['message'], status=status.HTTP_400_BAD_REQUEST)
+                return Response(result['errors'], status=status.HTTP_400_BAD_REQUEST)
             return Response(result['message'], status=status.HTTP_201_CREATED)
 
         except Exception as e:
             print(f"An exception occurred: {str(e)}")
             return Response(f"An error occurred: {str(e)}", status=status.HTTP_400_BAD_REQUEST)
+        
+        finally:      
+            os.remove(filename)
+            minio_remove_object(filename)
         
     
     @action(detail=False, methods=['get'])
