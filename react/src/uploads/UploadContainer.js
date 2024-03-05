@@ -1,8 +1,9 @@
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
 import React, { useState, useEffect } from 'react';
+import {
+  Paper, Alert, CircularProgress, Stack,
+} from '@mui/material';
 import ROUTES_UPLOAD from './routes';
 import ROUTES_USERS from '../users/routes';
 import UploadPage from './components/UploadPage';
@@ -134,20 +135,28 @@ const UploadContainer = () => {
           title="Replace existing data?"
         />
         )}
-        <UploadPage
-          uploadFiles={uploadFiles}
-          datasetList={datasetList}
-          doUpload={doUpload}
-          setDatasetSelected={setDatasetSelected}
-          datasetSelected={datasetSelected}
-          setUploadFiles={setUploadFiles}
-          setReplaceData={setReplaceData}
-          replaceData={replaceData}
-          handleRadioChange={handleRadioChange}
-          downloadSpreadsheet={downloadSpreadsheet}
-        />
-        {adminUser
-        && <UsersContainer />}
+        <Stack direction="column" spacing={2}>
+          <Paper square variant="outlined">
+            <UploadPage
+              uploadFiles={uploadFiles}
+              datasetList={datasetList}
+              doUpload={doUpload}
+              setDatasetSelected={setDatasetSelected}
+              datasetSelected={datasetSelected}
+              setUploadFiles={setUploadFiles}
+              setReplaceData={setReplaceData}
+              replaceData={replaceData}
+              handleRadioChange={handleRadioChange}
+              downloadSpreadsheet={downloadSpreadsheet}
+            />
+          </Paper>
+          {adminUser
+          && (
+            <Paper square variant="outlined">
+              <UsersContainer />
+            </Paper>
+          )}
+        </Stack>
       </div>
     </div>
   );

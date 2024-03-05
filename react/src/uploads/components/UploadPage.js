@@ -1,14 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import {
+  Box, Button, MenuItem, Select, Radio, RadioGroup, FormControlLabel, FormControl,
+} from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
 import FileDropArea from './FileDropArea';
 
 const UploadPage = (props) => {
@@ -31,6 +26,7 @@ const UploadPage = (props) => {
   return (
     <>
       <Box p={3}>
+        <h2>Upload Program Data</h2>
         <div id="dataset-select">
           <span>
             <h3>
@@ -39,12 +35,12 @@ const UploadPage = (props) => {
           </span>
           <Select
             value={datasetSelected}
-            style={{ minWidth: 220 }}
+            style={{ minWidth: 220, backgroundColor: 'white'}}
             onChange={(e) => { setDatasetSelected(e.target.value); }}
           >
             {selectionList}
           </Select>
-          <Button onClick={downloadSpreadsheet}>Download Spreadsheet</Button>
+          <Button className="text-button" onClick={downloadSpreadsheet}>Download Spreadsheet</Button>
 
         </div>
         <div id="replace-data-select">
@@ -76,13 +72,13 @@ const UploadPage = (props) => {
             uploadFiles={uploadFiles}
           />
         </div>
-        <Box pt={2}>
+        <Box pt={2} className="upload-bar" alignItems="center" padding={2} display="flex" justifyContent="flex-end">
           <Button
             disabled={uploadFiles.length === 0 || !datasetSelected}
-            className="button primary"
+            className="button-dark-blue"
             onClick={() => doUpload()}
             type="button"
-            variant="outlined"
+            variant="contained"
           >
             <UploadIcon />
             Upload
