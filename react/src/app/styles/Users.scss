@@ -1,22 +1,31 @@
 .add-user-box {
-//   height: 4rem;
   background-color: $default-background-grey;
   margin-bottom: 1rem;
-  margin-top: 1rem;
-//   width: 40%;
 }
 
 .permissions {
   background-color: $default-background-grey;
   align-content: space-around;
+  width: 10%;
  .checkbox {
-    // width: 40%;
+    width: 40%;
   }
+  @media (max-width:991px) {
+    width: 20%;
+}
+  @media (max-width:599px) {
+    width: 40%;
+}
+
 }
 
 .user-input {
     margin-left: 10px;
     margin-right: 10px;
     background-color: white;
+}
+
+.button-dark-blue {
+  background-color: #003366 !important;
 }
 
