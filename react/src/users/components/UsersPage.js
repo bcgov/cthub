@@ -24,7 +24,7 @@ const UsersPage = (props) => {
       console.log(userPerms[permissionType]);
     };
     return (
-      <Grid container key={user.idir}>
+      <Grid container key={user.idir} alignItems="center">
         <Grid item className="permissions">
           <Checkbox className="checkbox" name="uploader" id="uploader" color="default" checked={userPerms.uploader} onChange={(event) => { handleRadioChange(event); }} />
           <Checkbox className="checkbox" name="admin" id="admin" color="default" checked={userPerms.admin} onChange={(event) => { handleRadioChange(event); }} />
