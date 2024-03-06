@@ -8,6 +8,7 @@ import UsersPage from './components/UsersPage';
 const UsersContainer = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
+  const [newUser, setNewUser] = useState('')
   const [userUpdates, setUserUpdates] = useState([]);
 
   const refreshDetails = () => {
@@ -17,6 +18,11 @@ const UsersContainer = () => {
     });
   };
 
+  const handleAddNewUser = () => {
+    axios.post(ROUTES_USERS.CREATE, { idir: newUser }).then((response) => {
+      console.log(response);
+    });
+  };
   useEffect(() => {
     refreshDetails();
     setLoading(false);
@@ -31,7 +37,13 @@ const UsersContainer = () => {
   }
   return (
     <div className="row">
-      <UsersPage users={users} userUpdates={userUpdates} setUserUpdates={setUserUpdates} />
+      <UsersPage
+        users={users}
+        userUpdates={userUpdates}
+        setUserUpdates={setUserUpdates}
+        setNewUser={setNewUser}
+        handleAddNewUser={handleAddNewUser}
+      />
     </div>
   );
 };

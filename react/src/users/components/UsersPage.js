@@ -7,7 +7,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 
 const UsersPage = (props) => {
-  const { users, userUpdates, setUserUpdates } = props;
+  const { users, userUpdates, setUserUpdates, handleAddNewUser, setNewUser } = props;
 
   const userRow = (user) => {
     const userPerms = { admin: false, uploader: false };
@@ -53,10 +53,10 @@ const UsersPage = (props) => {
                 </h3>
               </Grid>
               <Grid item>
-                <TextField className="user-input" type="text" />
+                <TextField className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); }} />
               </Grid>
               <Grid item>
-                <Button variant="contained" className="button-dark-blue">
+                <Button variant="contained" className="button-dark-blue" onClick={handleAddNewUser}>
                   Add User
                 </Button>
               </Grid>
