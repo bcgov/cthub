@@ -7,37 +7,25 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 
 const UsersPage = (props) => {
-  const { users, userUpdates, setUserUpdates, handleAddNewUser, setNewUser } = props;
+  const {
+    users, handleAddNewUser, setNewUser, handleCheckboxChange, handleSubmitPermissionUpdates
+  } = props;
 
-  const userRow = (user) => {
-    const userPerms = { admin: false, uploader: false };
-    user.user_permissions.forEach((permission) => {
-      userPerms[permission.description] = true;
-    });
-
-    const handleRadioChange = (event) => {
-      const { checked } = event.target;
-      const permissionType = event.target.id;
-      console.log(permissionType);
-      console.log(userPerms);
-      userPerms[permissionType] = checked;
-      console.log(userPerms[permissionType]);
-    };
-    return (
-      <Grid container key={user.idir} alignItems="center">
-        <Grid item className="permissions">
-          <Checkbox className="checkbox" name="uploader" id="uploader" color="default" checked={userPerms.uploader} onChange={(event) => { handleRadioChange(event); }} />
-          <Checkbox className="checkbox" name="admin" id="admin" color="default" checked={userPerms.admin} onChange={(event) => { handleRadioChange(event); }} />
-        </Grid>
-        <Grid item md={2} paddingLeft={2}>
-          <span>{user.idir}</span>
-        </Grid>
-        <Grid item>
-          <ClearIcon padding={0} sx={{ color: 'red' }} />
-        </Grid>
+  const userRow = (user) => (
+    <Grid container key={user.idir} alignItems="center">
+      <Grid item className="permissions">
+        <Checkbox className="checkbox" name={user.idir} id="uploader" color="default" checked={user.user_permissions.uploader} onChange={(event) => { handleCheckboxChange(event); }} />
+        <Checkbox className="checkbox" name={user.idir} id="admin" color="default" checked={user.user_permissions.admin} onChange={(event) => { handleCheckboxChange(event); }} />
       </Grid>
-    );
-  };
+      <Grid item md={2} paddingLeft={2}>
+        <span>{user.idir}</span>
+      </Grid>
+      <Grid item>
+        <ClearIcon padding={0} sx={{ color: 'red' }} />
+      </Grid>
+    </Grid>
+
+  );
   return (
     <>
       <Box p={3}>
@@ -76,7 +64,7 @@ const UsersPage = (props) => {
             userRow(user)
           ))}
           <Box className="permissions" justifyContent="space-around" display="flex" paddingTop={3} paddingBottom={3}>
-            <Button variant="contained" className="button-dark-blue" startIcon={<SaveIcon />}>
+            <Button variant="contained" className="button-dark-blue" startIcon={<SaveIcon />} onClick={handleSubmitPermissionUpdates}>
               Save
             </Button>
           </Box>
@@ -87,5 +75,8 @@ const UsersPage = (props) => {
 };
 UsersPage.propTypes = {
   users: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleAddNewUser: PropTypes.func.isRequired,
+  setNewUser: PropTypes.func.isRequired,
+  handleCheckboxChange: PropTypes.func.isRequired,
 };
 export default UsersPage;

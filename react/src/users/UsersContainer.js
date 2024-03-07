@@ -9,7 +9,7 @@ const UsersContainer = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState('')
-  const [userUpdates, setUserUpdates] = useState([]);
+  const [userUpdates, setUserUpdates] = useState({});
 
   const refreshDetails = () => {
     setLoading(true);
@@ -26,6 +26,27 @@ const UsersContainer = () => {
       }
     });
   };
+  const handleCheckboxChange = (event) => {
+    const { checked } = event.target;
+    const permissionType = event.target.id;
+    const userName = event.target.name;
+    // find what permissions were originally retrieved for that user from the axios call
+    const originalUser = users.find((user) => user.idir === userName);
+    const userPermissions = originalUser.user_permissions;
+    // update the permissions
+    userPermissions[permissionType] = checked;
+    setUserUpdates({ ...userUpdates, [userName]: { [permissionType]: checked } });
+  };
+
+  const handleSubmitPermissionUpdates = () => {
+    axios.put(ROUTES_USERS.UPDATE, userUpdates).then((response)=>{
+      if (response.status === 201) {
+        refreshDetails();
+        setLoading(false);
+      }
+    });
+  };
+
   useEffect(() => {
     refreshDetails();
     setLoading(false);
@@ -42,10 +63,11 @@ const UsersContainer = () => {
     <div className="row">
       <UsersPage
         users={users}
-        userUpdates={userUpdates}
-        setUserUpdates={setUserUpdates}
         setNewUser={setNewUser}
         handleAddNewUser={handleAddNewUser}
+        handleCheckboxChange={handleCheckboxChange}
+        userUpdates={userUpdates}
+        handleSubmitPermissionUpdates={handleSubmitPermissionUpdates}
       />
     </div>
   );
