@@ -7,7 +7,7 @@ from rest_framework import status
 from api.models.permission import Permission
 from api.models.user import User
 from api.models.user_permission import UserPermission
-from api.serializers.user import UserSerializer, UserPermissionUpdateSerializer
+from api.serializers.user import UserSerializer
 from api.decorators.permission import check_admin_permission
 
 class UserViewSet(GenericViewSet):
