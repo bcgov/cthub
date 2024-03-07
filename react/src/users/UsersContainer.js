@@ -20,7 +20,10 @@ const UsersContainer = () => {
 
   const handleAddNewUser = () => {
     axios.post(ROUTES_USERS.CREATE, { idir: newUser }).then((response) => {
-      console.log(response);
+      if (response.status === 200) {
+        refreshDetails();
+        setLoading(false);
+      }
     });
   };
   useEffect(() => {
