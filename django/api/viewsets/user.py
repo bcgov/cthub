@@ -1,3 +1,4 @@
+from django.utils.decorators import method_decorator
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -6,6 +7,7 @@ from rest_framework import status
 from api.models.user import User
 from api.serializers.user import UserSerializer, UserSaveSerializer
 from api.models.user import User
+from api.decorators.permission import check_admin_permission
 
 class UserViewSet(GenericViewSet):
     """
@@ -30,6 +32,7 @@ class UserViewSet(GenericViewSet):
         return self.serializer_classes['default']
 
     @action(detail=False, methods=['post'])
+    @method_decorator(check_admin_permission())
     def new(self, request):
         user_to_insert = request.data['idir'].upper()
         try:
@@ -48,20 +51,8 @@ class UserViewSet(GenericViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
     
+    @method_decorator(check_admin_permission())
     def list(self, request):
-        request = self.request
-        ##check if user is admin before producing list of all users
-        users = User.objects.all()
-        current_user = users.filter(idir=request.user).first()
-        if current_user:
-            current_user_serializer = UserSerializer(current_user)
-            current_user_permissions = current_user_serializer.data['user_permissions']
-            is_admin = False
-            if current_user_permissions:
-                for i in current_user_permissions:
-                    for v in i.values():
-                        if v == 'admin':
-                            is_admin = True
-                if is_admin == True:
-                    serializer = UserSerializer(users, many=True)
-                    return Response(serializer.data)
+        users = User.objects.all().order_by('idir')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
