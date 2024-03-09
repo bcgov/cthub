@@ -22,6 +22,7 @@ const UploadContainer = () => {
   // existing data with what is being uploaded
   const [open, setOpen] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
+  const [currentUser, setCurrentUser] = useState('');
   const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
   const leftButtonText = 'Cancel';
   const rightButtonText = 'Replace existing data';
@@ -39,6 +40,7 @@ const UploadContainer = () => {
       setDatasetList(response.data);
       setLoading(false);
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
+        setCurrentUser(currentUserResp.data.idir);
         if (currentUserResp.data.user_permissions.admin === true) {
           setAdminUser(true);
         }
@@ -152,7 +154,9 @@ const UploadContainer = () => {
           {adminUser
           && (
             <Paper square variant="outlined">
-              <UsersContainer />
+              <UsersContainer
+                currentUser={currentUser}
+              />
             </Paper>
           )}
         </Stack>

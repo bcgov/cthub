@@ -21,7 +21,6 @@ class UserViewSet(GenericViewSet):
 
     serializer_classes = {
         'default': UserSerializer,
-        'update': UserPermissionUpdateSerializer,
     }
 
 
@@ -46,23 +45,38 @@ class UserViewSet(GenericViewSet):
     def update_permissions(self, request):
         # make queryset with the users to update?
         permissions = Permission.objects.all()
+        error_msg = []
         for user_idir, v in request.data.items():
+            print('********** ', v)
             user = User.objects.get(idir=user_idir)
             for permission_description, value in v.items():
                 permission_to_update = permissions.get(description=permission_description)
                 if value == True:
-                    ##permission should be added
-                    UserPermission.objects.get_or_create(user_id=user.id, permission_id=permission_to_update.id)
+                    try:
+                    # permission should be added
+                        UserPermission.objects.get_or_create(user_id=user.id, permission_id=permission_to_update.id)
+                    except Exception as error:
+                        error_msg.append("{} permission could not be added to {}".format(permission_description, user.idir))
+                    
                 if value == False:
-                    ## permission should be removed from user_permission
-                    UserPermission.objects.get(user_id=user.id, permission_id=permission_to_update.id).delete()
+                # permission should be removed from user_permission
+                # make sure they are not removing their own admin permission
+                    if request.user == user_idir and permission_description == 'admin':
+                        error_msg += 'You can not remove your own admin permission.'
+                    else:   
+                        try:
+                            permission_to_delete = UserPermission.objects.filter(user_id=user.id, permission_id=permission_to_update.id).first()
+                            print(permission_to_delete)
+                            if permission_to_delete:
+                                permission_to_delete.delete()
+                        except Exception as error:
+                            error_msg.append("{} permission couldn't be removed from {}.".format(permission_description, user.idir))
         ## to do
-        ## dont allow user to remove their own admin permission
         ## double check if something exists before trying to delete it
-        ## on frontend make sure permissions are up to date, refresh etc
-        ## move some of this into serializer?
-        
-        return Response(status=status.HTTP_201_CREATED)
+        if error_msg:
+            return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response('User permissions were updated!', status=status.HTTP_201_CREATED)
     
     @action(detail=False)
     def current(self, request):

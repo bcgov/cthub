@@ -1,16 +1,18 @@
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
-import CircularProgress from '@mui/material/CircularProgress';
+import { CircularProgress, Alert } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import ROUTES_USERS from './routes';
 import UsersPage from './components/UsersPage';
 
-const UsersContainer = () => {
+const UsersContainer = (props) => {
+  const { currentUser } = props;
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState('')
+  const [newUser, setNewUser] = useState('');
   const [userUpdates, setUserUpdates] = useState({});
-
+  const [permissionMessage, setPermissionMessage] = useState('');
+  const [permissionMessageSeverity, setPermissionMessageSeverity] = useState('');
   const refreshDetails = () => {
     setLoading(true);
     axios.get(ROUTES_USERS.LIST).then((listResponse) => {
@@ -28,6 +30,9 @@ const UsersContainer = () => {
   };
   const handleCheckboxChange = (event) => {
     const { checked } = event.target;
+    if (permissionMessage) {
+      setPermissionMessage('');
+    }
     const permissionType = event.target.id;
     const userName = event.target.name;
     // find what permissions were originally retrieved for that user from the axios call
@@ -39,11 +44,16 @@ const UsersContainer = () => {
   };
 
   const handleSubmitPermissionUpdates = () => {
-    axios.put(ROUTES_USERS.UPDATE, userUpdates).then((response)=>{
+    axios.put(ROUTES_USERS.UPDATE, userUpdates).then((response) => {
       if (response.status === 201) {
-        refreshDetails();
-        setLoading(false);
+        setPermissionMessageSeverity('success');
       }
+      if (response.status === 400) {
+        setPermissionMessageSeverity('error');
+      }
+      setPermissionMessage(response.data);
+      refreshDetails();
+      setLoading(false);
     });
   };
 
@@ -61,7 +71,9 @@ const UsersContainer = () => {
   }
   return (
     <div className="row">
+      {permissionMessage && <Alert severity={permissionMessageSeverity}>{permissionMessage}</Alert>}
       <UsersPage
+        currentUser={currentUser}
         users={users}
         setNewUser={setNewUser}
         handleAddNewUser={handleAddNewUser}
