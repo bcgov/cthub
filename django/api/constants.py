@@ -37,7 +37,6 @@ class ArcProjectTrackingColumnMapping(Enum):
 
 class EVChargingRebatesColumns(Enum):
     ORGANIZATION = "Organization"
-    MLA = "MLA"
     REGION = "Region"
     CITY = "City"
     ADDRESS = "Address"
@@ -47,6 +46,19 @@ class EVChargingRebatesColumns(Enum):
     ANNOUNCED = "Announced?"
     BC_EMPR_FUNDING_ANTICIPATED = "B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)"
     NOTES = "Notes"
+
+class EVChargingRebatesColumnMapping(Enum):
+    organization = "Organization"
+    region = "Region"
+    city = "City"
+    address = "Address"
+    number_of_fast_charging_stations = "Number of Fast Charging Stations"
+    in_service_date = "In service date"
+    expected_in_service_date = "Expected in service date"
+    announced = "Announced?"
+    rebate_paid = "B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)"
+    notes = "Notes"
+
 
 class DataFleetsColumns(Enum):
     CURRENT_STAGE = "Current Stage"
@@ -75,6 +87,35 @@ class DataFleetsColumns(Enum):
     DEADLINE = "Deadline"
     APPLICATION_NUMBER = "Application Number"
     POTENTIAL_REBATE = "Potential Rebate"
+
+class DataFleetsColumnMapping(Enum):
+    current_stage = "Current Stage"
+    rebate_value = "Rebate Value"
+    legal_name_of_organization_fleet = "Legal Name of your Organization/Fleet: "
+    business_category = "Your business Category"
+    city = "City:*"
+    postal_code = "Postal Code:*"
+    applicant_first_name = "Applicant First Name"
+    applicant_last_name = "Applicant Last Name"
+    email_address = "Email Address:*"
+    fleet_size_all = "Fleet Size All"
+    fleet_size_light_duty = "Fleet Size Light-duty"
+    total_number_of_evs = "Total number of EVs?"
+    total_number_of_light_duty_evs = "Total number of light-duty EVs?"
+    phev = "PHEV's"
+    evse = "EVSE's?"
+    average_daily_travel_distance = "Average daily travel distance?"
+    component_being_applied_for = "Which component are you applying for?*"
+    estimated_cost = "Estimated cost"
+    type_of_charger_being_installed = "Which type of charger are you installing?"
+    number_of_level_2_charging_stations_being_applied_for = "How many Level 2 Charging Stations are you applying for"
+    number_of_level_3_dc_fast_charging_stations_being_applied_for = "How many Level 3/DC Fast Charging Stations are you applying for"
+    application_form_fleets_completion_date_time = '"Application Form Fleets" completion date/time'
+    pre_approval_date = "Pre-Approval Date"
+    deadline = "Deadline"
+    application_number = "Application Number"
+    potential_rebate = "Potential Rebate"
+
 
 class HydrogenFleetsColumns(Enum):
     APPLICATION_NUMBER = "Application #"
@@ -187,19 +228,6 @@ class SpecialtyUseVehicleIncentiveProgramColumns(Enum):
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
 
-dataset_columns = {
-    'ARC Project Tracking': ARCProjectTrackingColumns,
-    'EV Charging Rebates': EVChargingRebatesColumns,
-    'Data Fleets': DataFleetsColumns,
-    'Hydrogen Fleets': HydrogenFleetsColumns,
-    'Hydrogen Fueling': HydrogenFuelingColumns,
-    'LDV Rebates': LDVRebatesColumns,
-    'Public Charging': PublicChargingColumns,
-    'Scrap It': ScrapItColumns,
-    'Specialty Use Vehicle Incentive Program': SpecialtyUseVehicleIncentiveProgramColumns,
-}
-
-
 FIELD_TYPES = {
     'ARC Project Tracking': {
         "funding_call": str,
@@ -217,5 +245,44 @@ FIELD_TYPES = {
         "on_road_off_road": str,
         "fuel_type": str,
         "publicly_announced": bool,
-    }
+    },
+    'EV Charging Rebates': {
+        "organization": str,
+        "region": str,
+        "city": str,
+        "address": str,
+        "number_of_fast_charging_stations": int,
+        "in_service_date": str,
+        "expected_in_service_date": str,
+        "announced": str,
+        "rebate_paid": float,
+        "notes": str,
+    },
+    'Data Fleets': {
+        "current_stage": str,
+        "rebate_value": str,
+        "legal_name_of_organization_fleet": str,
+        "business_category": str,
+        "city": str,
+        "postal_code": str,
+        "applicant_first_name": str,
+        "applicant_last_name": str,
+        "email_address": str,
+        "fleet_size_all": int,
+        "fleet_size_light_duty": int,
+        "total_number_of_evs": int,
+        "total_number_of_light_duty_evs": int,
+        "phev": int,
+        "evse": int,
+        "average_daily_travel_distance": str,
+        "component_being_applied_for": str,
+        "estimated_cost": str,
+        "number_of_level_2_charging_stations_being_applied_for": int,
+        "number_of_level_3_dc_fast_charging_stations_being_applied_for": int,
+        "application_form_fleets_completion_date_time": str,
+        "pre_approval_date": str,
+        "deadline": str,
+        "application_number": str,
+        "potential_rebate": str,
+    },
 }

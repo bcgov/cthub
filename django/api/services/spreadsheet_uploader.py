@@ -21,9 +21,9 @@ def trim_all_columns(df):
     trim_strings = lambda x: x.strip() if isinstance(x, str) else x
     return df.applymap(trim_strings)
 
-def extract_data(excel_file, sheet_name):
+def extract_data(excel_file, sheet_name, header_row):
     try:
-        df = pd.read_excel(excel_file, sheet_name)
+        df = pd.read_excel(excel_file, sheet_name, header=header_row)
         df = trim_all_columns(df)
         return df
     except Exception as e:
@@ -54,12 +54,15 @@ def transform_data(df, dataset_columns, column_mapping_enum, preparation_functio
     return df
 
 @transaction.atomic
-def load_data(df, model, field_types):
+def load_data(df, model, field_types, replace_data):
     row_count = 0
     records_inserted = 0
     errors = []
     model_instances = []
     nullable_fields = get_nullable_fields(model)
+
+    if replace_data:
+        model.objects.all().delete()
 
     for index, row in df.iterrows():
         row_dict = row.to_dict()
@@ -103,11 +106,11 @@ def load_data(df, model, field_types):
 
 
 
-def import_from_xls(excel_file, dataset_name, sheet_name, model, dataset_columns, column_mapping_enum, field_types, preparation_functions=[], validation_functions=[]):
+def import_from_xls(excel_file, sheet_name, model, dataset_columns, header_row, column_mapping_enum, field_types, replace_data, preparation_functions=[], validation_functions=[]):
     try:
-        df = extract_data(excel_file, sheet_name)
+        df = extract_data(excel_file, sheet_name, header_row)
         df = transform_data(df, dataset_columns, column_mapping_enum, preparation_functions, validation_functions)
-        result = load_data(df, model, field_types)
+        result = load_data(df, model, field_types, replace_data)
 
         if result['errors']:
             return {"success": False, "message": f"{result['records_inserted']} records inserted from {result['row_count']} total possible rows.", "errors": result['errors'], "rows_processed": result['row_count']}

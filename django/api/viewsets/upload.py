@@ -24,12 +24,8 @@ from api.serializers.datasets import DatasetsSerializer
 from api.services.ldv_rebates import import_from_xls as import_ldv
 from api.services.hydrogen_fueling import import_from_xls as \
     import_hydrogen_fueling
-from api.services.charger_rebates import import_from_xls as \
-    import_charger_rebates
 from api.services.scrap_it import import_from_xls as \
     import_scrap_it
-from api.services.data_fleets import import_from_xls as \
-    import_data_fleets
 from api.services.hydrogen_fleets import import_from_xls as \
     import_hydrogen_fleets
 from api.services.minio import minio_get_object, minio_remove_object
@@ -63,6 +59,19 @@ class UploadViewset(GenericViewSet):
             'column_mapping': ArcProjectTrackingColumnMapping,
             'sheet_name': 'Project_Tracking',
             'preparation_functions': [prepare_arc_project_tracking]
+        },
+        'EV Charging Rebates': {
+            'model': ChargerRebates,
+            'columns': EVChargingRebatesColumns,
+            'column_mapping': EVChargingRebatesColumnMapping,
+            'sheet_name': 'Updated',
+            'header_row': 2
+        },
+        'Data Fleets': {
+            'model': DataFleets,
+            'columns': DataFleetsColumns,
+            'column_mapping': DataFleetsColumnMapping,
+            'sheet_name': 'Data Fleets'
         }
     }
 
@@ -83,20 +92,20 @@ class UploadViewset(GenericViewSet):
             sheet_name = config.get('sheet_name', 'Sheet1')  # Default to 'Sheet1' if not specified
             preparation_functions = config.get('preparation_functions', [])
             validation_functions = config.get('validation_functions', [])
-
-            if replace_data:
-                model.objects.all().delete()
+            header_row = config.get('header_row', 0)
+               
 
             result = import_from_xls(
                 excel_file=filename,
-                dataset_name=dataset_selected,
                 sheet_name=sheet_name,
                 model=model,
+                header_row = header_row,
                 preparation_functions=preparation_functions,
                 validation_functions=validation_functions,
                 dataset_columns=columns,
                 column_mapping_enum=mapping,
-                field_types=FIELD_TYPES
+                field_types=FIELD_TYPES,
+                replace_data=replace_data
             )
 
             if not result['success']:
