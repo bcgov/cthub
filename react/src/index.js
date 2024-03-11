@@ -1,18 +1,26 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom'
+import Keycloak from 'keycloak-js';
 
-import Keycloak from './keycloak';
-import settings from './app/settings';
+import KeycloakProvider from './app/components/KeycloakProvider';
+import App from './App';
+import Loading from './app/components/Loading';
 
 import './app/styles/index.scss';
 
-import App from './App';
-
-if (settings.ENABLE_KEYCLOAK) {
-  ReactDOM.render(
-    <Keycloak />,
-    document.getElementById('root'),
-  );
-} else {
-  ReactDOM.render(<App />, document.getElementById('root'));
+const keycloak = new Keycloak()
+const keycloakInitOptions = {
+  onLoad: 'check-sso',
+  pkceMethod: 'S256'
 }
+
+ReactDOM.render(
+  <KeycloakProvider
+    authClient={keycloak}
+    initOptions={keycloakInitOptions}
+    LoadingComponent={Loading}
+  >
+    <App />
+  </KeycloakProvider>,
+  document.getElementById('root')
+)

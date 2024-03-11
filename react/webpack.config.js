@@ -8,6 +8,7 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     hot: isDevelopment,
+    inline: isDevelopment
   },
   devtool: 'source-map',
   resolve: {
