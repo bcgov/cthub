@@ -97,3 +97,13 @@ h4 {
   color: #1a5a96 !important;
   text-decoration: underline !important;
 }
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.page-content {
+  flex-grow: 1;
+}

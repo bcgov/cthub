@@ -24,13 +24,6 @@ const App = () => {
   }
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="container">
-          <a href="/">
-            <div className="logo" />
-          </a>
-        </div>
-      </header>
       <div className="App-body">
         <Router>
           <Switch>
