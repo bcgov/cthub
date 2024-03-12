@@ -21,22 +21,11 @@ from api.models.arc_project_tracking import ARCProjectTracking
 from api.models.data_fleets import DataFleets
 from api.models.hydrogen_fleets import HydrogenFleets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.ldv_rebates import import_from_xls as import_ldv
-from api.services.hydrogen_fueling import import_from_xls as \
-    import_hydrogen_fueling
-from api.services.scrap_it import import_from_xls as \
-    import_scrap_it
-from api.services.hydrogen_fleets import import_from_xls as \
-    import_hydrogen_fleets
 from api.services.minio import minio_get_object, minio_remove_object
-from api.services.public_charging import import_from_xls as \
-    import_public_charging
-from api.services.speciality_use_vehicle_incentives import \
-    import_from_xls as import_suvi
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 from api.constants import *
-from api.services.spreadsheet_uploader_prep import prepare_arc_project_tracking
+from api.services.spreadsheet_uploader_prep import *
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -72,7 +61,50 @@ class UploadViewset(GenericViewSet):
             'columns': DataFleetsColumns,
             'column_mapping': DataFleetsColumnMapping,
             'sheet_name': 'Data Fleets'
-        }
+        },
+        'Hydrogen Fleets': {
+            'model': HydrogenFleets,
+            'columns': HydrogenFleetsColumnMapping,
+            'column_mapping': HydrogenFleetsColumnMapping,
+            'sheet_name': 'Fleets',
+            'preparation_functions': [prepare_hydrogen_fleets]
+        },
+        'Hydrogen Fueling': {
+            'model': HydrogrenFueling,
+            'columns': HydrogenFuelingColumnMapping,
+            'column_mapping': HydrogenFuelingColumnMapping,
+            'sheet_name': 'Station_Tracking',
+            'preparation_functions': [prepare_hydrogen_fueling]
+        },
+        'LDV Rebates': {
+            'model': LdvRebates,
+            'columns': LdvRebatesColumnMapping,
+            'sheet_name': 'Raw Data',
+            'preparation_functions': [prepare_ldv_rebates]
+        },
+        'Public Charging': {
+            'model': PublicCharging,
+            'columns': PublicChargingColumns,
+            'column_mapping': PublicChargingColumnMapping,
+            'sheet_name': 'Project_applications',
+            'header_row': 2,
+            'preparation_functions': [prepare_public_charging]
+        },
+        'Scrap It': {
+            'model': ScrapIt,
+            'columns': ScrapItColumns,
+            'column_mapping': ScrapItColumnMapping,
+            'sheet_name': 'TOP OTHER TRANSACTIONS',
+            'header_row': 5,
+            'preparation_functions': [prepare_scrap_it]
+        },
+        'Specialty Use Vehicle Incentive Program': {
+            'model': SpecialityUseVehicleIncentives,
+            'columns': SpecialityUseVehicleIncentiveProgramColumns,
+            'column_mapping': SpecialityUseVehicleIncentivesColumnMapping,
+            'sheet_name': 'Sheet1',
+            'preparation_functions': [prepare_speciality_use_vehicle_incentives]
+        },
     }
 
         filename = request.data.get('filename')

@@ -116,7 +116,6 @@ class DataFleetsColumnMapping(Enum):
     application_number = "Application Number"
     potential_rebate = "Potential Rebate"
 
-
 class HydrogenFleetsColumns(Enum):
     APPLICATION_NUMBER = "Application #"
     FLEET_NUMBER = "Fleet #"
@@ -134,6 +133,23 @@ class HydrogenFleetsColumns(Enum):
     DEALER_NAME = "Dealer Name"
     REBATE_AMOUNT = "Rebate Amount"
 
+class HydrogenFleetsColumnMapping(Enum):
+    application_number = "Application #"
+    fleet_number = "Fleet #"
+    application_date = "Application Date"
+    organization_name = "Organization Name"
+    fleet_name = "Fleet Name"
+    street_address = "Street Address"
+    city = "City"
+    postal_code = "Postal Code"
+    vin = "VIN"
+    make = "Make"
+    model = "Model"
+    year = "Year"
+    purchase_date = "Purchase Date"
+    dealer_name = "Dealer Name"
+    rebate_amount = "Rebate Amount"
+
 class HydrogenFuelingColumns(Enum):
     STATION_NUMBER = "Station Number"
     RFP_CLOSE_DATE = "RFP Close Date"
@@ -150,9 +166,29 @@ class HydrogenFuelingColumns(Enum):
     BAR_350 = "350 Bar"
     STATUS = "Status"
     NUMBER_OF_FUELLING_POSITIONS = "# of Fuelling Positions"
-    OPERATIONAL_DATE = "Operational Date"
+    OPERATIONAL_DATE = "Operational Date "
     OPENING_DATE = "Opening Date"
     TOTAL_CAPITAL_COST = "Total Capital Cost"
+
+class HydrogenFuelingColumnMapping(Enum):
+    station_number = "Station Number"
+    rfp_close_date = "RFP Close Date"
+    station_name = "Station Name"
+    street_address = "Street Address"
+    city = "City"
+    postal_code = "Postal Code"
+    proponent = "Proponent"
+    location_partner = "Location Partner (Shell/7-11/etc.)"
+    capital_funding_awarded = "Capital Funding Awarded"
+    om_funding_potential = "O&M Funding Potential"
+    daily_capacity = "Daily Capacity (kg/day)"
+    bar_700 = "700 Bar"
+    bar_350 = "350 Bar"
+    status = "Status"
+    number_of_fueling_positions = "# of Fuelling Positions"
+    operational_date = "Operational Date "
+    opening_date = "Opening Date"
+    total_capital_cost = "Total Capital Cost"
 
 class LDVRebatesColumns(Enum):
     CASL_CONSENT = "CASL Consent"
@@ -183,24 +219,73 @@ class LDVRebatesColumns(Enum):
     DELIVERED = "Delivered"
     CONSENT_TO_CONTACT = "Consent to Contact"
 
+class LdvRebatesColumnMapping(Enum):
+    casl_consent = "CASL Consent"
+    date_approved = "DATE APPROVED"
+    submission_id = "Submission ID"
+    submission_date = "Submission Date"
+    company_name = "Company Name"
+    city = "City"
+    applicant_name = "Applicant Name"
+    applicant_address_1 = "Applicant Address 1"
+    applicant_address_2 = "Applicant Address 2"
+    applicant_city = "Applicant City"
+    applicant_postal_code = "Applicant Postal Code"
+    applicant_phone = "Applicant Phone"
+    applicant_email = "Applicant Email"
+    applicant_use = "Applicant Use"
+    applicant_type = "Applicant Type"
+    business_name = "Business Name"
+    business_number = "Business Number"
+    drivers_license = "Drivers License"
+    province = "Province"
+    msrp = "MSRP"
+    other_incentives = "Other Incentives"
+    document_type = "Document Type"
+    vehicle = "Vehicle"
+    incentive_amount = "Incentive Amount"
+    vin = "VIN#"
+    delivered = "Delivered"
+    consent_to_contact = "Consent to Contact"
+
+
 class PublicChargingColumns(Enum):
     APPLICANT_NAME = "Applicant Name"
     ADDRESS = "Address"
     CHARGING_STATION_INFO = "Charging Station Info"
     GT_25KW_LT_50KW = ">25kW; <50kW"
     GT_50KW_LT_100KW = ">50kW; <100kW"
-    GT_100KW = ">100kW"
+    GT_100KW = ">100kW "
     LEVEL_2_UNITS_STATIONS = "Level 2 (# of units/stations)"
     LEVEL_2_PORTS = "Level 2 (# of ports)"
     ESTIMATED_BUDGET = "Estimated Budget"
-    ADJUSTED_REBATE = "Adjusted Rebate"
-    REBATE_PERCENT_MAXIMUM = "Rebate % Maximum"
+    ADJUSTED_REBATE = "Adjusted Rebate "
+    REBATE_PERCENT_MAXIMUM = "Rebate % Maximum "
     PILOT_PROJECT = "Pilot Project (Y/N)"
     REGION = "Region"
     ORGANIZATION_TYPE = "Organization Type"
     PROJECT_STATUS = "Project Status"
     REVIEW_NUMBER = "Review Number"
     PAID_OUT_REBATE_AMOUNT = "Paid out rebate amount"
+
+class PublicChargingColumnMapping(Enum):
+    applicant_name = "Applicant Name"
+    address = "Address"
+    charging_station_info = "Charging Station Info"
+    between_25kw_and_50kw = ">25kW; <50kW"
+    between_50kw_and_100kw = ">50kW; <100kW"
+    over_100kw = ">100kW "
+    level_2_units = "Level 2 (# of units/stations)"
+    level_2_ports = "Level 2 (# of ports)"
+    estimated_budget = "Estimated Budget"
+    adjusted_rebate = "Adjusted Rebate "
+    rebate_percent_maximum = "Rebate % Maximum "
+    pilot_project = "Pilot Project (Y/N)"
+    region = "Region"
+    organization_type = "Organization Type"
+    project_status = "Project Status"
+    review_number = "Review Number"
+    rebate_paid = "Paid out rebate amount"
 
 class ScrapItColumns(Enum):
     APPROVAL_NUM = "Approval Num"
@@ -215,18 +300,43 @@ class ScrapItColumns(Enum):
     BUDGET_CODE = "Budget Code"
     SCRAP_DATE = "Scrap Date"
 
-class SpecialtyUseVehicleIncentiveProgramColumns(Enum):
+class ScrapItColumnMapping(Enum):
+    approval_number = "Approval Num"
+    application_received_date = "App Recv'd Date"
+    completion_date = "Completion Date"
+    postal_code = "Postal Code"
+    vin = "VIN"
+    application_city_fuel = "App City Fuel"
+    incentive_type = "Incentive Type"
+    incentive_cost = "Incentive Cost"
+    cheque_number = "Cheque #"
+    budget_code = "Budget Code"
+    scrap_date = "Scrap Date"
+
+class SpecialityUseVehicleIncentiveProgramColumns(Enum):
     APPROVALS = "Approvals"
     DATE = "Date"
+    FLEET = "Fleet"
     APPLICANT_NAME = "Applicant Name"
     MAX_INCENTIVE_AMOUNT_REQUESTED = "Max Incentive Amount Requested"
     CATEGORY = "Category"
-    FLEET = "Fleet"
     INDIVIDUAL = "Individual"
     INCENTIVE_PAID = "Incentive Paid"
     TOTAL_PURCHASE_PRICE_PRE_TAX = "Total Purchase Price (pre-tax)"
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
+
+class SpecialityUseVehicleIncentivesColumnMapping(Enum):
+    approvals = "Approvals"
+    date = "Date"
+    applicant_name = "Applicant Name"
+    max_incentive_amount_requested = "Max Incentive Amount Requested"
+    category = "Category"
+    applicant_type = "Applicant Type"
+    incentive_paid = "Incentive Paid"
+    total_purchase_price = "Total Purchase Price (pre-tax)"
+    manufacturer = "Manufacturer"
+    model = "Model"
 
 FIELD_TYPES = {
     'ARC Project Tracking': {
@@ -285,4 +395,114 @@ FIELD_TYPES = {
         "application_number": str,
         "potential_rebate": str,
     },
+    'Hydrogen Fleets': {
+        "application_number": str,
+        "fleet_number": str,
+        "application_date": str,
+        "organization_name": str,
+        "fleet_name": str,
+        "street_address": str,
+        "city": str,
+        "postal_code": str,
+        "vin": str,
+        "make": str,
+        "model": str,
+        "year": int,
+        "purchase_date": str,
+        "dealer_name": str,
+        "rebate_amount": float
+    },
+    'Hydrogen Fueling': {
+        "station_number": str,
+        "rfp_close_date": str,
+        "station_name": str,
+        "street_address": str,
+        "city": str,
+        "postal_code": str,
+        "proponent": str,
+        "location_partner": str,
+        "capital_funding_awarded": float,
+        "om_funding_potential": float,
+        "daily_capacity": float,
+        "bar_700": bool,
+        "bar_350": bool,
+        "status": str,
+        "number_of_fueling_positions": int,
+        "operational_date": str,
+        "opening_date": str,
+        "total_capital_cost": float
+    },
+    'LDV Rebates': {
+        "casl_consent": bool,
+        "date_approved": str,
+        "submission_id": str,
+        "submission_date": str,
+        "company_name": str,
+        "city": str,
+        "applicant_name": str,
+        "applicant_address_1": str,
+        "applicant_address_2": str,
+        "applicant_city": str,
+        "applicant_postal_code": str,
+        "applicant_phone": str,
+        "applicant_email": str,
+        "applicant_use": str,
+        "applicant_type": str,
+        "business_name": str,
+        "business_number": str,
+        "drivers_license": str,
+        "province": str,
+        "msrp": str,
+        "other_incentives": str,
+        "document_type": str,
+        "vehicle": str,
+        "incentive_amount": str,
+        "vin": str,
+        "delivered": bool,
+        "consent_to_contact": bool,
+    },
+    'Public Charging': {
+        "applicant_name": str,
+        "address": str,
+        "charging_station_info": str,
+        "gt_25kw_lt_50kw": str,
+        "gt_50kw_lt_100kw": str,
+        "gt_100kw": str,
+        "level_2_units_stations": int,
+        "level_2_ports": int,
+        "estimated_budget": float,
+        "adjusted_rebate": float,
+        "rebate_percent_maximum": str,
+        "pilot_project": bool,
+        "region": str,
+        "organization_type": str,
+        "project_status": str,
+        "review_number": str,
+        "paid_out_rebate_amount": float,
+    },
+    'Scrap It': {
+        "approval_number": str,
+        "application_received_date": str,
+        "completion_date": str,
+        "postal_code": str,
+        "vin": str,
+        "application_city_fuel": str,
+        "incentive_type": str,
+        "incentive_cost": str,
+        "cheque_number": str,
+        "budget_code": str,
+        "scrap_date": str,
+    },
+    'speciality_use_vehicle_incentives': {
+        "approvals": str,
+        "date": "date or datetime",
+        "applicant_name": str,
+        "max_incentive_amount_requested": float,
+        "category": str,
+        "applicant_type": str,
+        "incentive_paid": float,
+        "total_purchase_price": float,
+        "manufacturer": str,
+        "model": str,
+    }
 }
