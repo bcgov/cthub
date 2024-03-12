@@ -1,8 +1,6 @@
 import 'regenerator-runtime/runtime';
-import axios from 'axios';
 import React from 'react';
 import {
-  Redirect,
   BrowserRouter as Router,
   Route,
   Switch,
@@ -12,18 +10,18 @@ import settings from './app/settings';
 import IcbcDataRouter from './icbc_data/router';
 import UploadRouter from './uploads/router';
 import DashboardContainer from './dashboard/DashboardContainer';
+import useKeycloak from './app/utilities/useKeycloak'
+import Login from './Login';
 
-const { API_BASE } = settings;
-
-axios.defaults.baseURL = API_BASE;
+const { ENABLE_KEYCLOAK } = settings;
 
 const App = () => {
-  const { sessionStorage } = window;
-  const redirect = sessionStorage.getItem('redirect');
-  if (redirect && redirect !== '') {
-    sessionStorage.removeItem('redirect');
+  const keycloak = useKeycloak()
+  
+  if (ENABLE_KEYCLOAK && !keycloak.authenticated) {
+    const redirectUri = window.location.href
+    return <Login redirectUri={redirectUri}/>
   }
-
   return (
     <div className="App">
       <header className="App-header">
@@ -35,10 +33,6 @@ const App = () => {
       </header>
       <div className="App-body">
         <Router>
-          {redirect && redirect !== '' && (
-            <Redirect to={redirect} />
-          )}
-
           <Switch>
             {IcbcDataRouter()}
             {UploadRouter()}

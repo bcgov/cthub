@@ -1,14 +1,15 @@
 import { withRouter } from 'react-router-dom';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {
-  Paper, Alert, CircularProgress, Stack,
+  Paper, Alert, Stack,
 } from '@mui/material';
 import ROUTES_UPLOAD from './routes';
 import ROUTES_USERS from '../users/routes';
 import UploadPage from './components/UploadPage';
 import AlertDialog from '../app/components/AlertDialog';
 import UsersContainer from '../users/UsersContainer';
+import Loading from '../app/components/Loading';
+import useAxios from '../app/utilities/useAxios';
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
@@ -32,6 +33,8 @@ const UploadContainer = () => {
     }
     setReplaceData(choice);
   };
+  const axios = useAxios()
+  const axiosDefault = useAxios(true)
 
   const refreshList = () => {
     setLoading(true);
@@ -57,11 +60,7 @@ const UploadContainer = () => {
   const doUpload = () => uploadFiles.forEach((file) => {
     axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
       const { url: uploadUrl, minio_object_name: filename } = response.data;
-      axios.put(uploadUrl, file, {
-        headers: {
-          Authorization: null,
-        },
-      }).then(() => {
+      axiosDefault.put(uploadUrl, file).then(() => {
         let replace = false;
         if (replaceData === true) {
           replace = true;
@@ -112,11 +111,7 @@ const UploadContainer = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div>
-        <CircularProgress color="inherit" />
-      </div>
-    );
+    return <Loading />
   }
 
   return (

@@ -1,14 +1,15 @@
 import { withRouter } from 'react-router-dom';
-import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState, useEffect } from 'react';
 import ROUTES_USERS from './routes';
 import UsersPage from './components/UsersPage';
+import useAxios from '../app/utilities/useAxios';
 
 const UsersContainer = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [userUpdates, setUserUpdates] = useState([]);
+  const axios = useAxios()
 
   const refreshDetails = () => {
     setLoading(true);

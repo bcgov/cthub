@@ -22,3 +22,4 @@ venv/
 coverage/
 minio/minio_files/cthub/
 decoder.env
+docker-compose-local-dev.yml
