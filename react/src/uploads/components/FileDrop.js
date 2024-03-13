@@ -7,9 +7,11 @@ import { useDropzone } from 'react-dropzone';
 const FileDrop = (props) => {
   const {
     setFiles,
+    setAlert,
   } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((files) => {
+    setAlert(false)
     setDropMessage('');
     setFiles(files);
   }, []);
@@ -46,6 +48,7 @@ FileDrop.propTypes = {
   setFiles: PropTypes.func,
   maxFiles: PropTypes.number,
   allowedFileTypes: PropTypes.string,
+  setAlert: PropTypes.func.isRequired,
 };
 
 export default FileDrop;

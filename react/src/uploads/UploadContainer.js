@@ -144,6 +144,7 @@ const UploadContainer = () => {
               replaceData={replaceData}
               handleRadioChange={handleRadioChange}
               downloadSpreadsheet={downloadSpreadsheet}
+              setAlert={setAlert}
             />
           </Paper>
           {adminUser

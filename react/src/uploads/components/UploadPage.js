@@ -17,6 +17,7 @@ const UploadPage = (props) => {
     replaceData,
     handleRadioChange,
     downloadSpreadsheet,
+    setAlert,
   } = props;
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
@@ -36,7 +37,7 @@ const UploadPage = (props) => {
           <Select
             value={datasetSelected}
             style={{ minWidth: 220, backgroundColor: 'white'}}
-            onChange={(e) => { setDatasetSelected(e.target.value); }}
+            onChange={(e) => { setDatasetSelected(e.target.value); setAlert(false); }}
           >
             {selectionList}
           </Select>
@@ -68,6 +69,7 @@ const UploadPage = (props) => {
         </div>
         <div>
           <FileDropArea
+            setAlert={setAlert}
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}
           />
@@ -104,5 +106,7 @@ UploadPage.propTypes = {
     PropTypes.bool,
   ]).isRequired,
   handleRadioChange: PropTypes.func.isRequired,
+  downloadSpreadsheet: PropTypes.func.isRequired,
+  setAlert: PropTypes.func.isRequired,
 };
 export default UploadPage;
