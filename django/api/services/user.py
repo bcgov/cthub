@@ -1,7 +1,9 @@
+from django.db import transaction
 from api.models.user_permission import UserPermission
 from api.models.permission import Permission
 from api.models.user import User
 
+@transaction.atomic
 def update_permissions(self, request):
     msg = []
     permissions = Permission.objects.all()

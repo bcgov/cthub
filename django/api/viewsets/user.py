@@ -1,5 +1,4 @@
 from django.utils.decorators import method_decorator
-from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -41,7 +40,6 @@ class UserViewSet(GenericViewSet):
         except Exception as e:
             return Response({"response": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @transaction.atomic
     @action(detail=False, methods=['put'])
     @method_decorator(check_admin_permission())
     def update_permissions(self, request):
