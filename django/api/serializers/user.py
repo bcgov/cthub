@@ -17,7 +17,15 @@ class UserSerializer(ModelSerializer):
     def get_user_permissions(self, obj):
         user_permission = UserPermission.objects.filter(user_id=obj.id)
         permissions = PermissionSerializer(user_permission, read_only=True, many=True)
-        return permissions.data
+        admin = False
+        uploader = False
+        for i in permissions.data:
+            if i['description'] == 'admin':
+                admin = True
+            if i['description'] == 'uploader':
+                uploader = True
+
+        return {'admin': admin, 'uploader': uploader}
 
     class Meta:
         model = User
