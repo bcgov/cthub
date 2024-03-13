@@ -11,7 +11,7 @@ const FileDrop = (props) => {
   } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((files) => {
-    setAlert('')
+    setAlert(false)
     setDropMessage('');
     setFiles(files);
   }, []);

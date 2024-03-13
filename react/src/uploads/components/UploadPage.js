@@ -37,7 +37,7 @@ const UploadPage = (props) => {
           <Select
             value={datasetSelected}
             style={{ minWidth: 220, backgroundColor: 'white'}}
-            onChange={(e) => { setDatasetSelected(e.target.value); setAlert(''); }}
+            onChange={(e) => { setDatasetSelected(e.target.value); setAlert(false); }}
           >
             {selectionList}
           </Select>
