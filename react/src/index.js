@@ -5,7 +5,6 @@ import Keycloak from 'keycloak-js';
 import KeycloakProvider from './app/components/KeycloakProvider';
 import App from './App';
 import Loading from './app/components/Loading';
-import Layout from './app/components/Layout';
 
 import './app/styles/index.scss';
 
@@ -21,9 +20,7 @@ ReactDOM.render(
     initOptions={keycloakInitOptions}
     LoadingComponent={Loading}
   >
-    <Layout>
-      <App />
-    </Layout>
+    <App />
   </KeycloakProvider>,
   document.getElementById('root')
 )
