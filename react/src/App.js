@@ -12,6 +12,7 @@ import UploadRouter from './uploads/router';
 import DashboardContainer from './dashboard/DashboardContainer';
 import useKeycloak from './app/utilities/useKeycloak'
 import Login from './Login';
+import Layout from './app/components/Layout'
 
 const { ENABLE_KEYCLOAK } = settings;
 
@@ -23,26 +24,21 @@ const App = () => {
     return <Login redirectUri={redirectUri}/>
   }
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="container">
-          <a href="/">
-            <div className="logo" />
-          </a>
+    <Layout>
+      <div className="App">
+        <div className="App-body">
+          <Router>
+            <Switch>
+              {IcbcDataRouter()}
+              {UploadRouter()}
+              <Route>
+                <DashboardContainer />
+              </Route>
+            </Switch>
+          </Router>
         </div>
-      </header>
-      <div className="App-body">
-        <Router>
-          <Switch>
-            {IcbcDataRouter()}
-            {UploadRouter()}
-            <Route>
-              <DashboardContainer />
-            </Route>
-          </Switch>
-        </Router>
       </div>
-    </div>
+    </Layout>
   );
 };
 
