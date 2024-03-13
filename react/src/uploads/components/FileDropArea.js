@@ -9,6 +9,7 @@ const FileDropArea = (props) => {
   const {
     setUploadFiles,
     uploadFiles,
+    setAlert,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -48,6 +49,7 @@ const FileDropArea = (props) => {
         <div className="content">
           <Box p={2}>
             <FileDrop
+              setAlert={setAlert}
               setFiles={setUploadFiles}
             />
           </Box>
@@ -75,5 +77,6 @@ const FileDropArea = (props) => {
 FileDropArea.propTypes = {
   setUploadFiles: PropTypes.func.isRequired,
   uploadFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setAlert: PropTypes.func.isRequired,
 };
 export default FileDropArea;
