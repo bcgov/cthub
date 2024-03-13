@@ -1,9 +1,14 @@
+from django.utils.decorators import method_decorator
+from django.db import transaction
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from api.models.user import User
-from api.serializers.user import UserSerializer, UserSaveSerializer
+from api.serializers.user import UserSerializer
+from api.decorators.permission import check_admin_permission
+from api.services.user import update_permissions
 
 class UserViewSet(GenericViewSet):
     """
@@ -16,8 +21,6 @@ class UserViewSet(GenericViewSet):
 
     serializer_classes = {
         'default': UserSerializer,
-        'update': UserSaveSerializer,
-        'create': UserSaveSerializer,
     }
 
 
@@ -28,6 +31,26 @@ class UserViewSet(GenericViewSet):
         return self.serializer_classes['default']
 
 
+    @action(detail=False, methods=['post'])
+    @method_decorator(check_admin_permission())
+    def new(self, request):
+        user_to_insert = request.data['idir'].upper()
+        try:
+            User.objects.get_or_create(idir=user_to_insert)
+            return Response(user_to_insert, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"response": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @transaction.atomic
+    @action(detail=False, methods=['put'])
+    @method_decorator(check_admin_permission())
+    def update_permissions(self, request):
+        error_msg = update_permissions(self, request)
+        if error_msg:
+            return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response('User permissions were updated!', status=status.HTTP_201_CREATED)
+    
     @action(detail=False)
     def current(self, request):
         """
@@ -37,20 +60,8 @@ class UserViewSet(GenericViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
     
+    @method_decorator(check_admin_permission())
     def list(self, request):
-        request = self.request
-        ##check if user is admin before producing list of all users
-        users = User.objects.all()
-        current_user = users.filter(idir=request.user).first()
-        if current_user:
-            current_user_serializer = UserSerializer(current_user)
-            current_user_permissions = current_user_serializer.data['user_permissions']
-            is_admin = False
-            if current_user_permissions:
-                for i in current_user_permissions:
-                    for v in i.values():
-                        if v == 'admin':
-                            is_admin = True
-                if is_admin == True:
-                    serializer = UserSerializer(users, many=True)
-                    return Response(serializer.data)
+        users = User.objects.all().order_by('idir')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)

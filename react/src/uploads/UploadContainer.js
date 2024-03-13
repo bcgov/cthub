@@ -19,6 +19,7 @@ const UploadContainer = () => {
   const [replaceData, setReplaceData] = useState('false'); // if true, we will replace all
   const [alertContent, setAlertContent] = useState();
   const [alert, setAlert] = useState(false);
+  const [currentUser, setCurrentUser] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('');
   // existing data with what is being uploaded
   const [open, setOpen] = useState(false);
@@ -42,9 +43,9 @@ const UploadContainer = () => {
       setDatasetList(response.data);
       setLoading(false);
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
-        const permissions = currentUserResp.data.user_permissions.map((each) => each.description);
-        if (permissions.includes('admin')) {
+        if (currentUserResp.data.user_permissions.admin === true) {
           setAdminUser(true);
+          setCurrentUser(currentUserResp.data.idir);
         }
       });
     });
@@ -148,7 +149,7 @@ const UploadContainer = () => {
           {adminUser
           && (
             <Paper square variant="outlined">
-              <UsersContainer />
+              <UsersContainer currentUser={currentUser} />
             </Paper>
           )}
         </Stack>
