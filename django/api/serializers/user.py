@@ -2,11 +2,11 @@
 Further reading:
 https://www.django-rest-framework.org/api-guide/serializers/
 """
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
 
 from api.models.user import User
 from api.models.user_permission import UserPermission
-from api.serializers.permission import PermissionSerializer
+from api.services.permissions import get_permissions_representation
 
 class UserSerializer(ModelSerializer):
     """
@@ -15,30 +15,33 @@ class UserSerializer(ModelSerializer):
     user_permissions = SerializerMethodField()
 
     def get_user_permissions(self, obj):
-        user_permission = UserPermission.objects.filter(user_id=obj.id)
-        permissions = PermissionSerializer(user_permission, read_only=True, many=True)
-        admin = False
-        uploader = False
-        for i in permissions.data:
-            if i['description'] == 'admin':
-                admin = True
-            if i['description'] == 'uploader':
-                uploader = True
-
-        return {'admin': admin, 'uploader': uploader}
+        user_permission = UserPermission.objects.select_related("permission").filter(user_id=obj.id)
+        permissions = []
+        for each in user_permission:
+            permissions.append(each.permission)
+        return get_permissions_representation(permissions)
+    
+    def validate_idir(self, value):
+        if isinstance(value, str) and value.strip():
+            return value.strip().upper()
+        raise ValidationError("IDIR error!")
+    
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
 
     class Meta:
         model = User
         fields = ('idir', 'user_permissions')
 
+# requires permissions_map object
+class UserListSerializer(ModelSerializer):
+    user_permissions = SerializerMethodField()
 
-class UserSaveSerializer(ModelSerializer):
-    def update(self, instance, validated_data):
-        request = self.context.get('request')
-        permissions = validated_data.pop('permissions')
-        print(request)
-        print(permissions)
-        #check if user exists, if not add them
+    def get_user_permissions(self, obj):
+        permissions_map = self.context.get("permissions_map")
+        permissions = permissions_map.get(obj)
+        return get_permissions_representation(permissions)
 
-        #update user_permissions
-    
+    class Meta:
+        model = User
+        fields = ('idir', 'user_permissions')

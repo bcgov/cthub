@@ -63,7 +63,7 @@ const UsersPage = (props) => {
           </Box>
         </Grid>
         <Grid container display="flex" flexDirection="column">
-          <Box item className="permissions" justifyContent="space-around" display="flex" flexDirection="row" paddingTop={1}>
+          <Box className="permissions" justifyContent="space-around" display="flex" flexDirection="row" paddingTop={1}>
             <Box>
               <h4>Upload </h4>
             </Box>

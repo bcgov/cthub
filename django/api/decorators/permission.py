@@ -1,6 +1,9 @@
 from rest_framework.response import Response
 from rest_framework import status
 from api.services.permissions import create_permission_list
+from api.models.permission import Permission
+from api.models.user import User
+from api.models.user_permission import UserPermission
 
 def check_upload_permission():
     def wrapper(func):

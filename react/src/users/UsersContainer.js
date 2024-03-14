@@ -31,7 +31,7 @@ const UsersContainer = (props) => {
   const handleAddNewUser = () => {
     axios.post(ROUTES_USERS.CREATE, { idir: newUser })
       .then((response) => {
-        const userAdded = response.data;
+        const userAdded = response.data.idir;
         setMessageSeverity('success');
         setPermissionMessage(`${userAdded} was added to the user list`);
         const userObject = { idir: userAdded, user_permissions: { admin: false, uploader: false } };
