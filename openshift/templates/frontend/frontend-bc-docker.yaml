@@ -68,7 +68,7 @@ objects:
       contextDir: react
     strategy:
       dockerStrategy:
-        dockerfilePath: ./Dockerfile-openshift
+        dockerfilePath: ./Dockerfile-Openshift
         env:
           - name: ARTIFACTORY_USER
             valueFrom:
