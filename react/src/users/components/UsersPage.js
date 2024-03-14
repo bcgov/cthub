@@ -14,6 +14,8 @@ const UsersPage = (props) => {
     setNewUser,
     handleCheckboxChange,
     handleSubmitPermissionUpdates,
+    newUser,
+    setMessage,
   } = props;
   const userRow = (user) => {
     const disableAdmin = currentUser === user.idir;
@@ -52,12 +54,16 @@ const UsersPage = (props) => {
                 </h3>
               </Grid>
               <Grid item>
-                <TextField className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); }} />
+                <TextField className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); setMessage(''); }} />
               </Grid>
               <Grid item>
-                <Button variant="contained" className="button-dark-blue" onClick={handleAddNewUser}>
-                  Add User
-                </Button>
+                <Tooltip disableHoverListener={newUser} title="Please type in the IDIR you would like to add.">
+                  <span>
+                    <Button disabled={!newUser} variant="contained" className="button-dark-blue" onClick={handleAddNewUser}>
+                      Add User
+                    </Button>
+                  </span>
+                </Tooltip>
               </Grid>
             </Grid>
           </Box>
@@ -84,6 +90,11 @@ const UsersPage = (props) => {
     </>
   );
 };
+UsersPage.defaultProps = {
+  newUser: '',
+  setMessage: '',
+};
+
 UsersPage.propTypes = {
   users: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleAddNewUser: PropTypes.func.isRequired,
@@ -91,5 +102,7 @@ UsersPage.propTypes = {
   handleCheckboxChange: PropTypes.func.isRequired,
   handleSubmitPermissionUpdates: PropTypes.func.isRequired,
   currentUser: PropTypes.string.isRequired,
+  newUser: PropTypes.string,
+  setMessage: PropTypes.string,
 };
 export default UsersPage;

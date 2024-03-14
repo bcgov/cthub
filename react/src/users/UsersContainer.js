@@ -12,11 +12,12 @@ const UsersContainer = (props) => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState('');
-  const [permissionMessage, setPermissionMessage] = useState('');
+  const [message, setMessage] = useState('');
   const [messageSeverity, setMessageSeverity] = useState('');
   const axios = useAxios();
 
   const handleCheckboxChange = useCallback((event) => {
+    setMessage('');
     const idir = event.target.name;
     const permissionType = event.target.id;
     const { checked } = event.target;
@@ -33,7 +34,7 @@ const UsersContainer = (props) => {
       .then((response) => {
         const userAdded = response.data.idir;
         setMessageSeverity('success');
-        setPermissionMessage(`${userAdded} was added to the user list`);
+        setMessage(`${userAdded} was added to the user list`);
         const userObject = { idir: userAdded, user_permissions: { admin: false, uploader: false } };
         setUsers(
           produce((draft) => {
@@ -43,7 +44,7 @@ const UsersContainer = (props) => {
       })
       .catch((error) => {
         setMessageSeverity('error');
-        setPermissionMessage('new user could not be added, sorry!');
+        setMessage('new user could not be added, sorry!');
       });
   };
 
@@ -51,11 +52,11 @@ const UsersContainer = (props) => {
     axios.put(ROUTES_USERS.UPDATE, users)
       .then((response) => {
         setMessageSeverity('success');
-        setPermissionMessage(response.data);
+        setMessage(response.data);
       })
       .catch((error) => {
         setMessageSeverity('error');
-        setPermissionMessage(error.data);
+        setMessage(error.data);
       });
   };
 
@@ -75,8 +76,8 @@ const UsersContainer = (props) => {
     );
   }
   return (
-    <div className="row">
-      {permissionMessage && <Alert severity={messageSeverity}>{permissionMessage}</Alert>}
+    <div className="users-container">
+      {message && <Alert severity={messageSeverity}>{message}</Alert>}
       <UsersPage
         currentUser={currentUser}
         users={users}
@@ -84,6 +85,8 @@ const UsersContainer = (props) => {
         handleAddNewUser={handleAddNewUser}
         handleCheckboxChange={handleCheckboxChange}
         handleSubmitPermissionUpdates={handleSubmitPermissionUpdates}
+        setMessage={setMessage}
+        newUser={newUser}
       />
     </div>
   );
