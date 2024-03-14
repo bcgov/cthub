@@ -12,7 +12,9 @@ WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install -g npm@latest
 RUN npm install --omit=dev
-RUN yes | npm install -D webpack webpack-cli
+RUN yes | npm install -g webpack webpack-cli
+RUN echo $NODE_PATH
+RUN export NODE_PATH="/usr/local/lib/node_modules:$NODE_PATH"
 RUN pwd && \
   ls -l && \
   ls -l node_modules && \
