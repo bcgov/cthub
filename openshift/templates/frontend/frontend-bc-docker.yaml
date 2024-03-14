@@ -67,13 +67,8 @@ objects:
       type: Git
       contextDir: react
     strategy:
-      sourceStrategy:
-        from:
-          kind: ImageStreamTag
-          name: nodejs-20:1-34
-          namespace: 30b186-tools
-        forcePull: true
-        noCache: true      
+      dockerStrategy:
+        dockerfilePath: ./Dockerfile-openshift
         env:
           - name: ARTIFACTORY_USER
             valueFrom:
@@ -84,8 +79,8 @@ objects:
             valueFrom:
               secretKeyRef:
                 name: artifacts-default-idxprm
-                key: password        
-      type: Source
+                key: password
+      type: Docker      
     successfulBuildsHistoryLimit: 5
     triggers: 
       - imageChange: {}
