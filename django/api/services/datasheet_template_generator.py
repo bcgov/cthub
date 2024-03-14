@@ -15,7 +15,7 @@ def generate_template(dataset_name):
         'LDV Rebates': LDVRebatesColumns,
         'Public Charging': PublicChargingColumns,
         'Scrap It': ScrapItColumns,
-        'Specialty Use Vehicle Incentive Program': SpecialtyUseVehicleIncentiveProgramColumns,
+        'Specialty Use Vehicle Incentive Program': SpecialityUseVehicleIncentiveProgramColumns,
     }
 
     if dataset_name not in dataset_column_enum_map:

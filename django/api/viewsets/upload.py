@@ -136,8 +136,9 @@ class UploadViewset(GenericViewSet):
                 validation_functions=validation_functions,
                 dataset_columns=columns,
                 column_mapping_enum=mapping,
-                field_types=FIELD_TYPES,
-                replace_data=replace_data
+                field_types=FIELD_TYPES.get(dataset_selected),
+                replace_data=replace_data,
+                user = request.user
             )
 
             if not result['success']:

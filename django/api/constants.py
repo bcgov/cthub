@@ -1,4 +1,8 @@
+import datetime
+from decimal import Decimal
 from enum import Enum
+
+
 
 class ARCProjectTrackingColumns(Enum):
     FUNDING_CALL = "Funding Call"
@@ -33,7 +37,6 @@ class ArcProjectTrackingColumnMapping(Enum):
     on_road_off_road = "On-Road/Off-Road"
     fuel_type = "Fuel Type"
     publicly_announced = "Publicly Announced"
-
 
 class EVChargingRebatesColumns(Enum):
     ORGANIZATION = "Organization"
@@ -396,8 +399,8 @@ FIELD_TYPES = {
         "potential_rebate": str,
     },
     'Hydrogen Fleets': {
-        "application_number": str,
-        "fleet_number": str,
+        "application_number": int,
+        "fleet_number": int,
         "application_date": str,
         "organization_name": str,
         "fleet_name": str,
@@ -407,35 +410,35 @@ FIELD_TYPES = {
         "vin": str,
         "make": str,
         "model": str,
-        "year": int,
+        "year": str,
         "purchase_date": str,
         "dealer_name": str,
-        "rebate_amount": float
+        "rebate_amount": str
     },
     'Hydrogen Fueling': {
-        "station_number": str,
-        "rfp_close_date": str,
+        "station_number": int,
+        "rfp_close_date": datetime.date,
         "station_name": str,
         "street_address": str,
         "city": str,
         "postal_code": str,
         "proponent": str,
         "location_partner": str,
-        "capital_funding_awarded": float,
-        "om_funding_potential": float,
-        "daily_capacity": float,
+        "capital_funding_awarded": Decimal,
+        "om_funding_potential": Decimal,
+        "daily_capacity": int,
         "bar_700": bool,
         "bar_350": bool,
         "status": str,
         "number_of_fueling_positions": int,
-        "operational_date": str,
-        "opening_date": str,
-        "total_capital_cost": float
+        "operational_date": datetime.date,
+        "opening_date": datetime.date,
+        "total_capital_cost": Decimal
     },
     'LDV Rebates': {
         "casl_consent": bool,
         "date_approved": str,
-        "submission_id": str,
+        "submission_id": int,
         "submission_date": str,
         "company_name": str,
         "city": str,
@@ -452,11 +455,11 @@ FIELD_TYPES = {
         "business_number": str,
         "drivers_license": str,
         "province": str,
-        "msrp": str,
+        "msrp": Decimal,
         "other_incentives": str,
         "document_type": str,
         "vehicle": str,
-        "incentive_amount": str,
+        "incentive_amount": Decimal,
         "vin": str,
         "delivered": bool,
         "consent_to_contact": bool,
@@ -465,43 +468,43 @@ FIELD_TYPES = {
         "applicant_name": str,
         "address": str,
         "charging_station_info": str,
-        "gt_25kw_lt_50kw": str,
-        "gt_50kw_lt_100kw": str,
-        "gt_100kw": str,
-        "level_2_units_stations": int,
+        "between_25kw_and_50kw": int,
+        "between_50kw_and_100kw": int,
+        "over_100kw": int,
+        "level_2_units": int,
         "level_2_ports": int,
         "estimated_budget": float,
         "adjusted_rebate": float,
-        "rebate_percent_maximum": str,
+        "rebate_percent_maximum": float,
         "pilot_project": bool,
         "region": str,
         "organization_type": str,
         "project_status": str,
-        "review_number": str,
-        "paid_out_rebate_amount": float,
+        "review_number": int,
+        "rebate_paid": float,
     },
     'Scrap It': {
-        "approval_number": str,
+        "approval_number": int,
         "application_received_date": str,
         "completion_date": str,
         "postal_code": str,
         "vin": str,
-        "application_city_fuel": str,
+        "application_city_fuel": Decimal,
         "incentive_type": str,
-        "incentive_cost": str,
+        "incentive_cost": Decimal,
         "cheque_number": str,
         "budget_code": str,
         "scrap_date": str,
     },
-    'speciality_use_vehicle_incentives': {
+    'Specialty Use Vehicle Incentive Program': {
         "approvals": str,
         "date": "date or datetime",
         "applicant_name": str,
-        "max_incentive_amount_requested": float,
+        "max_incentive_amount_requested": int,
         "category": str,
         "applicant_type": str,
-        "incentive_paid": float,
-        "total_purchase_price": float,
+        "incentive_paid": int,
+        "total_purchase_price": int,
         "manufacturer": str,
         "model": str,
     }

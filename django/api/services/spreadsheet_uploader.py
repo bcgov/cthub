@@ -1,3 +1,4 @@
+from decimal import Decimal
 import pandas as pd
 import traceback
 from django.db import transaction
@@ -54,11 +55,10 @@ def transform_data(df, dataset_columns, column_mapping_enum, preparation_functio
     return df
 
 @transaction.atomic
-def load_data(df, model, field_types, replace_data):
+def load_data(df, model, field_types, replace_data, user):
     row_count = 0
     records_inserted = 0
     errors = []
-    model_instances = []
     nullable_fields = get_nullable_fields(model)
 
     if replace_data:
@@ -66,36 +66,50 @@ def load_data(df, model, field_types, replace_data):
 
     for index, row in df.iterrows():
         row_dict = row.to_dict()
-        skip_row = False
+        valid_row = True
 
         for column, value in row_dict.items():
-            if pd.isna(value):
-                if column in nullable_fields:
+
+            expected_type = field_types.get(column)
+            is_nullable = column in nullable_fields
+
+            if pd.isna(value) or value == '':
+                if is_nullable:
                     row_dict[column] = None
                 else:
                     row_dict[column] = get_field_default(model, column)
-                continue
-
-            expected_type = field_types.get(column)
-            if expected_type and not isinstance(value, expected_type) and pd.notnull(value):
-                errors.append(f"Row {index + 1}: Incorrect type for '{column}'. Expected {expected_type.__name__}, got {type(value).__name__}")
-                skip_row = True
+            elif expected_type == float and isinstance(value, int):
+                row_dict[column] = float(value)
+            elif expected_type == int and (isinstance(value, str) and value.strip() != '') or isinstance(value, float):
+                try:
+                    row_dict[column] = int(value)
+                except ValueError:
+                    errors.append(f"Row {index + 1}: Unable to convert value to int for '{column}'. Value was '{value}'.")
+                    valid_row = False
+                    break
+            elif expected_type == Decimal and (isinstance(value, int) or isinstance(value, float)):
+                try:
+                    row_dict[column] = Decimal(value)
+                except ValueError:
+                    errors.append(f"Row {index + 1}: Unable to convert value to int for '{column}'. Value was '{value}'.")
+                    valid_row = False
+                    break
+            elif not isinstance(value, expected_type) and value != '':
+                errors.append(f"Row {index + 1}: Incorrect type for '{column}'. Expected {expected_type.__name__}, got {type(value).__name__}.")
+                valid_row = False
                 break
 
-        if skip_row:
-            continue
-
-        try:
-            model_instance = model(**row_dict)
-            model_instances.append(model_instance)
-            records_inserted += 1
-        except Exception as e:
-            errors.append(f"Row {index + 1}: {e}")
+        if valid_row:
+            try:
+                row_dict['update_user'] = user
+                model_instance = model(**row_dict)
+                model_instance.full_clean()
+                model_instance.save()
+                records_inserted += 1
+            except Exception as e:
+                errors.append(f"Row {index + 1}: {e}")
 
         row_count += 1
-
-    if model_instances:
-        model.objects.bulk_create(model_instances)
 
     return {
         "row_count": row_count,
@@ -104,13 +118,11 @@ def load_data(df, model, field_types, replace_data):
     }
 
 
-
-
-def import_from_xls(excel_file, sheet_name, model, dataset_columns, header_row, column_mapping_enum, field_types, replace_data, preparation_functions=[], validation_functions=[]):
+def import_from_xls(excel_file, sheet_name, model, dataset_columns, header_row, column_mapping_enum, field_types, replace_data, user, preparation_functions=[], validation_functions=[]):
     try:
         df = extract_data(excel_file, sheet_name, header_row)
         df = transform_data(df, dataset_columns, column_mapping_enum, preparation_functions, validation_functions)
-        result = load_data(df, model, field_types, replace_data)
+        result = load_data(df, model, field_types, replace_data, user)
 
         if result['errors']:
             return {"success": False, "message": f"{result['records_inserted']} records inserted from {result['row_count']} total possible rows.", "errors": result['errors'], "rows_processed": result['row_count']}
