@@ -43,7 +43,7 @@ const UploadPage = (props) => {
           >
             {selectionList}
           </Select>
-          <Button className="text-button" onClick={downloadSpreadsheet}>Download Excel File (program data upload template)</Button>
+          {datasetSelected && <Button className="text-button" onClick={downloadSpreadsheet}>Download Excel File (program data upload template)</Button>}
 
         </div>
         <div id="replace-data-select">
