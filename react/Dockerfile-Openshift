@@ -11,7 +11,9 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install --omit=dev && \ 
-    npm run build && \
+    npm install -D webpack webpack-cli && \
+    yes | npm run build
+RUN pwd && \
     ls -l && \
     tree
 
