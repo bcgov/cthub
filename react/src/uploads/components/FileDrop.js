@@ -6,6 +6,7 @@ import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
   const {
+    disabled,
     setFiles,
     setAlert,
   } = props;
@@ -16,10 +17,11 @@ const FileDrop = (props) => {
     setFiles(files);
   }, []);
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const uploadBoxClassNames = disabled ? "file-upload disabled" : "file-upload"
   return (
     <div {...getRootProps()}>
-      <input {...getInputProps()} />
-      <div className="file-upload">
+      <input disabled={disabled} {...getInputProps()} />
+      <div className={uploadBoxClassNames}>
         <UploadIcon />
         <br />
         Drag and Drop files here or

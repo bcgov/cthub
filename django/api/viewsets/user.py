@@ -4,12 +4,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import CreateModelMixin
 from api.models.user import User
-from api.serializers.user import UserSerializer
+from api.serializers.user import UserSerializer, UserListSerializer
 from api.decorators.permission import check_admin_permission
 from api.services.user import update_permissions
+from api.services.permissions import get_permissions_map
 
-class UserViewSet(GenericViewSet):
+class UserViewSet(GenericViewSet, CreateModelMixin):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
@@ -30,24 +32,19 @@ class UserViewSet(GenericViewSet):
         return self.serializer_classes['default']
 
 
-    @action(detail=False, methods=['post'])
     @method_decorator(check_admin_permission())
-    def new(self, request):
-        user_to_insert = request.data['idir'].upper()
-        try:
-            User.objects.get_or_create(idir=user_to_insert)
-            return Response(user_to_insert, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"response": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request):
+        return super().create(request)
 
     @action(detail=False, methods=['put'])
     @method_decorator(check_admin_permission())
     def update_permissions(self, request):
-        error_msg = update_permissions(self, request)
-        if error_msg:
-            return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response('User permissions were updated!', status=status.HTTP_201_CREATED)
+        user_permissions = request.data
+        try:
+            update_permissions(user_permissions)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        return Response('User permissions were updated!', status=status.HTTP_201_CREATED)
     
     @action(detail=False)
     def current(self, request):
@@ -61,5 +58,5 @@ class UserViewSet(GenericViewSet):
     @method_decorator(check_admin_permission())
     def list(self, request):
         users = User.objects.all().order_by('idir')
-        serializer = UserSerializer(users, many=True)
+        serializer = UserListSerializer(users, many=True, context={"permissions_map": get_permissions_map(users)})
         return Response(serializer.data)

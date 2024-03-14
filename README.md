@@ -32,6 +32,16 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
     - This is where you can make changes to your package.json
     - You can technically make changes to your packages without going into your container, but you'll need npm installed into your system
 
+# Rebasing Guide
+- To rebase your branch onto the latest release branch:
+ - ```git fetch upstream``` 
+ - ```git checkout your_branch```
+ - ```git rebase --onto A B```
+ - Where `upstream` is the remote containing the release branch, and `A` is the hash of the latest commit to the release branch, and `B` is the hash of the commit in `your_branch` such that every commit after `B` ought to be rebased onto the release branch.
+ - If you run into conflicts while rebasing, you can resolve them in your IDE, and `git add` the resolved changes before finishing the rebase (committing).
+ - The rebased commits will have different hashes than the old ones, so if you previously pushed `your_branch` to a remote you will have to `git push --force` in order not to end up with additional commits in your remote branch.
+ - On Github, you can modify the base branch of a PR if you're rebasing from a branch based on a previous release branch to the latest release branch.
+
 # License
 The code is a fork from Richard's personal project. Please do not clone, copy or replicate this project unless you're authorized to do so.
 

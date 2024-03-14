@@ -96,6 +96,11 @@ h4 {
 .text-button {
   color: #1a5a96 !important;
   text-decoration: underline !important;
+  text-transform: none !important;
+}
+
+.button-lowercase {
+  text-transform: none !important;
 }
 
 .layout {

@@ -7,6 +7,7 @@ import getFileSize from '../../app/utilities/getFileSize';
 
 const FileDropArea = (props) => {
   const {
+    disabled,
     setUploadFiles,
     uploadFiles,
     setAlert,
@@ -49,6 +50,7 @@ const FileDropArea = (props) => {
         <div className="content">
           <Box p={2}>
             <FileDrop
+              disabled={disabled}
               setAlert={setAlert}
               setFiles={setUploadFiles}
             />
@@ -75,6 +77,7 @@ const FileDropArea = (props) => {
   );
 };
 FileDropArea.propTypes = {
+  disabled: PropTypes.bool.isRequired,
   setUploadFiles: PropTypes.func.isRequired,
   uploadFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setAlert: PropTypes.func.isRequired,

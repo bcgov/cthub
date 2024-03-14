@@ -115,11 +115,11 @@ const UploadContainer = () => {
     return <Loading />
   }
 
+  const alertElement = alert && alertContent && alertSeverity ? <Alert severity={alertSeverity}>{alertContent}</Alert> : null
+
   return (
     <div className="row">
       <div className="col-12 mr-2">
-        {alert && alertContent && alertSeverity
-        && <Alert severity={alertSeverity}>{alertContent}</Alert>}
         {open && (
         <AlertDialog
           open={open}
@@ -134,6 +134,7 @@ const UploadContainer = () => {
         <Stack direction="column" spacing={2}>
           <Paper square variant="outlined">
             <UploadPage
+              alertElement={alertElement} 
               uploadFiles={uploadFiles}
               datasetList={datasetList}
               doUpload={doUpload}

@@ -2,22 +2,24 @@ from django.db import transaction
 from api.models.user_permission import UserPermission
 from api.models.permission import Permission
 from api.models.user import User
+from api.services.generic import get_objects_map
 
+
+# this deletes all records in user_permission, and adds the new ones
 @transaction.atomic
-def update_permissions(self, request):
-    msg = []
-    permissions = Permission.objects.all()
+def update_permissions(user_permissions):
+    permissions_map = get_objects_map(Permission.objects.all(), "description")
+    users_map = get_objects_map(User.objects.all(), "idir")
     UserPermission.objects.all().delete()
-    for each in request.data:
-        for k, v in each.items():
-            if k == 'idir':
-                user = User.objects.get(idir=v)
-            if k == 'user_permissions':
-                for permission_description, value in v.items():
-                    if value == True or (user.idir == request.user and permission_description == 'admin'):
-                    ## if they are updating permissions then they are already admin user, they cannot remove their own admin
-                        permission = permissions.get(description=permission_description)
-                        try:
-                            UserPermission.objects.create(user_id=user.id, permission_id=permission.id)
-                        except Exception as error:
-                            msg.append("{} permission could not be added to {}".format(permission_description, user.idir))
+    user_permissions_to_add = []
+    for each in user_permissions:
+        idir = each["idir"]
+        permissions = each["user_permissions"]
+        user = users_map.get(idir)
+        permission_objects = []
+        for description, value in permissions.items():
+            if value == True:
+                permission_objects.append(permissions_map.get(description))
+        for permission_object in permission_objects:
+            user_permissions_to_add.append(UserPermission(user=user, permission=permission_object))
+    UserPermission.objects.bulk_create(user_permissions_to_add)

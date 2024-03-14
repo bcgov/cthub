@@ -8,6 +8,7 @@ import FileDropArea from './FileDropArea';
 
 const UploadPage = (props) => {
   const {
+    alertElement,
     datasetList,
     datasetSelected,
     doUpload,
@@ -28,6 +29,7 @@ const UploadPage = (props) => {
     <>
       <Box p={3}>
         <h2>Upload Program Data</h2>
+        {alertElement}
         <div id="dataset-select">
           <span>
             <h3>
@@ -41,7 +43,7 @@ const UploadPage = (props) => {
           >
             {selectionList}
           </Select>
-          <Button className="text-button" onClick={downloadSpreadsheet}>Download Spreadsheet</Button>
+          <Button className="text-button" onClick={downloadSpreadsheet}>Download Excel File (program data upload template)</Button>
 
         </div>
         <div id="replace-data-select">
@@ -53,6 +55,7 @@ const UploadPage = (props) => {
               onChange={handleRadioChange}
             >
               <FormControlLabel
+                disabled={datasetSelected ? false: true}
                 value
                 control={(
                   <Radio />
@@ -60,6 +63,7 @@ const UploadPage = (props) => {
                 label="Replace existing data"
               />
               <FormControlLabel
+                disabled={datasetSelected ? false: true}
                 value={false}
                 control={<Radio />}
                 label="Add to existing data"
@@ -69,6 +73,7 @@ const UploadPage = (props) => {
         </div>
         <div>
           <FileDropArea
+            disabled={datasetSelected ? false: true}
             setAlert={setAlert}
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}
@@ -77,7 +82,7 @@ const UploadPage = (props) => {
         <Box pt={2} className="upload-bar" alignItems="center" padding={2} display="flex" justifyContent="flex-end">
           <Button
             disabled={uploadFiles.length === 0 || !datasetSelected}
-            className="button-dark-blue"
+            className="button-dark-blue button-lowercase"
             onClick={() => doUpload()}
             type="button"
             variant="contained"
@@ -95,6 +100,7 @@ UploadPage.defaultProps = {
 };
 
 UploadPage.propTypes = {
+  alertElement: PropTypes.element,
   datasetSelected: PropTypes.string,
   datasetList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   uploadFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,

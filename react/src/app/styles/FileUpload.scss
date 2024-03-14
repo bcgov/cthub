@@ -40,3 +40,9 @@
   padding-bottom: 1rem;
   margin-top: 2rem;
 }
+
+.file-upload {
+  &.disabled {
+    background-color: $default-background-grey;
+  }
+}
