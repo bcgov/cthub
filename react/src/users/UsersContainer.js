@@ -54,7 +54,7 @@ const UsersContainer = (props) => {
   }, []);
 
   const handleDeleteUser = useCallback((idir) => {
-    axios.delete(ROUTES_USERS.DELETE, { data: { idir } })
+    axios.delete(ROUTES_USERS.DELETE, { data: { current_user: currentUser, idir } })
       .then((response) => {
         setMessageSeverity('success');
         setMessage(`${idir} was deleted from the user table`);
