@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Box, Button, Grid, TextField, Checkbox, Tooltip,
+  Box, Button, Grid, TextField, Checkbox, Tooltip, IconButton,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
@@ -13,14 +13,15 @@ const UsersPage = (props) => {
     handleAddNewUser,
     setNewUser,
     handleCheckboxChange,
-    handleSubmitPermissionUpdates,
+    handleSubmitUserUpdates,
     newUser,
     setMessage,
+    handleDeleteClick,
   } = props;
+
   const userRow = (user) => {
     const disableAdmin = currentUser === user.idir;
     return (
-
       <Grid container key={user.idir} alignItems="center">
         <Grid item className="permissions">
           <Checkbox className="checkbox" name={user.idir} id="uploader" color="default" checked={user.user_permissions.uploader} onChange={(event) => { handleCheckboxChange(event); }} />
@@ -34,11 +35,14 @@ const UsersPage = (props) => {
           <span>{user.idir}</span>
         </Grid>
         <Grid item>
-          <ClearIcon padding={0} sx={{ color: 'red' }} />
+          <IconButton onClick={(event) => { handleDeleteClick(event); }}>
+            <ClearIcon padding={0} sx={{ color: 'red' }} />
+          </IconButton>
         </Grid>
       </Grid>
     );
   };
+
   return (
     <>
       <Box p={3}>
@@ -57,7 +61,7 @@ const UsersPage = (props) => {
                 <TextField className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); setMessage(''); }} />
               </Grid>
               <Grid item>
-                <Tooltip disableHoverListener={newUser} title="Please type in the IDIR you would like to add.">
+                <Tooltip disableHoverListener={!!newUser} title="Please type in the IDIR you would like to add.">
                   <span>
                     <Button disabled={!newUser} variant="contained" className="button-dark-blue" onClick={handleAddNewUser}>
                       Add User
@@ -81,7 +85,7 @@ const UsersPage = (props) => {
             userRow(user)
           ))}
           <Box className="permissions" justifyContent="space-around" display="flex" paddingTop={3} paddingBottom={3}>
-            <Button variant="contained" className="button-dark-blue" startIcon={<SaveIcon />} onClick={handleSubmitPermissionUpdates}>
+            <Button variant="contained" className="button-dark-blue" startIcon={<SaveIcon />} onClick={handleSubmitUserUpdates}>
               Save
             </Button>
           </Box>
@@ -92,7 +96,6 @@ const UsersPage = (props) => {
 };
 UsersPage.defaultProps = {
   newUser: '',
-  setMessage: '',
 };
 
 UsersPage.propTypes = {
@@ -100,9 +103,10 @@ UsersPage.propTypes = {
   handleAddNewUser: PropTypes.func.isRequired,
   setNewUser: PropTypes.func.isRequired,
   handleCheckboxChange: PropTypes.func.isRequired,
-  handleSubmitPermissionUpdates: PropTypes.func.isRequired,
+  handleSubmitUserUpdates: PropTypes.func.isRequired,
   currentUser: PropTypes.string.isRequired,
   newUser: PropTypes.string,
-  setMessage: PropTypes.string,
+  setMessage: PropTypes.func.isRequired,
+  handleDeleteClick: PropTypes.func.isRequired,
 };
 export default UsersPage;

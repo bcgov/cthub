@@ -48,7 +48,11 @@ const UsersContainer = (props) => {
       });
   };
 
-  const handleSubmitPermissionUpdates = () => {
+  const handleDeleteClick = () => {
+    setMessage('');
+  };
+
+  const handleSubmitUserUpdates = () => {
     axios.put(ROUTES_USERS.UPDATE, users)
       .then((response) => {
         setMessageSeverity('success');
@@ -84,9 +88,10 @@ const UsersContainer = (props) => {
         setNewUser={setNewUser}
         handleAddNewUser={handleAddNewUser}
         handleCheckboxChange={handleCheckboxChange}
-        handleSubmitPermissionUpdates={handleSubmitPermissionUpdates}
+        handleSubmitUserUpdates={handleSubmitUserUpdates}
         setMessage={setMessage}
         newUser={newUser}
+        handleDeleteClick={handleDeleteClick}
       />
     </div>
   );
