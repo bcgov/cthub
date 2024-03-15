@@ -4,7 +4,7 @@ name: CTHUB 0.2.0 Dev CI
 
 on:
   push:
-    branches: [ release-0.2.0 ]
+    branches: [ backend-build-0.2.0 ]
     paths:
       - frontend/**
       - backend/**
@@ -57,13 +57,13 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ env.TOOLS_NAMESPACE }}
 
-      # - name: Build CTHUB Backend
-      #   run: |
-      #     cd openshift/templates/backend
-      #     oc process -f ./backend-bc.yaml NAME=cthub SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
-      #     sleep 5s
-      #     oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
-      #     oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+      - name: Build CTHUB Backend
+        run: |
+          cd openshift/templates/backend
+          oc process -f ./backend-bc.yaml NAME=cthub SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+          sleep 5s
+          oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
+          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
       - name: Build CTHUB Frontend
         run: |
