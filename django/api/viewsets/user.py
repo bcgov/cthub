@@ -17,7 +17,7 @@ class UserViewSet(GenericViewSet, CreateModelMixin):
     and  `update`  actions.
     """
     permission_classes = (AllowAny,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     queryset = User.objects.all()
 
     serializer_classes = {
@@ -30,6 +30,21 @@ class UserViewSet(GenericViewSet, CreateModelMixin):
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
+
+    @action(detail=False, methods=['delete'])
+    @method_decorator(check_admin_permission())
+    def delete(self, request):
+        user_idir = request.data['idir']
+        if self != user_idir:
+            try:
+                User.objects.get(idir=user_idir).delete()
+                users = User.objects.all().order_by('idir')
+                serializer = UserListSerializer(users, many=True, context={"permissions_map": get_permissions_map(users)})
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response('you cannot delete your own idir', status=status.HTTP_400_BAD_REQUEST )
 
 
     @method_decorator(check_admin_permission())
@@ -44,7 +59,7 @@ class UserViewSet(GenericViewSet, CreateModelMixin):
             update_permissions(user_permissions)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-        return Response('User permissions were updated!', status=status.HTTP_201_CREATED)
+        return Response('User permissions were updated!', status=status.HTTP_200_OK)
     
     @action(detail=False)
     def current(self, request):

@@ -34,8 +34,8 @@ const UploadContainer = () => {
     }
     setReplaceData(choice);
   };
-  const axios = useAxios()
-  const axiosDefault = useAxios(true)
+  const axios = useAxios();
+  const axiosDefault = useAxios(true);
 
   const refreshList = () => {
     setLoading(true);
@@ -88,9 +88,9 @@ const UploadContainer = () => {
   const downloadSpreadsheet = () => {
     axios.get(ROUTES_UPLOAD.DOWNLOAD_SPREADSHEET, {
       params: {
-        datasetSelected: datasetSelected
+        datasetSelected,
       },
-      responseType: 'blob'
+      responseType: 'blob',
     }).then((response) => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -112,7 +112,7 @@ const UploadContainer = () => {
   }, []);
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
 
   const alertElement = alert && alertContent && alertSeverity ? <Alert severity={alertSeverity}>{alertContent}</Alert> : null
@@ -120,6 +120,8 @@ const UploadContainer = () => {
   return (
     <div className="row">
       <div className="col-12 mr-2">
+        {alert && alertContent && alertSeverity
+        && <Alert severity={alertSeverity}>{alertContent}</Alert>}
         {open && (
         <AlertDialog
           open={open}
@@ -134,7 +136,7 @@ const UploadContainer = () => {
         <Stack direction="column" spacing={2}>
           <Paper square variant="outlined">
             <UploadPage
-              alertElement={alertElement} 
+              alertElement={alertElement}
               uploadFiles={uploadFiles}
               datasetList={datasetList}
               doUpload={doUpload}

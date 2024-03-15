@@ -9,13 +9,23 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 export default function AlertDialog(props) {
   const {
-    open, setOpen, rightButtonText, dialogue, leftButtonText, setReplaceData, title
+    open,
+    setOpen,
+    rightButtonText,
+    dialogue,
+    leftButtonText,
+    setReplaceData,
+    title,
+    handleDeleteUser,
+    userToDelete,
   } = props;
   const handleClose = (trueFalse) => {
+    if (userToDelete && trueFalse === true) {
+      handleDeleteUser(userToDelete);
+    }
     setReplaceData(trueFalse);
     setOpen(false);
   };
-
   return (
     <div>
       <Dialog
@@ -57,7 +67,10 @@ AlertDialog.defaultProps = {
   rightButtonText: '',
   dialogue: '',
   leftButtonText: '',
-  setReplaceData: '',
+  setReplaceData: () => {},
+  handleDeleteUser: () => {},
+  title: '',
+  userToDelete: '',
 };
 AlertDialog.propTypes = {
   open: PropTypes.bool.isRequired,
@@ -66,4 +79,7 @@ AlertDialog.propTypes = {
   dialogue: PropTypes.string,
   leftButtonText: PropTypes.string,
   setReplaceData: PropTypes.func,
+  handleDeleteUser: PropTypes.func,
+  title: PropTypes.string,
+  userToDelete: PropTypes.string,
 };

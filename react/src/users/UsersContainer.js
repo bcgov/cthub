@@ -6,28 +6,21 @@ import { produce } from 'immer';
 import ROUTES_USERS from './routes';
 import UsersPage from './components/UsersPage';
 import useAxios from '../app/utilities/useAxios';
+import AlertDialog from '../app/components/AlertDialog';
 
 const UsersContainer = (props) => {
-  const { currentUser } = props;
+  const {
+    currentUser,
+  } = props;
+
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState('');
   const [message, setMessage] = useState('');
   const [messageSeverity, setMessageSeverity] = useState('');
+  const [userToDelete, setUserToDelete] = useState('');
+  const [open, setOpen] = useState(false);
   const axios = useAxios();
-
-  const handleCheckboxChange = useCallback((event) => {
-    setMessage('');
-    const idir = event.target.name;
-    const permissionType = event.target.id;
-    const { checked } = event.target;
-    setUsers(
-      produce((draft) => {
-        const user = draft.find((user) => user.idir === idir);
-        user.user_permissions[permissionType] = checked;
-      }),
-    );
-  }, []);
 
   const handleAddNewUser = () => {
     axios.post(ROUTES_USERS.CREATE, { idir: newUser })
@@ -47,10 +40,31 @@ const UsersContainer = (props) => {
         setMessage('new user could not be added, sorry!');
       });
   };
-
-  const handleDeleteClick = () => {
+  const handleCheckboxChange = useCallback((event) => {
     setMessage('');
-  };
+    const idir = event.target.name;
+    const permissionType = event.target.id;
+    const { checked } = event.target;
+    setUsers(
+      produce((draft) => {
+        const userToChange = draft.find((user) => user.idir === idir);
+        userToChange.user_permissions[permissionType] = checked;
+      }),
+    );
+  }, []);
+
+  const handleDeleteUser = useCallback((idir) => {
+    axios.delete(ROUTES_USERS.DELETE, { data: { idir } })
+      .then((response) => {
+        setMessageSeverity('success');
+        setMessage(`${idir} was deleted from the user table`);
+        setUsers(response.data);
+      })
+      .catch((error) => {
+        setMessageSeverity(error);
+        setMessage(error.data);
+      });
+  }, []);
 
   const handleSubmitUserUpdates = () => {
     axios.put(ROUTES_USERS.UPDATE, users)
@@ -62,6 +76,12 @@ const UsersContainer = (props) => {
         setMessageSeverity('error');
         setMessage(error.data);
       });
+  };
+
+  const handleXClick = (idir) => {
+    setMessage('');
+    setUserToDelete(idir);
+    setOpen(true);
   };
 
   useEffect(() => {
@@ -82,6 +102,18 @@ const UsersContainer = (props) => {
   return (
     <div className="users-container">
       {message && <Alert severity={messageSeverity}>{message}</Alert>}
+      {open && (
+        <AlertDialog
+          open={open}
+          setOpen={setOpen}
+          dialogue={`${userToDelete} will be removed from the application and will have no permissions.`}
+          rightButtonText="Delete"
+          leftButtonText="Cancel"
+          title="Delete user?"
+          handleDeleteUser={handleDeleteUser}
+          userToDelete={userToDelete}
+        />
+      )}
       <UsersPage
         currentUser={currentUser}
         users={users}
@@ -91,7 +123,7 @@ const UsersContainer = (props) => {
         handleSubmitUserUpdates={handleSubmitUserUpdates}
         setMessage={setMessage}
         newUser={newUser}
-        handleDeleteClick={handleDeleteClick}
+        handleXClick={handleXClick}
       />
     </div>
   );

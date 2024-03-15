@@ -16,7 +16,7 @@ const UsersPage = (props) => {
     handleSubmitUserUpdates,
     newUser,
     setMessage,
-    handleDeleteClick,
+    handleXClick,
   } = props;
 
   const userRow = (user) => {
@@ -24,10 +24,10 @@ const UsersPage = (props) => {
     return (
       <Grid container key={user.idir} alignItems="center">
         <Grid item className="permissions">
-          <Checkbox className="checkbox" name={user.idir} id="uploader" color="default" checked={user.user_permissions.uploader} onChange={(event) => { handleCheckboxChange(event); }} />
+          <Checkbox className="checkbox" name={user.idir} id="uploader" color="default" checked={user.user_permissions.uploader || false} onChange={(event) => { handleCheckboxChange(event); }} />
           <Tooltip disableHoverListener={!disableAdmin} title="You cannot remove your own admin permission">
             <span>
-              <Checkbox className="checkbox" name={user.idir} id="admin" color="default" disabled={disableAdmin} checked={user.user_permissions.admin} onChange={(event) => { handleCheckboxChange(event); }} />
+              <Checkbox className="checkbox" name={user.idir} id="admin" color="default" disabled={disableAdmin} checked={user.user_permissions.admin || false} onChange={(event) => { handleCheckboxChange(event); }} />
             </span>
           </Tooltip>
         </Grid>
@@ -35,9 +35,17 @@ const UsersPage = (props) => {
           <span>{user.idir}</span>
         </Grid>
         <Grid item>
-          <IconButton onClick={(event) => { handleDeleteClick(event); }}>
-            <ClearIcon padding={0} sx={{ color: 'red' }} />
-          </IconButton>
+          <Tooltip disableHoverListener={!disableAdmin} title="You cannot delete yourself.">
+            <span>
+              <IconButton
+                padding={0}
+                disabled={disableAdmin}
+                onClick={() => { handleXClick(user.idir); }}
+              >
+                <ClearIcon padding={0} sx={{ color: disableAdmin ? 'grey' : 'red' }} />
+              </IconButton>
+            </span>
+          </Tooltip>
         </Grid>
       </Grid>
     );
@@ -107,6 +115,6 @@ UsersPage.propTypes = {
   currentUser: PropTypes.string.isRequired,
   newUser: PropTypes.string,
   setMessage: PropTypes.func.isRequired,
-  handleDeleteClick: PropTypes.func.isRequired,
+  handleXClick: PropTypes.func.isRequired,
 };
 export default UsersPage;
