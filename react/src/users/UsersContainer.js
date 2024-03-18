@@ -53,18 +53,19 @@ const UsersContainer = (props) => {
     );
   }, []);
 
-  const handleDeleteUser = useCallback((idir) => {
-    axios.delete(ROUTES_USERS.DELETE, { data: { current_user: currentUser, idir } })
+  const handleDeleteUser = () => {
+    axios.delete(ROUTES_USERS.DELETE, { data: { current_user: currentUser, userToDelete } })
       .then((response) => {
         setMessageSeverity('success');
-        setMessage(`${idir} was deleted from the user table`);
+        setMessage(`${userToDelete} was deleted from the user table`);
         setUsers(response.data);
+        setUserToDelete('');
       })
       .catch((error) => {
         setMessageSeverity(error);
         setMessage(error.data);
       });
-  }, []);
+  };
 
   const handleSubmitUserUpdates = () => {
     axios.put(ROUTES_USERS.UPDATE, users)

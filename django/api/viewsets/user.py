@@ -35,7 +35,7 @@ class UserViewSet(GenericViewSet, CreateModelMixin):
     @method_decorator(check_admin_permission())
     def delete(self, request):
         current_user = request.data['current_user']
-        user_idir = request.data['idir']
+        user_idir = request.data['userToDelete']
         if current_user != user_idir:
             try:
                 User.objects.get(idir=user_idir).delete()
