@@ -4,14 +4,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import CreateModelMixin
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from api.models.user import User
 from api.serializers.user import UserSerializer, UserListSerializer
 from api.decorators.permission import check_admin_permission
 from api.services.user import update_permissions
 from api.services.permissions import get_permissions_map
 
-class UserViewSet(GenericViewSet, CreateModelMixin):
+class UserViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
@@ -19,6 +19,7 @@ class UserViewSet(GenericViewSet, CreateModelMixin):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     queryset = User.objects.all()
+    lookup_field = 'idir'
 
     serializer_classes = {
         'default': UserSerializer,
@@ -28,24 +29,14 @@ class UserViewSet(GenericViewSet, CreateModelMixin):
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):
             return self.serializer_classes[self.action]
-
         return self.serializer_classes['default']
 
-    @action(detail=False, methods=['delete'])
+
     @method_decorator(check_admin_permission())
-    def delete(self, request):
-        current_user = request.data['current_user']
-        user_idir = request.data['userToDelete']
-        if current_user != user_idir:
-            try:
-                User.objects.get(idir=user_idir).delete()
-                users = User.objects.all().order_by('idir')
-                serializer = UserListSerializer(users, many=True, context={"permissions_map": get_permissions_map(users)})
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-        else:
+    def destroy(self, request, idir=None):
+        if request.user == idir:
             return Response('you cannot delete your own idir', status=status.HTTP_400_BAD_REQUEST )
+        return super().destroy(self, request)
 
 
     @method_decorator(check_admin_permission())

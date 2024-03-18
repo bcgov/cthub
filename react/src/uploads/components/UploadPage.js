@@ -50,21 +50,19 @@ const UploadPage = (props) => {
           <FormControl component="fieldset">
             <RadioGroup
               aria-label="Replace or add to existing data"
-              value={replaceData}
+              value={replaceData ? "replace" : "add"}
               name="radio-buttons-group"
               onChange={handleRadioChange}
             >
               <FormControlLabel
                 disabled={datasetSelected ? false: true}
-                value
-                control={(
-                  <Radio />
-)}
+                value={"replace"}
+                control={<Radio />}
                 label="Replace existing data"
               />
               <FormControlLabel
                 disabled={datasetSelected ? false: true}
-                value={false}
+                value={"add"}
                 control={<Radio />}
                 label="Add to existing data"
               />

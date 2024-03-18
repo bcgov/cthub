@@ -16,24 +16,13 @@ const UploadContainer = () => {
   const [datasetList, setDatasetList] = useState([{}]); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
   const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
-  const [replaceData, setReplaceData] = useState('false'); // if true, we will replace all
+  const [replaceData, setReplaceData] = useState(false); // if true, we will replace all
   const [alertContent, setAlertContent] = useState();
   const [alert, setAlert] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('');
-  // existing data with what is being uploaded
-  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
-  const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
-  const leftButtonText = 'Cancel';
-  const rightButtonText = 'Replace existing data';
-  const handleRadioChange = (event) => {
-    const choice = event.target.value;
-    if (choice === 'true') {
-      setOpen(true);
-    }
-    setReplaceData(choice);
-  };
   const axios = useAxios();
   const axiosDefault = useAxios(true);
 
@@ -107,6 +96,24 @@ const UploadContainer = () => {
     });
   };
 
+  const handleRadioChange = (event) => {
+    const choice = event.target.value;
+    if (choice === 'replace') {
+      setOpenDialog(true);
+    } else {
+      setReplaceData(false);
+    }
+  };
+
+  const handleReplaceDataConfirm = () => {
+    setReplaceData(true)
+    setOpenDialog(false)
+  }
+
+  const handleReplaceDataCancel = () => {
+    setOpenDialog(false)
+  }
+
   useEffect(() => {
     refreshList(true);
   }, []);
@@ -120,19 +127,15 @@ const UploadContainer = () => {
   return (
     <div className="row">
       <div className="col-12 mr-2">
-        {alert && alertContent && alertSeverity
-        && <Alert severity={alertSeverity}>{alertContent}</Alert>}
-        {open && (
         <AlertDialog
-          open={open}
-          setOpen={setOpen}
-          dialogue={dialogue}
-          rightButtonText={rightButtonText}
-          leftButtonText={leftButtonText}
-          setReplaceData={setReplaceData}
-          title="Replace existing data?"
+          open={openDialog}
+          title={'Replace existing data?'}
+          dialogue={'Selecting replace will delete all previously uploaded records for this dataset'}
+          cancelText={'Cancel'}
+          handleCancel={handleReplaceDataCancel}
+          confirmText={'Replace existing data'}
+          handleConfirm={handleReplaceDataConfirm}
         />
-        )}
         <Stack direction="column" spacing={2}>
           <Paper square variant="outlined">
             <UploadPage

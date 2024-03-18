@@ -1,12 +1,13 @@
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { CircularProgress, Alert } from '@mui/material';
+import { Alert } from '@mui/material';
 import React, { useState, useEffect, useCallback } from 'react';
 import { produce } from 'immer';
 import ROUTES_USERS from './routes';
 import UsersPage from './components/UsersPage';
 import useAxios from '../app/utilities/useAxios';
 import AlertDialog from '../app/components/AlertDialog';
+import Loading from '../app/components/Loading';
 
 const UsersContainer = (props) => {
   const {
@@ -19,7 +20,7 @@ const UsersContainer = (props) => {
   const [message, setMessage] = useState('');
   const [messageSeverity, setMessageSeverity] = useState('');
   const [userToDelete, setUserToDelete] = useState('');
-  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const axios = useAxios();
 
   const handleAddNewUser = () => {
@@ -53,19 +54,37 @@ const UsersContainer = (props) => {
     );
   }, []);
 
+  const handleDeleteUserClick = (idir) => {
+    setUserToDelete(idir);
+    setOpenDialog(true);
+  }
+
   const handleDeleteUser = () => {
-    axios.delete(ROUTES_USERS.DELETE, { data: { current_user: currentUser, userToDelete } })
+    axios.delete(ROUTES_USERS.DETAILS.replace(/:id/g, userToDelete))
       .then((response) => {
         setMessageSeverity('success');
         setMessage(`${userToDelete} was deleted from the user table`);
-        setUsers(response.data);
-        setUserToDelete('');
+        setUsers(
+          produce((draft) => {
+            const indexOfUserToRemove = draft.findIndex((user) => user.idir === userToDelete);
+            draft.splice(indexOfUserToRemove, 1);
+          }),
+        );
       })
       .catch((error) => {
-        setMessageSeverity(error);
-        setMessage(error.data);
+        setMessageSeverity('error');
+        setMessage('something went wrong when deleting the user, sorry!');
+      })
+      .finally(() => {
+        setUserToDelete('');
+        setOpenDialog(false)
       });
-  };
+  }
+
+  const handleDeleteUserCancel = () => {
+    setUserToDelete('');
+    setOpenDialog(false);
+  }
 
   const handleSubmitUserUpdates = () => {
     axios.put(ROUTES_USERS.UPDATE, users)
@@ -79,12 +98,6 @@ const UsersContainer = (props) => {
       });
   };
 
-  const handleXClick = (idir) => {
-    setMessage('');
-    setUserToDelete(idir);
-    setOpen(true);
-  };
-
   useEffect(() => {
     setLoading(true);
     axios.get(ROUTES_USERS.LIST).then((listResponse) => {
@@ -94,27 +107,20 @@ const UsersContainer = (props) => {
   }, []);
 
   if (loading) {
-    return (
-      <div>
-        <CircularProgress color="inherit" />
-      </div>
-    );
+    return <Loading />
   }
   return (
     <div className="users-container">
       {message && <Alert severity={messageSeverity}>{message}</Alert>}
-      {open && (
         <AlertDialog
-          open={open}
-          setOpen={setOpen}
+          open={openDialog}
+          title={'Delete user?'}
           dialogue={`${userToDelete} will be removed from the application and will have no permissions.`}
-          rightButtonText="Delete"
-          leftButtonText="Cancel"
-          title="Delete user?"
-          handleDeleteUser={handleDeleteUser}
-          userToDelete={userToDelete}
+          cancelText={'Cancel'}
+          handleCancel={handleDeleteUserCancel}
+          confirmText={'Delete'}
+          handleConfirm={handleDeleteUser}
         />
-      )}
       <UsersPage
         currentUser={currentUser}
         users={users}
@@ -124,7 +130,7 @@ const UsersContainer = (props) => {
         handleSubmitUserUpdates={handleSubmitUserUpdates}
         setMessage={setMessage}
         newUser={newUser}
-        handleXClick={handleXClick}
+        handleXClick={handleDeleteUserClick}
       />
     </div>
   );

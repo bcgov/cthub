@@ -5,7 +5,7 @@ const USERS = {
   CURRENT: `${API_BASE_PATH}/current`,
   CREATE: API_BASE_PATH,
   UPDATE: `${API_BASE_PATH}/update_permissions`,
-  DELETE: API_BASE_PATH,
+  DETAILS: `${API_BASE_PATH}/:id`,
 };
 
 export default USERS;
