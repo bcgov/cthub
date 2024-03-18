@@ -1,33 +1,27 @@
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { CircularProgress, Alert } from '@mui/material';
+import { Alert } from '@mui/material';
 import React, { useState, useEffect, useCallback } from 'react';
 import { produce } from 'immer';
 import ROUTES_USERS from './routes';
 import UsersPage from './components/UsersPage';
 import useAxios from '../app/utilities/useAxios';
+import AlertDialog from '../app/components/AlertDialog';
+import Loading from '../app/components/Loading';
 
 const UsersContainer = (props) => {
-  const { currentUser } = props;
+  const {
+    currentUser,
+  } = props;
+
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState('');
   const [message, setMessage] = useState('');
   const [messageSeverity, setMessageSeverity] = useState('');
+  const [userToDelete, setUserToDelete] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
   const axios = useAxios();
-
-  const handleCheckboxChange = useCallback((event) => {
-    setMessage('');
-    const idir = event.target.name;
-    const permissionType = event.target.id;
-    const { checked } = event.target;
-    setUsers(
-      produce((draft) => {
-        const user = draft.find((user) => user.idir === idir);
-        user.user_permissions[permissionType] = checked;
-      }),
-    );
-  }, []);
 
   const handleAddNewUser = () => {
     axios.post(ROUTES_USERS.CREATE, { idir: newUser })
@@ -47,8 +41,52 @@ const UsersContainer = (props) => {
         setMessage('new user could not be added, sorry!');
       });
   };
+  const handleCheckboxChange = useCallback((event) => {
+    setMessage('');
+    const idir = event.target.name;
+    const permissionType = event.target.id;
+    const { checked } = event.target;
+    setUsers(
+      produce((draft) => {
+        const userToChange = draft.find((user) => user.idir === idir);
+        userToChange.user_permissions[permissionType] = checked;
+      }),
+    );
+  }, []);
 
-  const handleSubmitPermissionUpdates = () => {
+  const handleDeleteUserClick = (idir) => {
+    setUserToDelete(idir);
+    setOpenDialog(true);
+  }
+
+  const handleDeleteUser = () => {
+    axios.delete(ROUTES_USERS.DETAILS.replace(/:id/g, userToDelete))
+      .then((response) => {
+        setMessageSeverity('success');
+        setMessage(`${userToDelete} was deleted from the user table`);
+        setUsers(
+          produce((draft) => {
+            const indexOfUserToRemove = draft.findIndex((user) => user.idir === userToDelete);
+            draft.splice(indexOfUserToRemove, 1);
+          }),
+        );
+      })
+      .catch((error) => {
+        setMessageSeverity('error');
+        setMessage('something went wrong when deleting the user, sorry!');
+      })
+      .finally(() => {
+        setUserToDelete('');
+        setOpenDialog(false)
+      });
+  }
+
+  const handleDeleteUserCancel = () => {
+    setUserToDelete('');
+    setOpenDialog(false);
+  }
+
+  const handleSubmitUserUpdates = () => {
     axios.put(ROUTES_USERS.UPDATE, users)
       .then((response) => {
         setMessageSeverity('success');
@@ -69,24 +107,30 @@ const UsersContainer = (props) => {
   }, []);
 
   if (loading) {
-    return (
-      <div>
-        <CircularProgress color="inherit" />
-      </div>
-    );
+    return <Loading />
   }
   return (
     <div className="users-container">
       {message && <Alert severity={messageSeverity}>{message}</Alert>}
+        <AlertDialog
+          open={openDialog}
+          title={'Delete user?'}
+          dialogue={`${userToDelete} will be removed from the application and will have no permissions.`}
+          cancelText={'Cancel'}
+          handleCancel={handleDeleteUserCancel}
+          confirmText={'Delete'}
+          handleConfirm={handleDeleteUser}
+        />
       <UsersPage
         currentUser={currentUser}
         users={users}
         setNewUser={setNewUser}
         handleAddNewUser={handleAddNewUser}
         handleCheckboxChange={handleCheckboxChange}
-        handleSubmitPermissionUpdates={handleSubmitPermissionUpdates}
+        handleSubmitUserUpdates={handleSubmitUserUpdates}
         setMessage={setMessage}
         newUser={newUser}
+        handleXClick={handleDeleteUserClick}
       />
     </div>
   );

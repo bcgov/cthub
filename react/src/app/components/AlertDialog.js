@@ -7,20 +7,27 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function AlertDialog(props) {
+const AlertDialog = (props) => {
   const {
-    open, setOpen, rightButtonText, dialogue, leftButtonText, setReplaceData, title
+    open,
+    dialogue,
+    title,
+    cancelText,
+    handleCancel,
+    confirmText,
+    handleConfirm
   } = props;
-  const handleClose = (trueFalse) => {
-    setReplaceData(trueFalse);
-    setOpen(false);
-  };
 
+  if (!open) {
+    return null
+  }
   return (
     <div>
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={true}
+        onClose={() => {
+          handleCancel()
+        }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -34,36 +41,38 @@ export default function AlertDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => {
-            handleClose(false);
+            handleCancel();
           }}
           >
-            {leftButtonText}
+            {cancelText}
 
           </Button>
           <Button
             onClick={() => {
-              handleClose(true);
+              handleConfirm();
             }}
             autoFocus
           >
-            {rightButtonText}
+            {confirmText}
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 }
+
 AlertDialog.defaultProps = {
-  rightButtonText: '',
   dialogue: '',
-  leftButtonText: '',
-  setReplaceData: '',
+  title: '',
 };
 AlertDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  setOpen: PropTypes.func.isRequired,
-  rightButtonText: PropTypes.string,
+  title: PropTypes.string,
   dialogue: PropTypes.string,
-  leftButtonText: PropTypes.string,
-  setReplaceData: PropTypes.func,
+  cancelText: PropTypes.string.isRequired,
+  handleCancel: PropTypes.func.isRequired,
+  confirmText: PropTypes.string.isRequired,
+  handleConfirm: PropTypes.func.isRequired
 };
+
+export default AlertDialog
