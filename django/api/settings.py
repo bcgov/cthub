@@ -43,6 +43,7 @@ CORS_ORIGIN_WHITELIST = [
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'tfrs.apps.ApiConfig',
+    'metabase.apps.MetabaseConfig',
     'corsheaders',
     'django_filters',
     'django.contrib.admin',
@@ -96,7 +97,17 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
     },
+    'metabase': {
+        'ENGINE': os.getenv('METABASE_DB_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.getenv('METABASE_DB_NAME', 'metabase'),
+        'USER': os.getenv('METABASE_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('METABASE_DB_PASSWORD', 'postgres'),
+        'HOST': os.getenv('METABASE_DB_HOST', 'db'),
+        'PORT': os.getenv('METABASE_DB_PORT', '5432'),
+    },
 }
+
+DATABASE_ROUTERS = ['metabase.db_router.MetabaseRouter',]
 
 
 # Password validation
