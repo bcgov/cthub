@@ -6,7 +6,7 @@
 #     && npm install --omit=dev \
 #     && npm install -D webpack webpack-cli
 # RUN yes | npm run dist
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:20 as builder
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.13 as builder
 WORKDIR /usr/src/app
 COPY ./ ./
 RUN npm install -g npm@latest
