@@ -9,7 +9,7 @@
 FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.13 as builder
 WORKDIR /usr/src/app
 COPY ./ ./
-RUN npm install -g npm@latest
+# RUN npm install -g npm@latest    doesn't work for node 16
 RUN npm install
 RUN pwd && \
   ls -l && \
