@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import pandas as pd
 import traceback
 from django.db import transaction
@@ -73,31 +73,45 @@ def load_data(df, model, field_types, replace_data, user):
             expected_type = field_types.get(column)
             is_nullable = column in nullable_fields
 
+            print(f"Column: {column}, Expected Type: {expected_type}, Actual Type: {type(value)}")
+
             if pd.isna(value) or value == '':
                 if is_nullable:
                     row_dict[column] = None
                 else:
                     row_dict[column] = get_field_default(model, column)
-            elif expected_type == float and isinstance(value, int):
-                row_dict[column] = float(value)
-            elif expected_type == int and (isinstance(value, str) and value.strip() != '') or isinstance(value, float):
+            elif expected_type == float:
+                if isinstance(value, int):
+                    row_dict[column] = float(value)
+                elif isinstance(value, float):
+                    row_dict[column] = round(value, 2)
+                elif isinstance(value, str) and value.strip() != '':
+                    try:
+                        float_value = float(value)
+                        row_dict[column] = round(float_value, 2)
+                    except ValueError:
+                        errors.append(f"Row {index + 1}: Unable to convert value to float for '{column}'. Value was '{value}'.")
+                        valid_row = False
+                        continue
+            elif expected_type == int and ((isinstance(value, str) and value.strip() != '') or isinstance(value, float)):
                 try:
                     row_dict[column] = int(value)
                 except ValueError:
                     errors.append(f"Row {index + 1}: Unable to convert value to int for '{column}'. Value was '{value}'.")
                     valid_row = False
-                    break
-            elif expected_type == Decimal and (isinstance(value, int) or isinstance(value, float)):
+                    continue
+            elif expected_type == Decimal and ((isinstance(value, int) or isinstance(value, float))):
                 try:
-                    row_dict[column] = Decimal(value)
+                    decimal_value = Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                    row_dict[column] = decimal_value
                 except ValueError:
                     errors.append(f"Row {index + 1}: Unable to convert value to int for '{column}'. Value was '{value}'.")
                     valid_row = False
-                    break
+                    continue
             elif not isinstance(value, expected_type) and value != '':
                 errors.append(f"Row {index + 1}: Incorrect type for '{column}'. Expected {expected_type.__name__}, got {type(value).__name__}.")
                 valid_row = False
-                break
+                continue
 
         if valid_row:
             try:
@@ -124,12 +138,36 @@ def import_from_xls(excel_file, sheet_name, model, dataset_columns, header_row, 
         df = transform_data(df, dataset_columns, column_mapping_enum, preparation_functions, validation_functions)
         result = load_data(df, model, field_types, replace_data, user)
 
-        if result['errors']:
-            return {"success": False, "message": f"{result['records_inserted']} records inserted from {result['row_count']} total possible rows.", "errors": result['errors'], "rows_processed": result['row_count']}
+        total_rows = result['row_count']
+        inserted_rows = result['records_inserted']
+
+        if result['errors'] and result['records_inserted'] > 0:
+            return {
+                "success": True,
+                "message": f"{inserted_rows} out of {total_rows} rows successfully inserted with some errors encountered.",
+                "errors": result['errors'],
+                "rows_processed": result['row_count']
+            }
+        elif len(result['errors']) > 0:
+            return {
+                "success": False,
+                "message": "Errors encountered with no successful insertions.",
+                "errors": result['errors'],
+                "rows_processed": result['row_count']
+            }
         else:
-            return {"success": True, "message": f"{result['records_inserted']} records inserted from {result['row_count']} total possible rows.", "rows_processed": result['row_count']}
+            return {
+                "success": True,
+                "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
+                "rows_processed": result['row_count']
+            }
     except Exception as error:
         traceback.print_exc()
         error_msg = f"Unexpected error: {str(error)}"
         print(error_msg)
-        return {"success": False, "errors": [str(error)], "rows_processed": 0}
+        return {
+            "success": False,
+            "errors": [str(error)],
+            "rows_processed": 0
+        }
+

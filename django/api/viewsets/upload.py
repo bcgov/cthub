@@ -142,8 +142,8 @@ class UploadViewset(GenericViewSet):
             )
 
             if not result['success']:
-                return Response(result['errors'], status=status.HTTP_400_BAD_REQUEST)
-            return Response(result['message'], status=status.HTTP_201_CREATED)
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            return Response(result, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             print(f"An exception occurred: {str(e)}")

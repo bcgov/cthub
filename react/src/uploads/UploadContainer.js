@@ -16,7 +16,6 @@ const UploadContainer = () => {
   const [alertContent, setAlertContent] = useState();
   const [alert, setAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState('');
-  // existing data with what is being uploaded
   const [open, setOpen] = useState(false);
   const dialogue = 'Selecting replace will delete all previously uploaded records for this dataset';
   const leftButtonText = 'Cancel';
@@ -39,7 +38,7 @@ const UploadContainer = () => {
 
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent(errorResponse.data);
+    setAlertContent(`${errorResponse.data.message}\n${errorResponse.data.errors ? 'Errors: ' + errorResponse.data.errors.join('\n') : ''}`);
     setAlertSeverity('error');
     setAlert(true);
   };
@@ -60,10 +59,17 @@ const UploadContainer = () => {
           filename,
           datasetSelected,
           replace,
-        }).then((postResponse) => {
-          setAlertContent(`Data has been successfully uploaded. ${postResponse.data}`);
-          setAlertSeverity('success');
+        }).then((response) => {
+          if (response.data.errors && response.data.errors.length > 0) {
+            setErrorMessage(response.data.errors.join("\n"));
+          }
+        
+          if (response.data.message) {
+            setSuccessMessage(response.data.message);
+          }
           setAlert(true);
+          setAlertSeverity(response.data.success ? 'success' : 'error')
+          setAlertContent(`${response.data.message}${response.data.errors ? '\nErrors: ' + response.data.errors.join('\n') : ''}`);
         }).catch((error) => {
           showError(error);
         });
@@ -113,7 +119,12 @@ const UploadContainer = () => {
     <div className="row">
       <div className="col-12 mr-2">
         {alert && alertContent && alertSeverity
-        && <Alert severity={alertSeverity}>{alertContent}</Alert>}
+        && <Alert severity={alertSeverity}>{alertContent.split('\n').map((line, index) => (
+          <React.Fragment key={index}>
+            {line}
+            <br />
+          </React.Fragment>
+        ))}</Alert>}
         {open && (
         <AlertDialog
           open={open}

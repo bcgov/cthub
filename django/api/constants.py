@@ -2,6 +2,8 @@ import datetime
 from decimal import Decimal
 from enum import Enum
 
+import pandas as pd
+
 
 
 class ARCProjectTrackingColumns(Enum):
@@ -390,6 +392,7 @@ FIELD_TYPES = {
         "average_daily_travel_distance": str,
         "component_being_applied_for": str,
         "estimated_cost": str,
+        "type_of_charger_being_installed": str,
         "number_of_level_2_charging_stations_being_applied_for": int,
         "number_of_level_3_dc_fast_charging_stations_being_applied_for": int,
         "application_form_fleets_completion_date_time": str,
@@ -498,7 +501,7 @@ FIELD_TYPES = {
     },
     'Specialty Use Vehicle Incentive Program': {
         "approvals": str,
-        "date": "date or datetime",
+        "date": str,
         "applicant_name": str,
         "max_incentive_amount_requested": int,
         "category": str,
