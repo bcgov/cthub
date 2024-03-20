@@ -1,6 +1,7 @@
 const Webpack = require('webpack');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+require('dotenv').config();
 
 const isDevelopment = 'API_BASE' in process.env && process.env.API_BASE === 'http://localhost:8000';
 

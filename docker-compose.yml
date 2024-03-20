@@ -62,11 +62,6 @@ services:
     command: >
       sh -c "npm install --legacy-peer-deps &&
              npm start"
-    env_file:
-      - keycloak.env
-    environment: 
-      - API_BASE=http://localhost:8000
-      - ENABLE_KEYCLOAK=true
     volumes:
       - ./react:/web
     ports:
