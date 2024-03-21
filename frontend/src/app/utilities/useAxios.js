@@ -1,14 +1,14 @@
 import axios from 'axios'
-import settings from '../settings';
 import useKeycloak from './useKeycloak'
+import { API_BASE } from '../../config';
 
 const useAxios = (useDefault = false, opts = {}) => {
+  const keycloak = useKeycloak()
   if (useDefault) {
     return axios.create(opts)
   }
-  const keycloak = useKeycloak()
   const instance = axios.create({
-    baseURL: settings.API_BASE,
+    baseURL: API_BASE,
     ...opts,
   })
   instance.interceptors.request.use(async (config) => {
