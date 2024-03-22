@@ -3,8 +3,8 @@
 name: CTHUB v0.2.0
 
 on:
-  push:
-    branches: [ release-0.2.0 ]
+  # push:
+  #   branches: [ release-0.2.0 ]
   workflow_dispatch:
   workflow_call:
 
@@ -38,7 +38,7 @@ jobs:
 
       ## Log in to Openshift with a token of service account
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.2
+        uses: redhat-actions/oc-login@v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.2
+        uses: redhat-actions/oc-login@v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.2
+        uses: redhat-actions/oc-login@v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -127,7 +127,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.2
+        uses: redhat-actions/oc-login@v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
