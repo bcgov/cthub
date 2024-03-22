@@ -14,7 +14,7 @@ RUN npm install
 RUN pwd && \
   ls -l && \
   ls -l node_modules
-RUN NODE_ENV=production | npm run build
+RUN yes | npm run build
 
 # Stage 2: Copy the JS React SPA into the Nginx HTML directory
 FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.24.0

@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { KeycloakContext } from '../../contexts'
-import settings from '../settings'
+import { ENABLE_KEYCLOAK } from '../../config'
 
 const KeycloakProvider = ({authClient, initOptions, LoadingComponent, children}) => {
-  const keycloakEnabled = settings.ENABLE_KEYCLOAK
-  const [loading, setLoading] = useState(keycloakEnabled ? true : false)
+  const [loading, setLoading] = useState(ENABLE_KEYCLOAK ? true : false)
   const [keycloak, setKeycloak] = useState({})
 
   useEffect(() => {
-    if (keycloakEnabled) {
+    if (ENABLE_KEYCLOAK) {
       authClient.init(initOptions).then(() => {
         setKeycloak(authClient)
         setLoading(false)
       })
     }
-  }, [keycloakEnabled, authClient, initOptions])
+  }, [authClient, initOptions])
 
   if (loading) {
     return <LoadingComponent/>
