@@ -60,13 +60,6 @@ const UploadContainer = () => {
           datasetSelected,
           replace,
         }).then((response) => {
-          if (response.data.errors && response.data.errors.length > 0) {
-            setErrorMessage(response.data.errors.join("\n"));
-          }
-        
-          if (response.data.message) {
-            setSuccessMessage(response.data.message);
-          }
           setAlert(true);
           setAlertSeverity(response.data.success ? 'success' : 'error')
           setAlertContent(`${response.data.message}${response.data.errors ? '\nErrors: ' + response.data.errors.join('\n') : ''}`);

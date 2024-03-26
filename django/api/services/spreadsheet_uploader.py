@@ -73,8 +73,6 @@ def load_data(df, model, field_types, replace_data, user):
             expected_type = field_types.get(column)
             is_nullable = column in nullable_fields
 
-            print(f"Column: {column}, Expected Type: {expected_type}, Actual Type: {type(value)}")
-
             if pd.isna(value) or value == '':
                 if is_nullable:
                     row_dict[column] = None
@@ -164,7 +162,6 @@ def import_from_xls(excel_file, sheet_name, model, dataset_columns, header_row, 
     except Exception as error:
         traceback.print_exc()
         error_msg = f"Unexpected error: {str(error)}"
-        print(error_msg)
         return {
             "success": False,
             "errors": [str(error)],
