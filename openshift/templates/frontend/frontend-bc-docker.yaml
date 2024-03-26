@@ -80,9 +80,9 @@ objects:
               secretKeyRef:
                 name: artifacts-default-idxprm
                 key: password
+        noCache: true
+        forcePull: true
       type: Docker
-      noCache: true
-      forcePull: true
     successfulBuildsHistoryLimit: 5
     triggers: 
       - imageChange: {}
