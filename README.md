@@ -52,6 +52,13 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
 - To make your `RunPython` "script" cleaner, consider putting the actual queries themselves in separate sql files and reading from those in `RunPython`
 - To uncouple metabase from django, simply remove metabase from `settings.INSTALLED_APPS`.
 
+# Updating packages
+- From time to time, we may become aware of package updates (mainly the packages in package.json (frontend) and requirements.py (backend)).
+- Tools like Dependabot (https://github.com/dependabot) may raise PRs that update these packages.
+- If the package that can be updated is a npm package and is a transitive dependency (a dependency of an immediate dependency), we can implement the update using `overrides` (https://docs.npmjs.com/cli/v10/configuring-npm/package-json#overrides).
+- When packages get updated, we'll have to confirm that things are still working; ideally, we would have test suites with good coverage that we can run. Otherwise, or in addition to that, some user testing may be needed.
+- When an entire image is scanned by some tool, there may be deeper, OS level dependencies that show as being critically out of date/vulnerable; in cases like this, if an updated image is not yet available, there are usually `alpine` versions of images that simply don't include many of these dependencies; whether they will work for our purposes is another question.
+
 # License
 The code is a fork from Richard's personal project. Please do not clone, copy or replicate this project unless you're authorized to do so.
 
