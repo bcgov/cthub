@@ -42,6 +42,16 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
  - The rebased commits will have different hashes than the old ones, so if you previously pushed `your_branch` to a remote you will have to `git push --force` in order not to end up with additional commits in your remote branch.
  - On Github, you can modify the base branch of a PR if you're rebasing from a branch based on a previous release branch to the latest release branch.
 
+# Metabase
+- Locally, create a database to store metabase's internals, and use/modify `metabase.env`, django's `settings.DATABASES` and `settings.DATABASE_ROUTERS` to point to said database.
+- You can create django data migrations to insert your custom queries into the metabase application database.
+- To create a data migration within the metabase django app:
+- ```python manage.py makemigrations --empty metabase```
+- Then, using `RunPython` and django's `QuerySet` API, you may read/insert/update/delete data from metabase's application database.
+- For custom queries, the internal metabase table of interest would probably be `report_card` (the associated model is `ReportCard`).
+- To make your `RunPython` "script" cleaner, consider putting the actual queries themselves in separate sql files and reading from those in `RunPython`
+- To uncouple metabase from django, simply remove metabase from `settings.INSTALLED_APPS`.
+
 # License
 The code is a fork from Richard's personal project. Please do not clone, copy or replicate this project unless you're authorized to do so.
 

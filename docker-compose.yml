@@ -19,6 +19,11 @@ services:
     image: metabase/metabase
     ports:
       - 3001:3000
+    env_file:
+      - metabase.env
+    depends_on:
+      db:
+        condition: service_healthy
   minio:
     image: minio/minio
     hostname: "minio"
