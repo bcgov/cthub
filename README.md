@@ -32,6 +32,26 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
     - This is where you can make changes to your package.json
     - You can technically make changes to your packages without going into your container, but you'll need npm installed into your system
 
+# Rebasing Guide
+- To rebase your branch onto the latest release branch:
+ - ```git fetch upstream``` 
+ - ```git checkout your_branch```
+ - ```git rebase --onto A B```
+ - Where `upstream` is the remote containing the release branch, and `A` is the hash of the latest commit to the release branch, and `B` is the hash of the commit in `your_branch` such that every commit after `B` ought to be rebased onto the release branch.
+ - If you run into conflicts while rebasing, you can resolve them in your IDE, and `git add` the resolved changes before finishing the rebase (committing).
+ - The rebased commits will have different hashes than the old ones, so if you previously pushed `your_branch` to a remote you will have to `git push --force` in order not to end up with additional commits in your remote branch.
+ - On Github, you can modify the base branch of a PR if you're rebasing from a branch based on a previous release branch to the latest release branch.
+
+# Metabase
+- Locally, create a database to store metabase's internals, and use/modify `metabase.env`, django's `settings.DATABASES` and `settings.DATABASE_ROUTERS` to point to said database.
+- You can create django data migrations to insert your custom queries into the metabase application database.
+- To create a data migration within the metabase django app:
+- ```python manage.py makemigrations --empty metabase```
+- Then, using `RunPython` and django's `QuerySet` API, you may read/insert/update/delete data from metabase's application database.
+- For custom queries, the internal metabase table of interest would probably be `report_card` (the associated model is `ReportCard`).
+- To make your `RunPython` "script" cleaner, consider putting the actual queries themselves in separate sql files and reading from those in `RunPython`
+- To uncouple metabase from django, simply remove metabase from `settings.INSTALLED_APPS`.
+
 # License
 The code is a fork from Richard's personal project. Please do not clone, copy or replicate this project unless you're authorized to do so.
 

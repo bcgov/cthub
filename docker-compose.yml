@@ -19,6 +19,11 @@ services:
     image: metabase/metabase
     ports:
       - 3001:3000
+    env_file:
+      - metabase.env
+    depends_on:
+      db:
+        condition: service_healthy
   minio:
     image: minio/minio
     hostname: "minio"
@@ -58,17 +63,11 @@ services:
       db:
         condition: service_healthy
   web:
-    build: ./react
-    command: >
-      sh -c "npm install --legacy-peer-deps &&
-             npm start"
-    env_file:
-      - keycloak.env
-    environment: 
-      - API_BASE=http://localhost:8000
-      - ENABLE_KEYCLOAK=true
+    build: ./frontend
+    command: npm run start
     volumes:
-      - ./react:/web
+      - ./frontend:/web
+      - /web/node_modules
     ports:
       - 3000:3000
 

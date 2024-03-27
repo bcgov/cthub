@@ -1,0 +1,51 @@
+---
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  creationTimestamp: null
+  name: superset
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: superset
+      creationTimestamp:
+      labels:
+        shared: "true"
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      creationTimestamp: null
+      name: superset-bc
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: superset:3.0.1-authlib
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        contextDir: openshift/templates/superset/docker
+        git:
+          ref: "superset-0.2.0"
+          uri: "https://github.com/bcgov/cthub.git"
+        type: Git
+      strategy:
+        dockerStrategy:
+          imageOptimizationPolicy: SkipLayers
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers:
+        - imageChange: {}
+          type: ImageChange
+        - type: ConfigChange
+    status:
+      lastVersion: 0
