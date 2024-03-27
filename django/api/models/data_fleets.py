@@ -103,7 +103,7 @@ class DataFleets(Auditable):
         unique=False
     )
 
-    component_being_applyied_for = models.CharField(
+    component_being_applied_for = models.CharField(
         blank=True,
         null=True,
         max_length=250,
@@ -117,19 +117,19 @@ class DataFleets(Auditable):
         unique=False
     )
 
-    type_of_charger_being_installing = models.CharField(
+    type_of_charger_being_installed = models.CharField(
         blank=True,
         null=True,
         max_length=250,
         unique=False
     )
 
-    number_of_Level_2_Charging_Stations_being_applying_for = models.IntegerField(
+    number_of_level_2_charging_stations_being_applied_for = models.IntegerField(
         blank=True,
         null=True
     )
 
-    number_of_level_3_dc_fast_charging_stations_being_applying_for = models.IntegerField(
+    number_of_level_3_dc_fast_charging_stations_being_applied_for = models.IntegerField(
         blank=True,
         null=True
     )

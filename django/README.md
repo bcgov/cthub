@@ -48,3 +48,14 @@ docker-compose exec api bash
 python manage.py loaddata api/fixtures/0001_add_ldv_rebates_datasets.json 
 
 etc
+
+## Creating User Account
+After running all the fixtures to create the dataset dropdown list and the user_permissions table.
+You will need to run a few SQL commands to allow your account to upload documents locally.
+
+insert into public.user (create_user, idir) values ('test', 'IDIR');
+insert into user_permission (create_user, permission_id, user_id) values ('test', 1, 1);
+insert into user_permission (create_user, permission_id, user_id) values ('test', 2, 1);
+
+Only after running these will you be able to upload into CTHUB locally.
+If you're encountering errors make sure you've run the fixture for creating the user_permission table and that you're not missing any fields in SQL.

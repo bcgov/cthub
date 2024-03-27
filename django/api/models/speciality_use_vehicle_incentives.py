@@ -9,7 +9,7 @@ class SpecialityUseVehicleIncentives(Auditable):
         null=True,
         max_length=20
     )
-    date = models.CharField(
+    date = models.DateField(
         max_length=20,
         null=True,
         blank=True
