@@ -1,7 +1,6 @@
 __pycache__/
 .coverage
 .DS_Store
-.env
 .idea/
 .minio.sys/
 .pyc
@@ -22,3 +21,4 @@ venv/
 coverage/
 minio/minio_files/cthub/
 decoder.env
+docker-compose-local-dev.yml

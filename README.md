@@ -5,25 +5,8 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
 - Make sure Docker is installed and running
 - In your terminal, go to your project folder and execute the following: 
   - ```docker-compose up```
-- You'll have to make an edit to your host file
-  - Mac Users
-    - Edit ```/private/etc/hosts```
-    - Add this line:
-      - ```127.0.0.1 keycloak```
-  - Windows Users
-    - Edit ```c:\windows\system32\drivers\etc\hosts```
-    - Add this line:
-      - ```127.0.0.1 keycloak```
-- Navigate to ```http://localhost:3000/```
-- Login with:
-  - username: ```user```
-  - password: ```1234```
 
 ## Useful Docker Commands
-- To access keycloak:
-  - Navigate to ```http://localhost:8080/```
-    - username: ```admin```
-    - password: ```admin```
 
 - To access postgres:
   - Go to your project folder in your terminal
@@ -49,5 +32,48 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
     - This is where you can make changes to your package.json
     - You can technically make changes to your packages without going into your container, but you'll need npm installed into your system
 
+# Rebasing Guide
+- To rebase your branch onto the latest release branch:
+ - ```git fetch upstream``` 
+ - ```git checkout your_branch```
+ - ```git rebase --onto A B```
+ - Where `upstream` is the remote containing the release branch, and `A` is the hash of the latest commit to the release branch, and `B` is the hash of the commit in `your_branch` such that every commit after `B` ought to be rebased onto the release branch.
+ - If you run into conflicts while rebasing, you can resolve them in your IDE, and `git add` the resolved changes before finishing the rebase (committing).
+ - The rebased commits will have different hashes than the old ones, so if you previously pushed `your_branch` to a remote you will have to `git push --force` in order not to end up with additional commits in your remote branch.
+ - On Github, you can modify the base branch of a PR if you're rebasing from a branch based on a previous release branch to the latest release branch.
+
+# Metabase
+- Locally, create a database to store metabase's internals, and use/modify `metabase.env`, django's `settings.DATABASES` and `settings.DATABASE_ROUTERS` to point to said database.
+- You can create django data migrations to insert your custom queries into the metabase application database.
+- To create a data migration within the metabase django app:
+- ```python manage.py makemigrations --empty metabase```
+- Then, using `RunPython` and django's `QuerySet` API, you may read/insert/update/delete data from metabase's application database.
+- For custom queries, the internal metabase table of interest would probably be `report_card` (the associated model is `ReportCard`).
+- To make your `RunPython` "script" cleaner, consider putting the actual queries themselves in separate sql files and reading from those in `RunPython`
+- To uncouple metabase from django, simply remove metabase from `settings.INSTALLED_APPS`.
+
 # License
 The code is a fork from Richard's personal project. Please do not clone, copy or replicate this project unless you're authorized to do so.
+
+
+# List of Dev Work | What to do before bringing in a new ticket into a Sprint
+
+This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.  
+
+**Team Rule* Do not bring in ticket After Friday 
+
+1. Help another Dev - see if other Devs need help to finish their ticket 
+
+2. PR Reviews – linked to the task above 
+
+3. Writing additional tests – for both tront and back end 
+
+4. Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first 
+
+5. Learning time: 
+
+- Take the opportunity to familiarize yourself with business logic, tech (anything around work we do) 
+
+- New learning and applying it to our work 
+
+- Innovation work 

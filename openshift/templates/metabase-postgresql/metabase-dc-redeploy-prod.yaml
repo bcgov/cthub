@@ -1,0 +1,132 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: metabase-dc
+parameters:
+  - name: CPU_REQUEST
+    value: 130m
+    displayName: Requested CPU
+    description: Requested CPU
+    required: true    
+  - name: CPU_LIMIT
+    value: 260m
+    displayName: CPU upper limit
+    description: CPU upper limit
+    required: true
+  - name: MEMORY_REQUEST
+    value: 820Mi
+    displayName: Requested memory
+    description: Requested memory
+    required: true
+  - name: MEMORY_LIMIT
+    value: 1640Mi
+    displayName: Memory upper limit
+    description: Memory upper limit
+    required: true
+  - name: REPLICAS
+    description: The number of replicas to use
+    displayName: REPLICAS
+    value: "1"    
+objects:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: metabase
+    name: metabase
+  spec:
+    replicas: ${{REPLICAS}}
+    revisionHistoryLimit: 10
+    selector:
+      app: metabase
+      deploymentconfig: metabase
+    strategy:
+      activeDeadlineSeconds: 600
+      recreateParams:
+        timeoutSeconds: 300
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: metabase
+          deploymentconfig: metabase
+      spec:
+        containers:
+        - name: metabase
+          image:
+          imagePullPolicy: Always
+          env:
+            - name: MB_DB_TYPE
+              value: postgres
+            - name: MB_DB_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  key: metabase-db-name
+                  name: patroni-creds-prod
+            - name: MB_DB_PORT
+              value: '5432'
+            - name: MB_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: metabase-db-username
+                  name: patroni-creds-prod
+            - name: MB_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: metabase-db-password
+                  name: patroni-creds-prod
+            - name: MB_DB_HOST
+              value: patroni-master-prod-metabase
+          resources:
+            limits:
+              cpu: ${CPU_LIMIT}
+              memory: ${MEMORY_LIMIT}
+            requests:
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
+            readinessProbe:
+              httpGet:
+                path: /api/health
+                port: 3000
+                scheme: HTTP
+              initialDelaySeconds: 180
+              timeoutSeconds: 5
+              periodSeconds: 30
+              successThreshold: 1
+              failureThreshold: 10              
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: metabase
+        serviceAccountName: metabase
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - metabase
+        from:
+          kind: ImageStreamTag
+          name: metabase:v0.44.0
+          namespace: 30b186-tools
+        lastTriggeredImage: 
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0

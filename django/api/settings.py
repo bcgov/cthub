@@ -21,7 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '#8+m(ba_(ra1=lo+-7jyp#x49l27guk*i4)w@xp7j9b9umkwh^'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    '#8+m(ba_(ra1=lo+-7jyp#x49l27guk*i4)w@xp7j9b9umkwh^'
+)
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +43,7 @@ CORS_ORIGIN_WHITELIST = [
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'tfrs.apps.ApiConfig',
+    'metabase.apps.MetabaseConfig',
     'corsheaders',
     'django_filters',
     'django.contrib.admin',
@@ -92,7 +97,17 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
     },
+    'metabase': {
+        'ENGINE': os.getenv('METABASE_DB_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.getenv('METABASE_DB_NAME', 'metabase'),
+        'USER': os.getenv('METABASE_DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('METABASE_DB_PASSWORD', 'postgres'),
+        'HOST': os.getenv('METABASE_DB_HOST', 'db'),
+        'PORT': os.getenv('METABASE_DB_PORT', '5432'),
+    },
 }
+
+DATABASE_ROUTERS = ['metabase.db_router.MetabaseRouter',]
 
 
 # Password validation
@@ -155,6 +170,7 @@ MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT', None)
 MINIO_USE_SSL = bool(
     os.getenv('MINIO_USE_SSL', 'False').lower() in ['true', 1]
 )
+MINIO_PREFIX = os.getenv('MINIO_PREFIX')
 
 
 DECODER_ACCESS_KEY = os.getenv('DECODER_ACCESS_KEY')

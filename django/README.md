@@ -13,7 +13,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Log into database to inspect the new table
-docker-compose exec db psql -U postgre
+docker-compose exec db psql -U postgres
 # run this: \d <new_table_name>
 ```
 
@@ -39,3 +39,12 @@ Log into the docker container and run the following command.
 ```bash
 python manage.py import_charger_rebates '/tmp/EV_Fast-Charging Stations_20210520.xlsx'
 ```
+
+## Fixtures
+If docker doesn't load your fixtures and the dataset dropdown list is empty use
+use the same as above to load fixtures
+
+docker-compose exec api bash
+python manage.py loaddata api/fixtures/0001_add_ldv_rebates_datasets.json 
+
+etc

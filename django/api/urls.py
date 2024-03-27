@@ -20,6 +20,7 @@ from rest_framework import routers
 from api.viewsets.icbc_data import IcbcViewset
 from api.viewsets.minio import MinioViewSet
 from api.viewsets.upload import UploadViewset
+from api.viewsets.user import UserViewSet
 
 ROUTER = routers.SimpleRouter(trailing_slash=False)
 
@@ -33,6 +34,9 @@ ROUTER.register(
 
 ROUTER.register(
     r'minio', MinioViewSet, basename='minio'
+)
+ROUTER.register(
+    r'users', UserViewSet
 )
 
 urlpatterns = [

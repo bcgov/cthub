@@ -49,15 +49,14 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
             options=options
         )
 
-        # Get the user from the keycloak server based on the token
         user_info = keycloak_openid.userinfo(token)
         if user_info.get('user_id') != token_info.get('user_id'):
             raise exceptions.AuthenticationFailed(
                 'Invalid Token'
             )
+        return user_info.get('idir_username'), None
 
         # user = None
-
     #     if 'user_id' not in user_info:
     #         # try email
     #         if 'email' in user_info:

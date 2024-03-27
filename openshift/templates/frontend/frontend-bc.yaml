@@ -56,10 +56,10 @@ objects:
     resources:
       limits:
         cpu: 2000m
-        memory: 2G
+        memory: 4Gi
       requests:
         cpu: 500m
-        memory: 200M
+        memory: 2Gi
     runPolicy: Serial
     source:
       git:
@@ -88,6 +88,9 @@ objects:
                 key: password        
       type: Source
     successfulBuildsHistoryLimit: 5
-    triggers: []
+    triggers: 
+      - imageChange: {}
+        type: ImageChange
+      - type: ConfigChange    
   status:
     lastVersion: 0

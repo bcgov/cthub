@@ -49,6 +49,14 @@ parameters:
   - name: REPLICAS
     value: '1'
     required: true
+  - name: DB_HOST
+    displayName: database host 
+    description: database host 
+    required: true       
+  - name: MINIO_BUCKET_NAME
+    displayName: minio bucket name
+    description: minio bucket name
+    required: true       
 objects:
   - apiVersion: v1
     kind: Secret
@@ -191,20 +199,23 @@ objects:
                 - name: DB_ENGINE
                   value: django.db.backends.postgresql
                 - name: DB_HOST
-                  value: patroni-master${SUFFIX}
+                  value: ${DB_HOST}
+                  #value: patroni-master${SUFFIX}
                 - name: DB_NAME
                   value: cthub
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: patroni-creds${SUFFIX}
+                      #name: patroni-creds${SUFFIX}
+                      name: cthub-patroni-app
                       key: app-db-password
                 - name: DB_PORT
                   value: "5432"
                 - name: DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: patroni-creds${SUFFIX}
+                      name: cthub-patroni-app
+                      #name: patroni-creds${SUFFIX}
                       key: app-db-username
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg.py
@@ -228,20 +239,24 @@ objects:
                 - name: MINIO_ENDPOINT
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-minio-${ENV_NAME}
-                      key: MINIO_ENDPOINT
+                      name: cthub-db-backup-s3
+                      key: AWS_ENDPOINT
                 - name: MINIO_USE_SSL
                   value: "true"
                 - name: MINIO_ROOT_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-minio-${ENV_NAME}
-                      key: MINIO_ROOT_USER
+                      name: cthub-db-backup-s3
+                      key: AWS_ACCESS_KEY_ID
                 - name: MINIO_ROOT_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-minio-${ENV_NAME}
-                      key: MINIO_ROOT_PASSWORD                  
+                      name: cthub-db-backup-s3
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: MINIO_BUCKET_NAME
+                  value: ${MINIO_BUCKET_NAME}
+                - name: MINIO_PREFIX
+                  value: cthub-docs
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:

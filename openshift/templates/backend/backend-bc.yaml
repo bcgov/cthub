@@ -30,20 +30,6 @@ objects:
     metadata:
       annotations:
         description: Keeps track of changes in the backend image
-      creationTimestamp: null
-      name: ${NAME}-python
-      labels:
-        shared: "true"      
-    spec:
-      lookupPolicy:
-        local: false
-    status:
-      dockerImageRepository: ""
-  - apiVersion: image.openshift.io/v1
-    kind: ImageStream
-    metadata:
-      annotations:
-        description: Keeps track of changes in the backend image
       labels:
         shared: "true"
       creationTimestamp: null
@@ -100,7 +86,7 @@ objects:
               value: 'true'
           from:
             kind: ImageStreamTag
-            name: python-39:1-18.1634036280
+            name: python-311:1-52
           forcePull: true
           noCache: true            
         type: Source

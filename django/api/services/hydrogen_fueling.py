@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 1
     df = pd.read_excel(excel_file, 'Station_Tracking')
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
@@ -35,8 +36,9 @@ def import_from_xls(excel_file):
         value=True,
         inplace=True
     )
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count +=1
             HydrogrenFueling.objects.create(
                 station_number=row["Station Number"],
                 rfp_close_date=row["RFP Close Date"],
@@ -57,12 +59,6 @@ def import_from_xls(excel_file):
                 opening_date=row["Opening Date"],
                 total_capital_cost=row["Total Capital Cost"]  
             )
-        except Exception as error:
-            print('-----------------------')
-            print('ERROR:')
-            print(error)
-            print('.......')
-            print('ROW:')
-            print(row)
-            print('-----------------------')
+    except Exception as error:
+        return (error,'data',row_count)  
     return True

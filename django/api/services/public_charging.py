@@ -11,6 +11,7 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
+    row_count = 3
     df = pd.read_excel(excel_file, 'Project_applications', header=2)
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
@@ -25,12 +26,11 @@ def import_from_xls(excel_file):
         value=True,
         inplace=True
     )
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
+            row_count += 1
             PublicCharging.objects.create(
                 applicant_name=row["Applicant Name"],
-                # city=row["City"],
-                # postal_code=row["Postal Code"],
                 address=row["Address"],
                 charging_station_info=row["Charging Station Info"],
                 between_25kw_and_50kw=row[">25kW; <50kW"],
@@ -48,9 +48,6 @@ def import_from_xls(excel_file):
                 review_number=row["Review Number"],
                 rebate_paid=row["Paid out rebate amount"],
             )
-        except Exception as error:
-            print('-----------------------')
-            print(error)
-            print(row)
-            print('-----------------------')
+    except Exception as error:
+        return (error,'data',row_count) 
     return True
