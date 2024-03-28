@@ -2,7 +2,7 @@ import json
 from os import path
 from django.core.management import BaseCommand
 
-from api.services.arc_project_tracking import import_from_xls
+#from django.api.services.spreadsheet_uploader_prep import import_from_xls
 
 
 class Command(BaseCommand):
@@ -34,7 +34,7 @@ class Command(BaseCommand):
                 )
             ))
             return False
-        import_from_xls(xls_file)
+        #import_from_xls(xls_file)
         self.stdout.write(self.style.SUCCESS(
             'Import complete'
         ))
