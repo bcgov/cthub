@@ -43,7 +43,7 @@ const UploadContainer = () => {
 
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent(errorResponse.data);
+    setAlertContent(`${errorResponse.data.message}\n${errorResponse.data.errors ? 'Errors: ' + errorResponse.data.errors.join('\n') : ''}`);
     setAlertSeverity('error');
     setAlert(true);
   };
@@ -67,9 +67,17 @@ const UploadContainer = () => {
       });
     });
   
-    Promise.all(uploadPromises).then(() => {
-      setAlertContent('Data has been successfully uploaded.');
-      setAlertSeverity('success');
+    Promise.all(uploadPromises).then((responses) => {
+
+      const errorCheck = responses.some(response => response.data.success)
+
+      setAlertSeverity(errorCheck ? 'success' : 'error')
+
+      const message = responses.map(response => 
+        `${response.data.message}${response.data.errors ? '\nErrors: ' + response.data.errors.join('\n') : ''}`
+      ).join('\n');
+
+      setAlertContent(message);
       setAlert(true);
       setUploadFiles([]);
     }).catch((error) => {
@@ -127,47 +135,54 @@ const UploadContainer = () => {
     return <Loading />;
   }
 
-  const alertElement = alert && alertContent && alertSeverity ? <Alert severity={alertSeverity}>{alertContent}</Alert> : null
+  const alertElement = alert && alertContent && alertSeverity ? 
+  <Alert severity={alertSeverity}>{alertContent.split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  ))}</Alert> : null
 
   return (
     <div className="row">
       <div className="col-12 mr-2">
-        <AlertDialog
-          open={openDialog}
-          title={'Replace existing data?'}
-          dialogue={'Selecting replace will delete all previously uploaded records for this dataset'}
-          cancelText={'Cancel'}
-          handleCancel={handleReplaceDataCancel}
-          confirmText={'Replace existing data'}
-          handleConfirm={handleReplaceDataConfirm}
-        />
-        <Stack direction="column" spacing={2}>
-          <Paper square variant="outlined">
-            <UploadPage
-              alertElement={alertElement}
-              uploadFiles={uploadFiles}
-              datasetList={datasetList}
-              doUpload={doUpload}
-              setDatasetSelected={setDatasetSelected}
-              datasetSelected={datasetSelected}
-              setUploadFiles={setUploadFiles}
-              setReplaceData={setReplaceData}
-              replaceData={replaceData}
-              handleRadioChange={handleRadioChange}
-              downloadSpreadsheet={downloadSpreadsheet}
-              setAlert={setAlert}
-              loading={loading}
-            />
-          </Paper>
-          {adminUser
-          && (
+        <>
+          <AlertDialog
+            open={openDialog}
+            title={'Replace existing data?'}
+            dialogue={'Selecting replace will delete all previously uploaded records for this dataset'}
+            cancelText={'Cancel'}
+            handleCancel={handleReplaceDataCancel}
+            confirmText={'Replace existing data'}
+            handleConfirm={handleReplaceDataConfirm}
+          />
+          <Stack direction="column" spacing={2}>
             <Paper square variant="outlined">
-              <UsersContainer currentUser={currentUser} />
+              <UploadPage
+                alertElement={alertElement}
+                uploadFiles={uploadFiles}
+                datasetList={datasetList}
+                doUpload={doUpload}
+                setDatasetSelected={setDatasetSelected}
+                datasetSelected={datasetSelected}
+                setUploadFiles={setUploadFiles}
+                setReplaceData={setReplaceData}
+                replaceData={replaceData}
+                handleRadioChange={handleRadioChange}
+                downloadSpreadsheet={downloadSpreadsheet}
+                setAlert={setAlert}
+                loading={loading}
+              />
             </Paper>
-          )}
-        </Stack>
+            {adminUser && (
+              <Paper square variant="outlined">
+                <UsersContainer currentUser={currentUser} />
+              </Paper>
+            )}
+          </Stack>
+        </>
       </div>
     </div>
   );
-};
+}
 export default withRouter(UploadContainer);
