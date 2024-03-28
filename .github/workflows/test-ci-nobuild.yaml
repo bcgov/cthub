@@ -33,7 +33,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
+          namespace: ${{ env.DEV_NAMESPACE }}
 
       - id: set-pre-release
         run: |
