@@ -24,7 +24,7 @@ from api.serializers.datasets import DatasetsSerializer
 from api.services.minio import minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
-from api.constants import *
+import api.constants as constants
 from api.services.spreadsheet_uploader_prep import *
 
 class UploadViewset(GenericViewSet):
@@ -34,7 +34,7 @@ class UploadViewset(GenericViewSet):
     @action(detail=False, methods=['get'])
     def datasets_list(self, request):
         
-        incomplete_datasets = ['LDV Rebates', 'Specialty Use Vehicle Incentive Program', 'Public Charging', 'EV Charging Rebates', 'Hydrogen Fueling', 'Hydrogen Fleets', 'ARC Project Tracking', 'Data Fleets', 'Scrap It']
+        incomplete_datasets = ['LDV Rebates', 'Specialty Use Vehicle Incentive Program', 'Public Charging -Remove Later', 'EV Charging Rebates', 'Hydrogen Fueling', 'Hydrogen Fleets', 'ARC Project Tracking', 'Data Fleets', 'Scrap It']
 
         datasets = Datasets.objects.all().exclude(name__in=incomplete_datasets)
         serializer = DatasetsSerializer(datasets, many=True, read_only=True)
@@ -44,72 +44,6 @@ class UploadViewset(GenericViewSet):
     @method_decorator(check_upload_permission())
     def import_data(self, request):
 
-        DATASET_CONFIG = {
-        'ARC Project Tracking': {
-            'model': ARCProjectTracking,
-            'columns': ARCProjectTrackingColumns,
-            'column_mapping': ArcProjectTrackingColumnMapping,
-            'sheet_name': 'Project_Tracking',
-            'preparation_functions': [prepare_arc_project_tracking]
-        },
-        'EV Charging Rebates': {
-            'model': ChargerRebates,
-            'columns': EVChargingRebatesColumns,
-            'column_mapping': EVChargingRebatesColumnMapping,
-            'sheet_name': 'Updated',
-            'header_row': 2
-        },
-        'Data Fleets': {
-            'model': DataFleets,
-            'columns': DataFleetsColumns,
-            'column_mapping': DataFleetsColumnMapping,
-            'sheet_name': 'Data Fleets'
-        },
-        'Hydrogen Fleets': {
-            'model': HydrogenFleets,
-            'columns': HydrogenFleetsColumnMapping,
-            'column_mapping': HydrogenFleetsColumnMapping,
-            'sheet_name': 'Fleets',
-            'preparation_functions': [prepare_hydrogen_fleets]
-        },
-        'Hydrogen Fueling': {
-            'model': HydrogrenFueling,
-            'columns': HydrogenFuelingColumnMapping,
-            'column_mapping': HydrogenFuelingColumnMapping,
-            'sheet_name': 'Station_Tracking',
-            'preparation_functions': [prepare_hydrogen_fueling]
-        },
-        'LDV Rebates': {
-            'model': LdvRebates,
-            'columns': LdvRebatesColumnMapping,
-            'sheet_name': 'Raw Data',
-            'preparation_functions': [prepare_ldv_rebates]
-        },
-        'Public Charging': {
-            'model': PublicCharging,
-            'columns': PublicChargingColumns,
-            'column_mapping': PublicChargingColumnMapping,
-            'sheet_name': 'Project_applications',
-            'header_row': 2,
-            'preparation_functions': [prepare_public_charging]
-        },
-        'Scrap It': {
-            'model': ScrapIt,
-            'columns': ScrapItColumns,
-            'column_mapping': ScrapItColumnMapping,
-            'sheet_name': 'TOP OTHER TRANSACTIONS',
-            'header_row': 5,
-            'preparation_functions': [prepare_scrap_it]
-        },
-        'Specialty Use Vehicle Incentive Program': {
-            'model': SpecialityUseVehicleIncentives,
-            'columns': SpecialityUseVehicleIncentiveProgramColumns,
-            'column_mapping': SpecialityUseVehicleIncentivesColumnMapping,
-            'sheet_name': 'Sheet1',
-            'preparation_functions': [prepare_speciality_use_vehicle_incentives]
-        },
-    }
-
         filename = request.data.get('filename')
         dataset_selected = request.data.get('datasetSelected')
         replace_data = request.data.get('replace', False)
@@ -118,7 +52,7 @@ class UploadViewset(GenericViewSet):
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
 
-            config = DATASET_CONFIG.get(dataset_selected)
+            config = constants.DATASET_CONFIG.get(dataset_selected)
             if not config:
                 return Response(f"Dataset '{dataset_selected}' is not supported.", status=status.HTTP_400_BAD_REQUEST)
             model = config['model']
@@ -139,7 +73,7 @@ class UploadViewset(GenericViewSet):
                 validation_functions=validation_functions,
                 dataset_columns=columns,
                 column_mapping_enum=mapping,
-                field_types=FIELD_TYPES.get(dataset_selected),
+                field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user = request.user
             )

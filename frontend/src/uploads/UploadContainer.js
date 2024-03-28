@@ -21,7 +21,6 @@ const UploadContainer = () => {
   const [alert, setAlert] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('');
-  const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
   const axios = useAxios();
@@ -123,31 +122,27 @@ const UploadContainer = () => {
     return <Loading />;
   }
 
-  const alertElement = alert && alertContent && alertSeverity ? <Alert severity={alertSeverity}>{alertContent}</Alert> : null
+  const alertElement = alert && alertContent && alertSeverity ? 
+  <Alert severity={alertSeverity}>{alertContent.split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  ))}</Alert> : null
 
   return (
     <div className="row">
       <div className="col-12 mr-2">
-        {alert && alertContent && alertSeverity &&
-          <Alert severity={alertSeverity}>{alertContent.split('\n').map((line, index) => (
-            <React.Fragment key={index}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}</Alert>
-        }
         <>
-          {open && (
-            <AlertDialog
-              open={openDialog}
-              title={'Replace existing data?'}
-              dialogue={'Selecting replace will delete all previously uploaded records for this dataset'}
-              cancelText={'Cancel'}
-              handleCancel={handleReplaceDataCancel}
-              confirmText={'Replace existing data'}
-              handleConfirm={handleReplaceDataConfirm}
-            />
-          )}
+          <AlertDialog
+            open={openDialog}
+            title={'Replace existing data?'}
+            dialogue={'Selecting replace will delete all previously uploaded records for this dataset'}
+            cancelText={'Cancel'}
+            handleCancel={handleReplaceDataCancel}
+            confirmText={'Replace existing data'}
+            handleConfirm={handleReplaceDataConfirm}
+          />
           <Stack direction="column" spacing={2}>
             <Paper square variant="outlined">
               <UploadPage

@@ -4,6 +4,17 @@ from enum import Enum
 
 import pandas as pd
 
+from api.models.arc_project_tracking import ARCProjectTracking
+from api.models.charger_rebates import ChargerRebates
+from api.models.data_fleets import DataFleets
+from api.models.hydrogen_fleets import HydrogenFleets
+from api.models.hydrogen_fueling import HydrogrenFueling
+from api.models.ldv_rebates import LdvRebates
+from api.models.public_charging import PublicCharging
+from api.models.scrap_it import ScrapIt
+from api.models.speciality_use_vehicle_incentives import SpecialityUseVehicleIncentives
+from api.services.spreadsheet_uploader_prep import prepare_arc_project_tracking, prepare_hydrogen_fleets, prepare_hydrogen_fueling, prepare_ldv_rebates, prepare_public_charging, prepare_scrap_it, prepare_speciality_use_vehicle_incentives
+
 
 
 class ARCProjectTrackingColumns(Enum):
@@ -512,3 +523,69 @@ FIELD_TYPES = {
         "model": str,
     }
 }
+
+DATASET_CONFIG = {
+        'ARC Project Tracking': {
+            'model': ARCProjectTracking,
+            'columns': ARCProjectTrackingColumns,
+            'column_mapping': ArcProjectTrackingColumnMapping,
+            'sheet_name': 'Project_Tracking',
+            'preparation_functions': [prepare_arc_project_tracking]
+        },
+        'EV Charging Rebates': {
+            'model': ChargerRebates,
+            'columns': EVChargingRebatesColumns,
+            'column_mapping': EVChargingRebatesColumnMapping,
+            'sheet_name': 'Updated',
+            'header_row': 2
+        },
+        'Data Fleets': {
+            'model': DataFleets,
+            'columns': DataFleetsColumns,
+            'column_mapping': DataFleetsColumnMapping,
+            'sheet_name': 'Data Fleets'
+        },
+        'Hydrogen Fleets': {
+            'model': HydrogenFleets,
+            'columns': HydrogenFleetsColumnMapping,
+            'column_mapping': HydrogenFleetsColumnMapping,
+            'sheet_name': 'Fleets',
+            'preparation_functions': [prepare_hydrogen_fleets]
+        },
+        'Hydrogen Fueling': {
+            'model': HydrogrenFueling,
+            'columns': HydrogenFuelingColumnMapping,
+            'column_mapping': HydrogenFuelingColumnMapping,
+            'sheet_name': 'Station_Tracking',
+            'preparation_functions': [prepare_hydrogen_fueling]
+        },
+        'LDV Rebates': {
+            'model': LdvRebates,
+            'columns': LdvRebatesColumnMapping,
+            'sheet_name': 'Raw Data',
+            'preparation_functions': [prepare_ldv_rebates]
+        },
+        'Public Charging': {
+            'model': PublicCharging,
+            'columns': PublicChargingColumns,
+            'column_mapping': PublicChargingColumnMapping,
+            'sheet_name': 'Project_applications',
+            'header_row': 2,
+            'preparation_functions': [prepare_public_charging]
+        },
+        'Scrap It': {
+            'model': ScrapIt,
+            'columns': ScrapItColumns,
+            'column_mapping': ScrapItColumnMapping,
+            'sheet_name': 'TOP OTHER TRANSACTIONS',
+            'header_row': 5,
+            'preparation_functions': [prepare_scrap_it]
+        },
+        'Specialty Use Vehicle Incentive Program': {
+            'model': SpecialityUseVehicleIncentives,
+            'columns': SpecialityUseVehicleIncentiveProgramColumns,
+            'column_mapping': SpecialityUseVehicleIncentivesColumnMapping,
+            'sheet_name': 'Sheet1',
+            'preparation_functions': [prepare_speciality_use_vehicle_incentives]
+        },
+    }
