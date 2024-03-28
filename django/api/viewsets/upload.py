@@ -34,7 +34,7 @@ class UploadViewset(GenericViewSet):
     @action(detail=False, methods=['get'])
     def datasets_list(self, request):
         
-        incomplete_datasets = ['LDV Rebates', 'Specialty Use Vehicle Incentive Program', 'Public Charging -Remove Later', 'EV Charging Rebates', 'Hydrogen Fueling', 'Hydrogen Fleets', 'ARC Project Tracking', 'Data Fleets', 'Scrap It']
+        incomplete_datasets = ['LDV Rebates', 'Specialty Use Vehicle Incentive Program', 'Public Charging', 'EV Charging Rebates', 'Hydrogen Fueling', 'Hydrogen Fleets', 'ARC Project Tracking', 'Data Fleets', 'Scrap It']
 
         datasets = Datasets.objects.all().exclude(name__in=incomplete_datasets)
         serializer = DatasetsSerializer(datasets, many=True, read_only=True)
