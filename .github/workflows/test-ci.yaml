@@ -58,7 +58,6 @@ jobs:
           oc process -f ./backend-bc.yaml NAME=cthub SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
           sleep 5s
           oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-backend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
-          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
  
       - name: Build CTHUB Frontend
         run: |
@@ -66,7 +65,6 @@ jobs:
           oc process -f ./frontend-bc-docker.yaml NAME=cthub SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}    
           sleep 5s
           oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
-          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
   deploy:
 
@@ -87,6 +85,11 @@ jobs:
           minimum-approvals: 1
           issue-title: "CTHUB release-${{ env.VERSION }} Test Deployment"      
 
+      - name: Tag CTHUB images to Test
+        run: |
+          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-$PRE_RELEASE ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-$PRE_RELEASE
+          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-$PRE_RELEASE ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-$PRE_RELEASE
+  
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
         with:
