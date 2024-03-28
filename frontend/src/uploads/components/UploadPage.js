@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
 import FileDropArea from './FileDropArea';
+import Loading from '../../app/components/Loading';
 
 const UploadPage = (props) => {
   const {
@@ -19,6 +20,7 @@ const UploadPage = (props) => {
     handleRadioChange,
     downloadSpreadsheet,
     setAlert,
+    loading,
   } = props;
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
@@ -78,16 +80,20 @@ const UploadPage = (props) => {
           />
         </div>
         <Box pt={2} className="upload-bar" alignItems="center" padding={2} display="flex" justifyContent="flex-end">
-          <Button
-            disabled={uploadFiles.length === 0 || !datasetSelected}
-            className="button-dark-blue button-lowercase"
-            onClick={() => doUpload()}
-            type="button"
-            variant="contained"
-          >
-            <UploadIcon />
-            Upload
-          </Button>
+          {loading ? (
+            <Loading color="button-dark-blue" />
+          ) : (
+            <Button
+              disabled={uploadFiles.length === 0 || !datasetSelected}
+              className="button-dark-blue button-lowercase"
+              onClick={() => doUpload()}
+              type="button"
+              variant="contained"
+            >
+              <UploadIcon />
+              Upload
+            </Button>
+          )}
         </Box>
       </Box>
     </>
