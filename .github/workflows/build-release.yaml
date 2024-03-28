@@ -52,74 +52,74 @@ jobs:
           npm install
           npm run build -- --pr=${{ env.PR_NUMBER }} --env=build 
 
-  deploy-on-dev:
+  # deploy-on-dev:
 
-    name: Deploy CTHUB on Dev Environment
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: build
+  #   name: Deploy CTHUB on Dev Environment
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
+  #   needs: build
 
-    steps:
+  #   steps:
 
-      - name: Check out repository
-        uses: actions/checkout@v3
+  #     - name: Check out repository
+  #       uses: actions/checkout@v3
 
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev    
+  #     - name: Log in to Openshift
+  #       uses: redhat-actions/oc-login@v1.3
+  #       with:
+  #         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+  #         openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+  #         insecure_skip_tls_verify: true
+  #         namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev    
 
-      - name: Run BCDK deployment on CTHUB Dev environment
-        run: |
-          cd .pipeline
-          echo "Deploying CTHUB ${{ env.RELEASE_NAME }} on Dev"
-          npm install
-          npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=dev
+  #     - name: Run BCDK deployment on CTHUB Dev environment
+  #       run: |
+  #         cd .pipeline
+  #         echo "Deploying CTHUB ${{ env.RELEASE_NAME }} on Dev"
+  #         npm install
+  #         npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=dev
 
-  deploy-on-test:
+  # deploy-on-test:
 
-    name: Deploy CTHUB on Test Environment
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: deploy-on-dev
+  #   name: Deploy CTHUB on Test Environment
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
+  #   needs: deploy-on-dev
 
-    steps:
+  #   steps:
 
-      - name: Check out repository
-        uses: actions/checkout@v3
+  #     - name: Check out repository
+  #       uses: actions/checkout@v3
 
-      - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
+  #     - name: Log in to Openshift
+  #       uses: redhat-actions/oc-login@v1.3
+  #       with:
+  #         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+  #         openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+  #         insecure_skip_tls_verify: true
+  #         namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
 
-      - name: Ask for approval for CTHUB Test deployment
-        uses: trstringer/manual-approval@v1.6.0
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: emi-hi,tim738745,kuanfandevops,JulianForeman
-          minimum-approvals: 1
-          issue-title: "CTHUB ${{ env.RELEASE_NAME }} Test Deployment"
+  #     - name: Ask for approval for CTHUB Test deployment
+  #       uses: trstringer/manual-approval@v1.6.0
+  #       with:
+  #         secret: ${{ github.TOKEN }}
+  #         approvers: emi-hi,tim738745,kuanfandevops,JulianForeman
+  #         minimum-approvals: 1
+  #         issue-title: "CTHUB ${{ env.RELEASE_NAME }} Test Deployment"
 
-      - name: Run BCDK deployment on CTHUB Test environment
-        run: |
-          cd .pipeline
-          echo "Deploying CTHUB ${{ env.RELEASE_NAME }} on Test"
-          npm install
-          npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=test
+  #     - name: Run BCDK deployment on CTHUB Test environment
+  #       run: |
+  #         cd .pipeline
+  #         echo "Deploying CTHUB ${{ env.RELEASE_NAME }} on Test"
+  #         npm install
+  #         npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=test
 
   deploy-on-prod:
 
     name: Deploy CTHUB on Prod Environment
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: deploy-on-test
+    # needs: deploy-on-test
 
     steps:
 
