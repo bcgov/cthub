@@ -60,8 +60,8 @@ jobs:
 
       - name: Tag CTHUB images to Test
         run: |
-          oc tag ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-Dev ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-$PRE_RELEASE
-          oc tag ${{ env.DEV_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-Dev ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-$PRE_RELEASE
+          oc tag ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          oc tag ${{ env.DEV_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
   
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
