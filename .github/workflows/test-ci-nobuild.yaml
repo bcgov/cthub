@@ -58,6 +58,14 @@ jobs:
           minimum-approvals: 1
           issue-title: "CTHUB release-${{ env.VERSION }} Test Deployment"      
 
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.DEV_NAMESPACE }}          
+
       - name: Tag CTHUB images to Test
         run: |
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
