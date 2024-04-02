@@ -15,6 +15,7 @@ const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
   const [datasetList, setDatasetList] = useState([{}]); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false); // Used for page refresh instead of loading progress
   const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
   const [replaceData, setReplaceData] = useState(false); // if true, we will replace all
   const [alertContent, setAlertContent] = useState();
@@ -27,10 +28,10 @@ const UploadContainer = () => {
   const axiosDefault = useAxios(true);
 
   const refreshList = () => {
-    setLoading(true);
+    setRefresh(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
       setDatasetList(response.data);
-      setLoading(false);
+      setRefresh(false);
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
         if (currentUserResp.data.user_permissions.admin === true) {
           setAdminUser(true);
@@ -48,32 +49,44 @@ const UploadContainer = () => {
   };
 
   const doUpload = () => uploadFiles.forEach((file) => {
-    axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
-      const { url: uploadUrl, minio_object_name: filename } = response.data;
-      axiosDefault.put(uploadUrl, file).then(() => {
-        let replace = false;
-        if (replaceData === true) {
-          replace = true;
-        }
-        axios.post(ROUTES_UPLOAD.UPLOAD, {
-          filename,
-          datasetSelected,
-          replace,
-        }).then((response) => {
-          setAlert(true);
-          setAlertSeverity(response.data.success ? 'success' : 'error')
-          setAlertContent(`${response.data.message}${response.data.errors ? '\nErrors: ' + response.data.errors.join('\n') : ''}`);
-        }).catch((error) => {
-          showError(error);
+    setLoading(true)
+    const uploadPromises = uploadFiles.map((file) => {
+      return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
+        const { url: uploadUrl, minio_object_name: filename } = response.data;
+        return axiosDefault.put(uploadUrl, file).then(() => {
+          let replace = false;
+          if (replaceData === true) {
+            replace = true;
+          }
+          return axios.post(ROUTES_UPLOAD.UPLOAD, {
+            filename,
+            datasetSelected,
+            replace,
+          });
         });
-      }).finally(() => {
-        setUploadFiles([]);
       });
+    });
+  
+    Promise.all(uploadPromises).then((responses) => {
+
+      const errorCheck = responses.some(response => response.data.success)
+
+      setAlertSeverity(errorCheck ? 'success' : 'error')
+
+      const message = responses.map(response => 
+        `${response.data.message}${response.data.errors ? '\nErrors: ' + response.data.errors.join('\n') : ''}`
+      ).join('\n');
+
+      setAlertContent(message);
+      setAlert(true);
+      setUploadFiles([]);
     }).catch((error) => {
-      const { response: errorResponse } = error;
       showError(error);
+    }).finally(() => {
+      setLoading(false);
     });
   });
+
   const downloadSpreadsheet = () => {
     axios.get(ROUTES_UPLOAD.DOWNLOAD_SPREADSHEET, {
       params: {
@@ -118,7 +131,7 @@ const UploadContainer = () => {
     refreshList(true);
   }, []);
 
-  if (loading) {
+  if (refresh) {
     return <Loading />;
   }
 
@@ -158,6 +171,7 @@ const UploadContainer = () => {
                 handleRadioChange={handleRadioChange}
                 downloadSpreadsheet={downloadSpreadsheet}
                 setAlert={setAlert}
+                loading={loading}
               />
             </Paper>
             {adminUser && (
