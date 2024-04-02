@@ -37,7 +37,6 @@ jobs:
       - id: set-pre-release
         run: |
           echo "PRE_RELEASE=$(oc -n ${{ env.DEV_NAMESPACE }} describe deployment/cthub-dev-frontend | grep Image | awk -F '-' '{print $NF}')" >> $GITHUB_OUTPUT
-          echo "PRE_RELEASE is $PRE_RELEASE "
 
   deploy:
 
@@ -56,7 +55,7 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: emi-hi,kuanfandevops,tim738745,JulianForeman
           minimum-approvals: 1
-          issue-title: "CTHUB release-${{ env.VERSION }} Test Deployment"      
+          issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"      
 
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
