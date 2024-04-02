@@ -49,7 +49,7 @@ jobs:
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
-      - name: Ask for approval for CTHUB release-${{ env.VERSION }} Test deployment
+      - name: Ask for approval for CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test deployment
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
