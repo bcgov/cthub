@@ -33,7 +33,7 @@ const UploadContainer = () => {
       setDatasetList(response.data);
       setRefresh(false);
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
-        if (currentUserResp.data.user_permissions.admin === true) {
+        if (currentUserResp.data && currentUserResp.data.user_permissions && currentUserResp.data.user_permissions.admin === true) {
           setAdminUser(true);
           setCurrentUser(currentUserResp.data.idir);
         }

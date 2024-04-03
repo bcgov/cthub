@@ -55,18 +55,19 @@ const UploadPage = (props) => {
               value={replaceData ? "replace" : "add"}
               name="radio-buttons-group"
               onChange={handleRadioChange}
+              defaultValue="add"
             >
               <FormControlLabel
                 disabled={datasetSelected ? false: true}
-                value={"replace"}
+                value="add"
                 control={<Radio />}
-                label="Replace existing data"
+                label="Add to existing data (default)"
               />
               <FormControlLabel
                 disabled={datasetSelected ? false: true}
-                value={"add"}
+                value="replace"
                 control={<Radio />}
-                label="Add to existing data"
+                label="Replace existing data (data cannot be restored, proceed only if you are certain that the new file contains all required data)."
               />
             </RadioGroup>
           </FormControl>
