@@ -61,14 +61,14 @@ jobs:
           # Run the oc command and store the output in a variable
           oc_output=$(oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev get imagetags | grep cthub-backend | awk '{print $1}')
           namespace="${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev"
-          echo "Will delete all cthub-bakcend image tags in ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev except search_string"
+          echo "Will delete all cthub-bakcend image tags in ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev except $search_string"
           delete_resources "$search_string" "$oc_output" "$namespace"
 
           # Define the search string
           search_string=$(oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev describe deployment/cthub-dev-frontend | grep Image | awk -F '/' '{print $NF}')
           # Run the oc command and store the output in a variable
           oc_output=$(oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev get imagetags | grep cthub-frontend | awk '{print $1}')
-          echo "Will delete all cthub-frontend image tags in ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev except search_string"
+          echo "Will delete all cthub-frontend image tags in ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev except $search_string"
           namespace="${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev"
           delete_resources "$search_string" "$oc_output" "$namespace"
 
