@@ -20,6 +20,7 @@ jobs:
           namespace: ${{ env.TOOLS_NAMESPACE }}
 
       - name: cleanup-images
+        continue-on-error: true
         run: |
 
           #!/bin/bash
