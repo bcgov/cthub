@@ -72,6 +72,7 @@ jobs:
           echo "Will delete all cthub-frontend image tags in ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev except $search_string"
           namespace="${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev"
           delete_resources "$search_string" "$oc_output" "$namespace"
-
+          
+          echo "will delete images in tools env"
           oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools get imagetags | grep cthub-frontend | awk '{print $1}' | xargs oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools delete imagetag 
           oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools get imagetags | grep cthub-backend | awk '{print $1}' | xargs oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools delete imagetag
