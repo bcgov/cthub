@@ -75,12 +75,12 @@ jobs:
           
           echo "will delete images in tools env"
           frontendimages=$(oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools get imagetags | grep cthub-frontend | awk '{print $1}')
-          if [ -z "$frontendimages" ]; then
+          if [ ! -z "$frontendimages" ]; then
             oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools get imagetags | grep cthub-frontend | awk '{print $1}' | xargs oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools delete imagetag 
           fi
 
           backendimages=$(oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools get imagetags | grep cthub-backend | awk '{print $1}')
-          if [ -z "$backendimages" ]; then
+          if [ ! -z "$backendimages" ]; then
             oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools get imagetags | grep cthub-backend | awk '{print $1}' | xargs oc -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools delete imagetag
           fi
           
