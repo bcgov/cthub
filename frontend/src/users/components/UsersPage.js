@@ -66,7 +66,7 @@ const UsersPage = (props) => {
                 </h3>
               </Grid>
               <Grid item>
-                <TextField className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); setMessage(''); }} />
+                <TextField value={newUser} className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); setMessage(''); }} />
               </Grid>
               <Grid item>
                 <Tooltip disableHoverListener={!!newUser} title="Please type in the IDIR you would like to add.">
