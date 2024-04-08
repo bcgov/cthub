@@ -33,8 +33,10 @@ const UsersContainer = (props) => {
         setUsers(
           produce((draft) => {
             draft.push(userObject);
+            draft.sort((a, b) => a.idir.localeCompare(b.idir));
           }),
         );
+        setNewUser('')
       })
       .catch((error) => {
         setMessageSeverity('error');
