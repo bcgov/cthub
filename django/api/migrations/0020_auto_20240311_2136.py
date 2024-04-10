@@ -6,28 +6,28 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0019_auto_20240223_1820'),
+        ("api", "0019_auto_20240223_1820"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='datafleets',
-            old_name='component_being_applyied_for',
-            new_name='component_being_applied_for',
+            model_name="datafleets",
+            old_name="component_being_applyied_for",
+            new_name="component_being_applied_for",
         ),
         migrations.RenameField(
-            model_name='datafleets',
-            old_name='number_of_Level_2_Charging_Stations_being_applying_for',
-            new_name='number_of_level_2_charging_stations_being_applied_for',
+            model_name="datafleets",
+            old_name="number_of_Level_2_Charging_Stations_being_applying_for",
+            new_name="number_of_level_2_charging_stations_being_applied_for",
         ),
         migrations.RenameField(
-            model_name='datafleets',
-            old_name='number_of_level_3_dc_fast_charging_stations_being_applying_for',
-            new_name='number_of_level_3_dc_fast_charging_stations_being_applied_for',
+            model_name="datafleets",
+            old_name="number_of_level_3_dc_fast_charging_stations_being_applying_for",
+            new_name="number_of_level_3_dc_fast_charging_stations_being_applied_for",
         ),
         migrations.RenameField(
-            model_name='datafleets',
-            old_name='type_of_charger_being_installing',
-            new_name='type_of_charger_being_installed',
+            model_name="datafleets",
+            old_name="type_of_charger_being_installing",
+            new_name="type_of_charger_being_installed",
         ),
     ]

@@ -13,8 +13,15 @@ from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
 from api.models.scrap_it import ScrapIt
 from api.models.speciality_use_vehicle_incentives import SpecialityUseVehicleIncentives
-from api.services.spreadsheet_uploader_prep import prepare_arc_project_tracking, prepare_hydrogen_fleets, prepare_hydrogen_fueling, prepare_ldv_rebates, prepare_public_charging, prepare_scrap_it, prepare_speciality_use_vehicle_incentives
-
+from api.services.spreadsheet_uploader_prep import (
+    prepare_arc_project_tracking,
+    prepare_hydrogen_fleets,
+    prepare_hydrogen_fueling,
+    prepare_ldv_rebates,
+    prepare_public_charging,
+    prepare_scrap_it,
+    prepare_speciality_use_vehicle_incentives,
+)
 
 
 class ARCProjectTrackingColumns(Enum):
@@ -34,6 +41,7 @@ class ARCProjectTrackingColumns(Enum):
     FUEL_TYPE = "Fuel Type"
     PUBLICLY_ANNOUNCED = "Publicly Announced"
 
+
 class ArcProjectTrackingColumnMapping(Enum):
     funding_call = "Funding Call"
     proponent = "Proponent"
@@ -51,6 +59,7 @@ class ArcProjectTrackingColumnMapping(Enum):
     fuel_type = "Fuel Type"
     publicly_announced = "Publicly Announced"
 
+
 class EVChargingRebatesColumns(Enum):
     ORGANIZATION = "Organization"
     REGION = "Region"
@@ -62,6 +71,7 @@ class EVChargingRebatesColumns(Enum):
     ANNOUNCED = "Announced?"
     BC_EMPR_FUNDING_ANTICIPATED = "B.C. (EMPR) Funding Anticipated (Max $25,000 per station, excludes MOTI stations) (Not all funding paid out yet as depends on station completion)"
     NOTES = "Notes"
+
 
 class EVChargingRebatesColumnMapping(Enum):
     organization = "Organization"
@@ -95,14 +105,23 @@ class DataFleetsColumns(Enum):
     AVERAGE_DAILY_TRAVEL_DISTANCE = "Average daily travel distance?"
     WHICH_COMPONENT_ARE_YOU_APPLYING_FOR = "Which component are you applying for?*"
     ESTIMATED_COST = "Estimated cost"
-    WHICH_TYPE_OF_CHARGER_ARE_YOU_INSTALLING = "Which type of charger are you installing?"
-    HOW_MANY_LEVEL_2_CHARGING_STATIONS = "How many Level 2 Charging Stations are you applying for"
-    HOW_MANY_LEVEL_3_DC_FAST_CHARGING_STATIONS = "How many Level 3/DC Fast Charging Stations are you applying for"
-    APPLICATION_FORM_FLEETS_COMPLETION_DATE_TIME = '"Application Form Fleets" completion date/time'
+    WHICH_TYPE_OF_CHARGER_ARE_YOU_INSTALLING = (
+        "Which type of charger are you installing?"
+    )
+    HOW_MANY_LEVEL_2_CHARGING_STATIONS = (
+        "How many Level 2 Charging Stations are you applying for"
+    )
+    HOW_MANY_LEVEL_3_DC_FAST_CHARGING_STATIONS = (
+        "How many Level 3/DC Fast Charging Stations are you applying for"
+    )
+    APPLICATION_FORM_FLEETS_COMPLETION_DATE_TIME = (
+        '"Application Form Fleets" completion date/time'
+    )
     PRE_APPROVAL_DATE = "Pre-Approval Date"
     DEADLINE = "Deadline"
     APPLICATION_NUMBER = "Application Number"
     POTENTIAL_REBATE = "Potential Rebate"
+
 
 class DataFleetsColumnMapping(Enum):
     current_stage = "Current Stage"
@@ -124,13 +143,20 @@ class DataFleetsColumnMapping(Enum):
     component_being_applied_for = "Which component are you applying for?*"
     estimated_cost = "Estimated cost"
     type_of_charger_being_installed = "Which type of charger are you installing?"
-    number_of_level_2_charging_stations_being_applied_for = "How many Level 2 Charging Stations are you applying for"
-    number_of_level_3_dc_fast_charging_stations_being_applied_for = "How many Level 3/DC Fast Charging Stations are you applying for"
-    application_form_fleets_completion_date_time = '"Application Form Fleets" completion date/time'
+    number_of_level_2_charging_stations_being_applied_for = (
+        "How many Level 2 Charging Stations are you applying for"
+    )
+    number_of_level_3_dc_fast_charging_stations_being_applied_for = (
+        "How many Level 3/DC Fast Charging Stations are you applying for"
+    )
+    application_form_fleets_completion_date_time = (
+        '"Application Form Fleets" completion date/time'
+    )
     pre_approval_date = "Pre-Approval Date"
     deadline = "Deadline"
     application_number = "Application Number"
     potential_rebate = "Potential Rebate"
+
 
 class HydrogenFleetsColumns(Enum):
     APPLICATION_NUMBER = "Application #"
@@ -149,6 +175,7 @@ class HydrogenFleetsColumns(Enum):
     DEALER_NAME = "Dealer Name"
     REBATE_AMOUNT = "Rebate Amount"
 
+
 class HydrogenFleetsColumnMapping(Enum):
     application_number = "Application #"
     fleet_number = "Fleet #"
@@ -165,6 +192,7 @@ class HydrogenFleetsColumnMapping(Enum):
     purchase_date = "Purchase Date"
     dealer_name = "Dealer Name"
     rebate_amount = "Rebate Amount"
+
 
 class HydrogenFuelingColumns(Enum):
     STATION_NUMBER = "Station Number"
@@ -186,6 +214,7 @@ class HydrogenFuelingColumns(Enum):
     OPENING_DATE = "Opening Date"
     TOTAL_CAPITAL_COST = "Total Capital Cost"
 
+
 class HydrogenFuelingColumnMapping(Enum):
     station_number = "Station Number"
     rfp_close_date = "RFP Close Date"
@@ -205,6 +234,7 @@ class HydrogenFuelingColumnMapping(Enum):
     operational_date = "Operational Date "
     opening_date = "Opening Date"
     total_capital_cost = "Total Capital Cost"
+
 
 class LDVRebatesColumns(Enum):
     CASL_CONSENT = "CASL Consent"
@@ -234,6 +264,7 @@ class LDVRebatesColumns(Enum):
     VIN = "VIN#"
     DELIVERED = "Delivered"
     CONSENT_TO_CONTACT = "Consent to Contact"
+
 
 class LdvRebatesColumnMapping(Enum):
     casl_consent = "CASL Consent"
@@ -284,6 +315,7 @@ class PublicChargingColumns(Enum):
     REVIEW_NUMBER = "Review Number"
     PAID_OUT_REBATE_AMOUNT = "Paid out rebate amount"
 
+
 class PublicChargingColumnMapping(Enum):
     applicant_name = "Applicant Name"
     address = "Address"
@@ -303,6 +335,7 @@ class PublicChargingColumnMapping(Enum):
     review_number = "Review Number"
     rebate_paid = "Paid out rebate amount"
 
+
 class ScrapItColumns(Enum):
     APPROVAL_NUM = "Approval Num"
     APP_RECVD_DATE = "App Recv'd Date"
@@ -315,6 +348,7 @@ class ScrapItColumns(Enum):
     CHEQUE_NUMBER = "Cheque #"
     BUDGET_CODE = "Budget Code"
     SCRAP_DATE = "Scrap Date"
+
 
 class ScrapItColumnMapping(Enum):
     approval_number = "Approval Num"
@@ -329,6 +363,7 @@ class ScrapItColumnMapping(Enum):
     budget_code = "Budget Code"
     scrap_date = "Scrap Date"
 
+
 class SpecialityUseVehicleIncentiveProgramColumns(Enum):
     APPROVALS = "Approvals"
     DATE = "Date"
@@ -342,6 +377,7 @@ class SpecialityUseVehicleIncentiveProgramColumns(Enum):
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
 
+
 class SpecialityUseVehicleIncentivesColumnMapping(Enum):
     approvals = "Approvals"
     date = "Date"
@@ -354,8 +390,9 @@ class SpecialityUseVehicleIncentivesColumnMapping(Enum):
     manufacturer = "Manufacturer"
     model = "Model"
 
+
 FIELD_TYPES = {
-    'ARC Project Tracking': {
+    "ARC Project Tracking": {
         "funding_call": str,
         "proponent": str,
         "reference_number": str,
@@ -372,7 +409,7 @@ FIELD_TYPES = {
         "fuel_type": str,
         "publicly_announced": bool,
     },
-    'EV Charging Rebates': {
+    "EV Charging Rebates": {
         "organization": str,
         "region": str,
         "city": str,
@@ -384,7 +421,7 @@ FIELD_TYPES = {
         "rebate_paid": float,
         "notes": str,
     },
-    'Data Fleets': {
+    "Data Fleets": {
         "current_stage": str,
         "rebate_value": str,
         "legal_name_of_organization_fleet": str,
@@ -412,7 +449,7 @@ FIELD_TYPES = {
         "application_number": str,
         "potential_rebate": str,
     },
-    'Hydrogen Fleets': {
+    "Hydrogen Fleets": {
         "application_number": int,
         "fleet_number": int,
         "application_date": str,
@@ -427,9 +464,9 @@ FIELD_TYPES = {
         "year": str,
         "purchase_date": str,
         "dealer_name": str,
-        "rebate_amount": str
+        "rebate_amount": str,
     },
-    'Hydrogen Fueling': {
+    "Hydrogen Fueling": {
         "station_number": int,
         "rfp_close_date": datetime.date,
         "station_name": str,
@@ -447,9 +484,9 @@ FIELD_TYPES = {
         "number_of_fueling_positions": int,
         "operational_date": datetime.date,
         "opening_date": datetime.date,
-        "total_capital_cost": Decimal
+        "total_capital_cost": Decimal,
     },
-    'LDV Rebates': {
+    "LDV Rebates": {
         "casl_consent": bool,
         "date_approved": str,
         "submission_id": int,
@@ -478,7 +515,7 @@ FIELD_TYPES = {
         "delivered": bool,
         "consent_to_contact": bool,
     },
-    'Public Charging': {
+    "Public Charging": {
         "applicant_name": str,
         "address": str,
         "charging_station_info": str,
@@ -497,7 +534,7 @@ FIELD_TYPES = {
         "review_number": int,
         "rebate_paid": float,
     },
-    'Scrap It': {
+    "Scrap It": {
         "approval_number": int,
         "application_received_date": str,
         "completion_date": str,
@@ -510,7 +547,7 @@ FIELD_TYPES = {
         "budget_code": str,
         "scrap_date": str,
     },
-    'Specialty Use Vehicle Incentive Program': {
+    "Specialty Use Vehicle Incentive Program": {
         "approvals": str,
         "date": str,
         "applicant_name": str,
@@ -521,71 +558,71 @@ FIELD_TYPES = {
         "total_purchase_price": int,
         "manufacturer": str,
         "model": str,
-    }
+    },
 }
 
 DATASET_CONFIG = {
-        'ARC Project Tracking': {
-            'model': ARCProjectTracking,
-            'columns': ARCProjectTrackingColumns,
-            'column_mapping': ArcProjectTrackingColumnMapping,
-            'sheet_name': 'Project_Tracking',
-            'preparation_functions': [prepare_arc_project_tracking]
-        },
-        'EV Charging Rebates': {
-            'model': ChargerRebates,
-            'columns': EVChargingRebatesColumns,
-            'column_mapping': EVChargingRebatesColumnMapping,
-            'sheet_name': 'Updated',
-            'header_row': 2
-        },
-        'Data Fleets': {
-            'model': DataFleets,
-            'columns': DataFleetsColumns,
-            'column_mapping': DataFleetsColumnMapping,
-            'sheet_name': 'Data Fleets'
-        },
-        'Hydrogen Fleets': {
-            'model': HydrogenFleets,
-            'columns': HydrogenFleetsColumnMapping,
-            'column_mapping': HydrogenFleetsColumnMapping,
-            'sheet_name': 'Fleets',
-            'preparation_functions': [prepare_hydrogen_fleets]
-        },
-        'Hydrogen Fueling': {
-            'model': HydrogrenFueling,
-            'columns': HydrogenFuelingColumnMapping,
-            'column_mapping': HydrogenFuelingColumnMapping,
-            'sheet_name': 'Station_Tracking',
-            'preparation_functions': [prepare_hydrogen_fueling]
-        },
-        'LDV Rebates': {
-            'model': LdvRebates,
-            'columns': LdvRebatesColumnMapping,
-            'sheet_name': 'Raw Data',
-            'preparation_functions': [prepare_ldv_rebates]
-        },
-        'Public Charging': {
-            'model': PublicCharging,
-            'columns': PublicChargingColumns,
-            'column_mapping': PublicChargingColumnMapping,
-            'sheet_name': 'Project_applications',
-            'header_row': 2,
-            'preparation_functions': [prepare_public_charging]
-        },
-        'Scrap It': {
-            'model': ScrapIt,
-            'columns': ScrapItColumns,
-            'column_mapping': ScrapItColumnMapping,
-            'sheet_name': 'TOP OTHER TRANSACTIONS',
-            'header_row': 5,
-            'preparation_functions': [prepare_scrap_it]
-        },
-        'Specialty Use Vehicle Incentive Program': {
-            'model': SpecialityUseVehicleIncentives,
-            'columns': SpecialityUseVehicleIncentiveProgramColumns,
-            'column_mapping': SpecialityUseVehicleIncentivesColumnMapping,
-            'sheet_name': 'Sheet1',
-            'preparation_functions': [prepare_speciality_use_vehicle_incentives]
-        },
-    }
+    "ARC Project Tracking": {
+        "model": ARCProjectTracking,
+        "columns": ARCProjectTrackingColumns,
+        "column_mapping": ArcProjectTrackingColumnMapping,
+        "sheet_name": "Project_Tracking",
+        "preparation_functions": [prepare_arc_project_tracking],
+    },
+    "EV Charging Rebates": {
+        "model": ChargerRebates,
+        "columns": EVChargingRebatesColumns,
+        "column_mapping": EVChargingRebatesColumnMapping,
+        "sheet_name": "Updated",
+        "header_row": 2,
+    },
+    "Data Fleets": {
+        "model": DataFleets,
+        "columns": DataFleetsColumns,
+        "column_mapping": DataFleetsColumnMapping,
+        "sheet_name": "Data Fleets",
+    },
+    "Hydrogen Fleets": {
+        "model": HydrogenFleets,
+        "columns": HydrogenFleetsColumnMapping,
+        "column_mapping": HydrogenFleetsColumnMapping,
+        "sheet_name": "Fleets",
+        "preparation_functions": [prepare_hydrogen_fleets],
+    },
+    "Hydrogen Fueling": {
+        "model": HydrogrenFueling,
+        "columns": HydrogenFuelingColumnMapping,
+        "column_mapping": HydrogenFuelingColumnMapping,
+        "sheet_name": "Station_Tracking",
+        "preparation_functions": [prepare_hydrogen_fueling],
+    },
+    "LDV Rebates": {
+        "model": LdvRebates,
+        "columns": LdvRebatesColumnMapping,
+        "sheet_name": "Raw Data",
+        "preparation_functions": [prepare_ldv_rebates],
+    },
+    "Public Charging": {
+        "model": PublicCharging,
+        "columns": PublicChargingColumns,
+        "column_mapping": PublicChargingColumnMapping,
+        "sheet_name": "Project_applications",
+        "header_row": 2,
+        "preparation_functions": [prepare_public_charging],
+    },
+    "Scrap It": {
+        "model": ScrapIt,
+        "columns": ScrapItColumns,
+        "column_mapping": ScrapItColumnMapping,
+        "sheet_name": "TOP OTHER TRANSACTIONS",
+        "header_row": 5,
+        "preparation_functions": [prepare_scrap_it],
+    },
+    "Specialty Use Vehicle Incentive Program": {
+        "model": SpecialityUseVehicleIncentives,
+        "columns": SpecialityUseVehicleIncentiveProgramColumns,
+        "column_mapping": SpecialityUseVehicleIncentivesColumnMapping,
+        "sheet_name": "Sheet1",
+        "preparation_functions": [prepare_speciality_use_vehicle_incentives],
+    },
+}

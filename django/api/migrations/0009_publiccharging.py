@@ -6,42 +6,74 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0008_chargerrebates'),
+        ("api", "0008_chargerrebates"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PublicCharging',
+            name="PublicCharging",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('effective_date', models.DateField(blank=True, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('applicant_name', models.CharField(blank=True, max_length=200, null=True)),
-                ('city', models.CharField(blank=True, max_length=200, null=True)),
-                ('postal_code', models.CharField(blank=True, max_length=50, null=True)),
-                ('address', models.CharField(blank=True, max_length=200, null=True)),
-                ('charging_station_info', models.CharField(blank=True, max_length=500, null=True)),
-                ('between_25kw_and_50kw', models.IntegerField(blank=True, null=True)),
-                ('between_50kw_and_100kw', models.IntegerField(blank=True, null=True)),
-                ('over_100kw', models.IntegerField(blank=True, null=True)),
-                ('level_2_units', models.IntegerField(blank=True, null=True)),
-                ('level_2_ports', models.IntegerField(blank=True, null=True)),
-                ('estimated_budget', models.DecimalField(decimal_places=2, max_digits=20)),
-                ('adjusted_rebate', models.DecimalField(decimal_places=2, max_digits=20)),
-                ('rebate_percent_maximum', models.DecimalField(decimal_places=2, max_digits=3)),
-                ('pilot_project', models.BooleanField()),
-                ('region', models.CharField(blank=True, max_length=200, null=True)),
-                ('organization_type', models.CharField(blank=True, max_length=100, null=True)),
-                ('project_status', models.CharField(blank=True, max_length=200, null=True)),
-                ('review_number', models.IntegerField(blank=True, null=True)),
-                ('rebate_paid', models.DecimalField(decimal_places=2, max_digits=20)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("effective_date", models.DateField(blank=True, null=True)),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                (
+                    "applicant_name",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                ("city", models.CharField(blank=True, max_length=200, null=True)),
+                ("postal_code", models.CharField(blank=True, max_length=50, null=True)),
+                ("address", models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "charging_station_info",
+                    models.CharField(blank=True, max_length=500, null=True),
+                ),
+                ("between_25kw_and_50kw", models.IntegerField(blank=True, null=True)),
+                ("between_50kw_and_100kw", models.IntegerField(blank=True, null=True)),
+                ("over_100kw", models.IntegerField(blank=True, null=True)),
+                ("level_2_units", models.IntegerField(blank=True, null=True)),
+                ("level_2_ports", models.IntegerField(blank=True, null=True)),
+                (
+                    "estimated_budget",
+                    models.DecimalField(decimal_places=2, max_digits=20),
+                ),
+                (
+                    "adjusted_rebate",
+                    models.DecimalField(decimal_places=2, max_digits=20),
+                ),
+                (
+                    "rebate_percent_maximum",
+                    models.DecimalField(decimal_places=2, max_digits=3),
+                ),
+                ("pilot_project", models.BooleanField()),
+                ("region", models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "organization_type",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "project_status",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                ("review_number", models.IntegerField(blank=True, null=True)),
+                ("rebate_paid", models.DecimalField(decimal_places=2, max_digits=20)),
             ],
             options={
-                'db_table': 'public_charging',
+                "db_table": "public_charging",
             },
         ),
     ]

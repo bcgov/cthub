@@ -1,6 +1,7 @@
 from django.db import models
 from auditable.models import Auditable
 
+
 class User(Auditable):
     idir = models.CharField(
         blank=False,
@@ -10,5 +11,6 @@ class User(Auditable):
     )
 
     class Meta:
-        db_table = 'user'
+        db_table = "user"
+
     db_table_comment = "Contains the list of users in the system "

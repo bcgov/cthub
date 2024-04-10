@@ -6,47 +6,115 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0013_hydrogenfleets'),
+        ("api", "0013_hydrogenfleets"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DataFleets',
+            name="DataFleets",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('current_stage', models.CharField(blank=True, max_length=250, null=True)),
-                ('rebate_value', models.CharField(blank=True, max_length=100, null=True)),
-                ('legal_name_of_organization_fleet', models.CharField(blank=True, max_length=500, null=True)),
-                ('business_category', models.CharField(blank=True, max_length=250, null=True)),
-                ('city', models.CharField(blank=True, max_length=250, null=True)),
-                ('postal_code', models.CharField(blank=True, max_length=100, null=True)),
-                ('applicant_first_name', models.CharField(blank=True, max_length=100, null=True)),
-                ('applicant_last_name', models.CharField(blank=True, max_length=100, null=True)),
-                ('email_address', models.CharField(blank=True, max_length=100, null=True)),
-                ('fleet_size_all', models.IntegerField(blank=True, null=True)),
-                ('fleet_size_light_duty', models.IntegerField(blank=True, null=True)),
-                ('total_number_of_evs', models.IntegerField(blank=True, null=True)),
-                ('total_number_of_light_duty_evs', models.IntegerField(blank=True, null=True)),
-                ('phev', models.IntegerField(blank=True, null=True)),
-                ('evse', models.IntegerField(blank=True, null=True)),
-                ('average_daily_travel_distance', models.CharField(blank=True, max_length=100, null=True)),
-                ('component_being_applyied_for', models.CharField(blank=True, max_length=250, null=True)),
-                ('estimated_cost', models.CharField(blank=True, max_length=100, null=True)),
-                ('type_of_charger_being_installing', models.CharField(blank=True, max_length=250, null=True)),
-                ('number_of_Level_2_Charging_Stations_being_applying_for', models.IntegerField(blank=True, null=True)),
-                ('number_of_level_3_dc_fast_charging_stations_being_applying_for', models.IntegerField(blank=True, null=True)),
-                ('application_form_fleets_completion_date_time', models.CharField(blank=True, max_length=100, null=True)),
-                ('pre_approval_date', models.CharField(blank=True, max_length=100, null=True)),
-                ('deadline', models.CharField(blank=True, max_length=250, null=True)),
-                ('application_number', models.CharField(blank=True, max_length=250, null=True)),
-                ('potential_rebate', models.CharField(blank=True, max_length=100, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                (
+                    "current_stage",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "rebate_value",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "legal_name_of_organization_fleet",
+                    models.CharField(blank=True, max_length=500, null=True),
+                ),
+                (
+                    "business_category",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                ("city", models.CharField(blank=True, max_length=250, null=True)),
+                (
+                    "postal_code",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "applicant_first_name",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "applicant_last_name",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "email_address",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                ("fleet_size_all", models.IntegerField(blank=True, null=True)),
+                ("fleet_size_light_duty", models.IntegerField(blank=True, null=True)),
+                ("total_number_of_evs", models.IntegerField(blank=True, null=True)),
+                (
+                    "total_number_of_light_duty_evs",
+                    models.IntegerField(blank=True, null=True),
+                ),
+                ("phev", models.IntegerField(blank=True, null=True)),
+                ("evse", models.IntegerField(blank=True, null=True)),
+                (
+                    "average_daily_travel_distance",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "component_being_applyied_for",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "estimated_cost",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "type_of_charger_being_installing",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "number_of_Level_2_Charging_Stations_being_applying_for",
+                    models.IntegerField(blank=True, null=True),
+                ),
+                (
+                    "number_of_level_3_dc_fast_charging_stations_being_applying_for",
+                    models.IntegerField(blank=True, null=True),
+                ),
+                (
+                    "application_form_fleets_completion_date_time",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "pre_approval_date",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                ("deadline", models.CharField(blank=True, max_length=250, null=True)),
+                (
+                    "application_number",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "potential_rebate",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
             ],
             options={
-                'db_table': 'data_fleets',
+                "db_table": "data_fleets",
             },
         ),
     ]

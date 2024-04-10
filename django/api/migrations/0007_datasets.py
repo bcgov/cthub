@@ -6,22 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0006_specialityusevehicleincentives'),
+        ("api", "0006_specialityusevehicleincentives"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Datasets',
+            name="Datasets",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('name', models.CharField(max_length=50, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("name", models.CharField(max_length=50, unique=True)),
             ],
             options={
-                'db_table': 'datasets',
+                "db_table": "datasets",
             },
         ),
     ]

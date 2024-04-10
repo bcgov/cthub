@@ -11,4 +11,4 @@ class Datasets(Auditable):
     )
 
     class Meta:
-        db_table = 'datasets'
+        db_table = "datasets"
