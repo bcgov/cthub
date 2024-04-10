@@ -21,5 +21,7 @@ def update_permissions(user_permissions):
             if value == True:
                 permission_objects.append(permissions_map.get(description))
         for permission_object in permission_objects:
-            user_permissions_to_add.append(UserPermission(user=user, permission=permission_object))
+            user_permissions_to_add.append(
+                UserPermission(user=user, permission=permission_object)
+            )
     UserPermission.objects.bulk_create(user_permissions_to_add)

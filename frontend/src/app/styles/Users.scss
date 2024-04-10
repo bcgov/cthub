@@ -7,25 +7,23 @@
   background-color: $default-background-grey;
   align-content: space-around;
   width: 10%;
- .checkbox {
+  .checkbox {
     width: 40%;
   }
-  @media (max-width:991px) {
+  @media (max-width: 991px) {
     width: 20%;
-}
-  @media (max-width:599px) {
+  }
+  @media (max-width: 599px) {
     width: 40%;
-}
-
+  }
 }
 
 .user-input {
-    margin-left: 10px;
-    margin-right: 10px;
-    background-color: white;
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: white;
 }
 
 .button-dark-blue {
   background-color: #003366 !important;
 }
-

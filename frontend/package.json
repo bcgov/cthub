@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "css-loader": "^5.2.7",
+    "prettier": "3.2.5",
     "sass": "^1.43.4",
     "sass-loader": "^11.1.1",
     "source-map-loader": "^2.0.2",

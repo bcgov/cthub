@@ -4,23 +4,15 @@ from django.db import models
 
 class IcbcRegistrationData(Auditable):
     icbc_vehicle = models.ForeignKey(
-        'IcbcVehicle',
-        related_name=None,
-        on_delete=models.CASCADE
+        "IcbcVehicle", related_name=None, on_delete=models.CASCADE
     )
 
     vin = models.CharField(
-        blank=False,
-        null=False,
-        unique=True,
-        max_length=20,
-        db_index=True
+        blank=False, null=False, unique=True, max_length=20, db_index=True
     )
 
     icbc_upload_date = models.ForeignKey(
-        'IcbcUploadDate',
-        related_name=None,
-        on_delete=models.CASCADE
+        "IcbcUploadDate", related_name=None, on_delete=models.CASCADE
     )
 
     class Meta:

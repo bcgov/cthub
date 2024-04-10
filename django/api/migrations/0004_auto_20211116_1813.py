@@ -6,58 +6,58 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0003_vindecodedinformation'),
+        ("api", "0003_vindecodedinformation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='applicant_email',
+            model_name="ldvrebates",
+            name="applicant_email",
             field=models.CharField(blank=True, max_length=200, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='applicant_phone',
+            model_name="ldvrebates",
+            name="applicant_phone",
             field=models.CharField(blank=True, max_length=25, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='applicant_postal_code',
+            model_name="ldvrebates",
+            name="applicant_postal_code",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='applicant_use',
+            model_name="ldvrebates",
+            name="applicant_use",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='business_number',
+            model_name="ldvrebates",
+            name="business_number",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='date_approved',
+            model_name="ldvrebates",
+            name="date_approved",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='document_type',
+            model_name="ldvrebates",
+            name="document_type",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='drivers_license',
+            model_name="ldvrebates",
+            name="drivers_license",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='submission_date',
+            model_name="ldvrebates",
+            name="submission_date",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='ldvrebates',
-            name='submission_id',
+            model_name="ldvrebates",
+            name="submission_id",
             field=models.IntegerField(),
         ),
     ]

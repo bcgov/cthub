@@ -1,31 +1,26 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import { makeStyles } from '@mui/styles';
+import PropTypes from "prop-types";
+import React from "react";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { makeStyles } from "@mui/styles";
 
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 
 const useStyles = makeStyles(() => ({
   pagination: {
     flexShrink: 0,
-    '& .MuiSelect-select': {
-      paddingBottom: '0.5rem',
-      paddingTop: '0.5rem',
+    "& .MuiSelect-select": {
+      paddingBottom: "0.5rem",
+      paddingTop: "0.5rem",
     },
   },
 }));
 
 const ReactTablePagination = (props) => {
   const classes = useStyles();
-  const {
-    count,
-    onPageChange,
-    page,
-    rowsPerPage,
-  } = props;
+  const { count, onPageChange, page, rowsPerPage } = props;
 
   const pagesCount = Math.ceil(count / rowsPerPage);
 
@@ -53,7 +48,9 @@ const ReactTablePagination = (props) => {
             value={page}
           >
             {Array.from(Array(pagesCount).keys()).map((value) => (
-              <MenuItem key={value} value={value}>{(value + 1)}</MenuItem>
+              <MenuItem key={value} value={value}>
+                {value + 1}
+              </MenuItem>
             ))}
           </Select>
 

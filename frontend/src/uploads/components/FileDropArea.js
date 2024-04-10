@@ -1,20 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Box, Button, Grid } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
-import FileDrop from './FileDrop';
-import getFileSize from '../../app/utilities/getFileSize';
+import React from "react";
+import PropTypes from "prop-types";
+import { Box, Button, Grid } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
+import FileDrop from "./FileDrop";
+import getFileSize from "../../app/utilities/getFileSize";
 
 const FileDropArea = (props) => {
-  const {
-    disabled,
-    setUploadFiles,
-    uploadFiles,
-    setAlert,
-  } = props;
+  const { disabled, setUploadFiles, uploadFiles, setAlert } = props;
 
   const removeFile = (removedFile) => {
-    const found = uploadFiles.findIndex((file) => (file === removedFile));
+    const found = uploadFiles.findIndex((file) => file === removedFile);
     uploadFiles.splice(found, 1);
     setUploadFiles([...uploadFiles]);
   };
@@ -38,7 +33,7 @@ const FileDropArea = (props) => {
             type="button"
             id="trash-button"
           >
-            <ClearIcon padding={0} sx={{ color: 'red' }} />
+            <ClearIcon padding={0} sx={{ color: "red" }} />
           </Button>
         </Grid>
       </Grid>
@@ -57,20 +52,18 @@ const FileDropArea = (props) => {
           </Box>
         </div>
         {uploadFiles.length > 0 && (
-        <Box className="upload-list" pt={3} rb={2}>
-          <Grid container direction="row">
-            <Grid item xs={7}>
-              <h3>Filename</h3>
+          <Box className="upload-list" pt={3} rb={2}>
+            <Grid container direction="row">
+              <Grid item xs={7}>
+                <h3>Filename</h3>
+              </Grid>
+              <Grid item xs={3}>
+                <h3>Size</h3>
+              </Grid>
+              <Grid item xs={2} />
+              {uploadFiles.map((file) => FormRow(file))}
             </Grid>
-            <Grid item xs={3}>
-              <h3>Size</h3>
-            </Grid>
-            <Grid item xs={2} />
-            {uploadFiles.map((file) => (
-              FormRow(file)
-            ))}
-          </Grid>
-        </Box>
+          </Box>
         )}
       </div>
     </div>

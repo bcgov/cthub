@@ -3,12 +3,8 @@ from api.services.vin_decoder import decoder
 
 
 class Command(BaseCommand):
-    help = 'Loads operational data'
+    help = "Loads operational data"
 
     def handle(self, *args, **options):
         decoder()
-        self.stdout.write(
-            self.style.SUCCESS(
-                'Decoding Completed!'
-            )
-        )
+        self.stdout.write(self.style.SUCCESS("Decoding Completed!"))

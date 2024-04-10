@@ -1,84 +1,84 @@
-import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import {
   useAsyncDebounce,
   useFilters,
   usePagination,
   useSortBy,
   useTable,
-} from 'react-table';
+} from "react-table";
 
 // material-ui core components
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import Popover from '@mui/material/Popover';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
-import { makeStyles } from '@mui/styles';
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Popover from "@mui/material/Popover";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
+import { makeStyles } from "@mui/styles";
 
 // material-ui icons
-import FilterListIcon from '@mui/icons-material/FilterList';
-import MoreVert from '@mui/icons-material/MoreVert';
+import FilterListIcon from "@mui/icons-material/FilterList";
+import MoreVert from "@mui/icons-material/MoreVert";
 
 // components
-import ReactTablePagination from './ReactTablePagination';
+import ReactTablePagination from "./ReactTablePagination";
 
 const useStyles = makeStyles(() => ({
   moreOptions: {
-    alignItems: 'center',
-    display: 'inline-flex',
-    height: '100%',
-    position: 'absolute',
+    alignItems: "center",
+    display: "inline-flex",
+    height: "100%",
+    position: "absolute",
     right: 0,
     top: 0,
-    zIndex: '999',
-    '&.active': {
-      opacity: '1 !important',
+    zIndex: "999",
+    "&.active": {
+      opacity: "1 !important",
     },
   },
   cellMoreOptions: {
-    '& $moreOptions': {
+    "& $moreOptions": {
       opacity: 0,
     },
-    '&:hover $moreOptions': {
+    "&:hover $moreOptions": {
       opacity: 0.5,
     },
   },
   popoverContainer: {
-    padding: '0.75rem',
+    padding: "0.75rem",
   },
   popoverInputFilter: {
-    '& input': {
-      padding: '0.75rem',
+    "& input": {
+      padding: "0.75rem",
     },
   },
   reactTable: {
-    position: 'relative',
-    '& caption': {
-      backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    position: "relative",
+    "& caption": {
+      backgroundColor: "rgba(255, 255, 255, 0.7)",
       bottom: 0,
       left: 0,
       padding: 0,
-      position: 'absolute',
+      position: "absolute",
       right: 0,
       top: 0,
       zIndex: 999,
     },
-    '& caption > div': {
-      alignItems: 'center',
-      display: 'flex',
-      height: '100%',
-      justifyContent: 'center',
-      width: '100%',
+    "& caption > div": {
+      alignItems: "center",
+      display: "flex",
+      height: "100%",
+      justifyContent: "center",
+      width: "100%",
     },
   },
 }));
@@ -111,26 +111,27 @@ const ReactTable = (props) => {
     page,
     prepareRow,
     setPageSize,
-    state: {
-      pageIndex,
-      pageSize,
-      sortBy,
+    state: { pageIndex, pageSize, sortBy },
+  } = useTable(
+    {
+      columns,
+      data,
+      disableSortBy: !sortable,
+      disableSortRemove: true,
+      initialState: {
+        filters: [],
+        pageIndex: 0,
+        sortBy: defaultSortBy,
+      },
+      manualFilters: true,
+      manualPagination: true,
+      manualSortBy: true,
+      pageCount: controlledPageCount,
     },
-  } = useTable({
-    columns,
-    data,
-    disableSortBy: !sortable,
-    disableSortRemove: true,
-    initialState: {
-      filters: [],
-      pageIndex: 0,
-      sortBy: defaultSortBy,
-    },
-    manualFilters: true,
-    manualPagination: true,
-    manualSortBy: true,
-    pageCount: controlledPageCount,
-  }, useFilters, useSortBy, usePagination);
+    useFilters,
+    useSortBy,
+    usePagination,
+  );
 
   const handleFilterColumn = useAsyncDebounce((event) => {
     const { value } = event.target;
@@ -140,7 +141,7 @@ const ReactTable = (props) => {
       filterBy = filterColumn.id;
     }
 
-    const foundIndex = filters.findIndex((filter) => (filter.id === filterBy));
+    const foundIndex = filters.findIndex((filter) => filter.id === filterBy);
 
     if (foundIndex >= 0) {
       filters[foundIndex].value = value;
@@ -156,20 +157,24 @@ const ReactTable = (props) => {
 
   const handleOpenMoreOptions = (event) => {
     event.stopPropagation();
-    event.currentTarget.parentNode.classList.add('active');
+    event.currentTarget.parentNode.classList.add("active");
 
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    anchorEl.parentNode.classList.remove('active');
+    anchorEl.parentNode.classList.remove("active");
 
     setAnchorEl(null);
   };
 
   useEffect(() => {
     onFetchData({
-      columns, pageIndex, pageSize, sortBy, filters,
+      columns,
+      pageIndex,
+      pageSize,
+      sortBy,
+      filters,
     });
   }, [onFetchData, pageIndex, pageSize, sortBy, filters]);
 
@@ -178,7 +183,12 @@ const ReactTable = (props) => {
   return (
     <>
       <TableContainer>
-        <Table className={classes.reactTable} {...getTableProps()} stickyHeader size={size}>
+        <Table
+          className={classes.reactTable}
+          {...getTableProps()}
+          stickyHeader
+          size={size}
+        >
           {loading && (
             <caption>
               <div>
@@ -192,15 +202,17 @@ const ReactTable = (props) => {
                 {headerGroup.headers.map((column) => (
                   <TableCell
                     {...column.getHeaderProps(column.getSortByToggleProps())}
-                    align={column.headerAlign ? column.headerAlign : 'center'}
+                    align={column.headerAlign ? column.headerAlign : "center"}
                     className={classes.cellMoreOptions}
                   >
                     <TableSortLabel
-                      active={sortable && column.sortable !== false && column.isSorted}
-                      direction={column.isSortedDesc ? 'desc' : 'asc'}
+                      active={
+                        sortable && column.sortable !== false && column.isSorted
+                      }
+                      direction={column.isSortedDesc ? "desc" : "asc"}
                       hideSortIcon={!sortable || column.sortable === false}
                     >
-                      {column.render('Header')}
+                      {column.render("Header")}
                     </TableSortLabel>
 
                     {filterable && column.filterable !== false && (
@@ -226,23 +238,24 @@ const ReactTable = (props) => {
           </TableHead>
 
           <TableBody {...getTableBodyProps()}>
-            {page && page.map((row) => {
-              prepareRow(row);
+            {page &&
+              page.map((row) => {
+                prepareRow(row);
 
-              return (
-                <TableRow {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <TableCell
-                      {...cell.getCellProps()}
-                      align={cell.column.align ? cell.column.align : 'left'}
-                      width={cell.column.width}
-                    >
-                      {cell.render('Cell')}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
+                return (
+                  <TableRow {...row.getRowProps()}>
+                    {row.cells.map((cell) => (
+                      <TableCell
+                        {...cell.getCellProps()}
+                        align={cell.column.align ? cell.column.align : "left"}
+                        width={cell.column.width}
+                      >
+                        {cell.render("Cell")}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -265,23 +278,32 @@ const ReactTable = (props) => {
       <Popover
         anchorEl={anchorEl}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         }}
         open={open}
         onClose={handleClose}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
       >
         <div className={classes.popoverContainer}>
           <TextField
             className={classes.popoverInputFilter}
             defaultValue={
-              filterColumn && filters.find(
-                (filter) => filter.id === filterColumn.filterBy || filter.id === filterColumn.id,
-              ) ? filters.find((filter) => filter.id === filterColumn.filterBy || filter.id === filterColumn.id).value : ''
+              filterColumn &&
+              filters.find(
+                (filter) =>
+                  filter.id === filterColumn.filterBy ||
+                  filter.id === filterColumn.id,
+              )
+                ? filters.find(
+                    (filter) =>
+                      filter.id === filterColumn.filterBy ||
+                      filter.id === filterColumn.id,
+                  ).value
+                : ""
             }
             InputLabelProps={{
               shrink: true,
@@ -294,7 +316,7 @@ const ReactTable = (props) => {
               ),
             }}
             label={`Filter by ${filterColumn && filterColumn.Header}`}
-            onChange={(event) => (handleFilterColumn(event))}
+            onChange={(event) => handleFilterColumn(event)}
             placeholder={filterColumn && filterColumn.Header}
             type="text"
             variant="outlined"
@@ -308,7 +330,7 @@ const ReactTable = (props) => {
 ReactTable.defaultProps = {
   defaultSortBy: [],
   filterable: true,
-  size: 'small',
+  size: "small",
   sortable: true,
 };
 

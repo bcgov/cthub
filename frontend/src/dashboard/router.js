@@ -1,14 +1,11 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React from "react";
+import { Route } from "react-router-dom";
 
-import DashboardContainer from './DashboardContainer';
+import DashboardContainer from "./DashboardContainer";
 
 const Router = () => (
   <>
-    <Route
-      path="/"
-      component={DashboardContainer}
-    />
+    <Route path="/" component={DashboardContainer} />
   </>
 );
 

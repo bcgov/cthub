@@ -16,7 +16,7 @@ Base styling for any React Table
         font-size: 1rem;
         font-weight: 700;
         text-transform: uppercase;
-  
+
         &:not([disabled]):hover {
           opacity: 0.65;
         }
@@ -49,7 +49,7 @@ Base styling for any React Table
       &.-sort-desc {
         box-shadow: inset 0 -3px 0 0 $highlight !important;
       }
-    } 
+    }
   }
 
   .rt-tr-group {

@@ -1,27 +1,25 @@
-import { withRouter } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-import {
-  Paper, Alert, Stack,
-} from '@mui/material';
-import ROUTES_UPLOAD from './routes';
-import ROUTES_USERS from '../users/routes';
-import UploadPage from './components/UploadPage';
-import AlertDialog from '../app/components/AlertDialog';
-import UsersContainer from '../users/UsersContainer';
-import Loading from '../app/components/Loading';
-import useAxios from '../app/utilities/useAxios';
+import { withRouter } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Paper, Alert, Stack } from "@mui/material";
+import ROUTES_UPLOAD from "./routes";
+import ROUTES_USERS from "../users/routes";
+import UploadPage from "./components/UploadPage";
+import AlertDialog from "../app/components/AlertDialog";
+import UsersContainer from "../users/UsersContainer";
+import Loading from "../app/components/Loading";
+import useAxios from "../app/utilities/useAxios";
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
   const [datasetList, setDatasetList] = useState([{}]); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false); // Used for page refresh instead of loading progress
-  const [datasetSelected, setDatasetSelected] = useState(''); // string identifying which dataset is being uploaded
+  const [datasetSelected, setDatasetSelected] = useState(""); // string identifying which dataset is being uploaded
   const [replaceData, setReplaceData] = useState(false); // if true, we will replace all
   const [alertContent, setAlertContent] = useState();
   const [alert, setAlert] = useState(false);
-  const [currentUser, setCurrentUser] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState('');
+  const [currentUser, setCurrentUser] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
   const axios = useAxios();
@@ -33,7 +31,11 @@ const UploadContainer = () => {
       setDatasetList(response.data);
       setRefresh(false);
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
-        if (currentUserResp.data && currentUserResp.data.user_permissions && currentUserResp.data.user_permissions.admin === true) {
+        if (
+          currentUserResp.data &&
+          currentUserResp.data.user_permissions &&
+          currentUserResp.data.user_permissions.admin === true
+        ) {
           setAdminUser(true);
           setCurrentUser(currentUserResp.data.idir);
         }
@@ -43,75 +45,88 @@ const UploadContainer = () => {
 
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent(`${errorResponse.data.message}\n${errorResponse.data.errors ? 'Errors: ' + errorResponse.data.errors.join('\n') : ''}`);
-    setAlertSeverity('error');
+    setAlertContent(
+      `${errorResponse.data.message}\n${errorResponse.data.errors ? "Errors: " + errorResponse.data.errors.join("\n") : ""}`,
+    );
+    setAlertSeverity("error");
     setAlert(true);
   };
 
-  const doUpload = () => uploadFiles.forEach((file) => {
-    setLoading(true)
-    const uploadPromises = uploadFiles.map((file) => {
-      return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
-        const { url: uploadUrl, minio_object_name: filename } = response.data;
-        return axiosDefault.put(uploadUrl, file).then(() => {
-          let replace = false;
-          if (replaceData === true) {
-            replace = true;
-          }
-          return axios.post(ROUTES_UPLOAD.UPLOAD, {
-            filename,
-            datasetSelected,
-            replace,
+  const doUpload = () =>
+    uploadFiles.forEach((file) => {
+      setLoading(true);
+      const uploadPromises = uploadFiles.map((file) => {
+        return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
+          const { url: uploadUrl, minio_object_name: filename } = response.data;
+          return axiosDefault.put(uploadUrl, file).then(() => {
+            let replace = false;
+            if (replaceData === true) {
+              replace = true;
+            }
+            return axios.post(ROUTES_UPLOAD.UPLOAD, {
+              filename,
+              datasetSelected,
+              replace,
+            });
           });
         });
       });
+
+      Promise.all(uploadPromises)
+        .then((responses) => {
+          const errorCheck = responses.some(
+            (response) => response.data.success,
+          );
+
+          setAlertSeverity(errorCheck ? "success" : "error");
+
+          const message = responses
+            .map(
+              (response) =>
+                `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
+            )
+            .join("\n");
+
+          setAlertContent(message);
+          setAlert(true);
+          setUploadFiles([]);
+        })
+        .catch((error) => {
+          showError(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     });
-  
-    Promise.all(uploadPromises).then((responses) => {
-
-      const errorCheck = responses.some(response => response.data.success)
-
-      setAlertSeverity(errorCheck ? 'success' : 'error')
-
-      const message = responses.map(response => 
-        `${response.data.message}${response.data.errors ? '\nErrors: ' + response.data.errors.join('\n') : ''}`
-      ).join('\n');
-
-      setAlertContent(message);
-      setAlert(true);
-      setUploadFiles([]);
-    }).catch((error) => {
-      showError(error);
-    }).finally(() => {
-      setLoading(false);
-    });
-  });
 
   const downloadSpreadsheet = () => {
-    axios.get(ROUTES_UPLOAD.DOWNLOAD_SPREADSHEET, {
-      params: {
-        datasetSelected,
-      },
-      responseType: 'blob',
-    }).then((response) => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+    axios
+      .get(ROUTES_UPLOAD.DOWNLOAD_SPREADSHEET, {
+        params: {
+          datasetSelected,
+        },
+        responseType: "blob",
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
 
-      link.href = url;
-      link.setAttribute('download', `${datasetSelected}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
+        link.href = url;
+        link.setAttribute("download", `${datasetSelected}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
 
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    }).catch((error) => {
-      showError(error);
-    });
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        showError(error);
+      });
   };
 
   const handleRadioChange = (event) => {
     const choice = event.target.value;
-    if (choice === 'replace') {
+    if (choice === "replace") {
       setOpenDialog(true);
     } else {
       setReplaceData(false);
@@ -119,13 +134,13 @@ const UploadContainer = () => {
   };
 
   const handleReplaceDataConfirm = () => {
-    setReplaceData(true)
-    setOpenDialog(false)
-  }
+    setReplaceData(true);
+    setOpenDialog(false);
+  };
 
   const handleReplaceDataCancel = () => {
-    setOpenDialog(false)
-  }
+    setOpenDialog(false);
+  };
 
   useEffect(() => {
     refreshList(true);
@@ -135,13 +150,17 @@ const UploadContainer = () => {
     return <Loading />;
   }
 
-  const alertElement = alert && alertContent && alertSeverity ? 
-  <Alert severity={alertSeverity}>{alertContent.split('\n').map((line, index) => (
-    <React.Fragment key={index}>
-      {line}
-      <br />
-    </React.Fragment>
-  ))}</Alert> : null
+  const alertElement =
+    alert && alertContent && alertSeverity ? (
+      <Alert severity={alertSeverity}>
+        {alertContent.split("\n").map((line, index) => (
+          <React.Fragment key={index}>
+            {line}
+            <br />
+          </React.Fragment>
+        ))}
+      </Alert>
+    ) : null;
 
   return (
     <div className="row">
@@ -149,11 +168,13 @@ const UploadContainer = () => {
         <>
           <AlertDialog
             open={openDialog}
-            title={'Replace existing data?'}
-            dialogue={'Selecting replace will delete all previously uploaded records for this dataset'}
-            cancelText={'Cancel'}
+            title={"Replace existing data?"}
+            dialogue={
+              "Selecting replace will delete all previously uploaded records for this dataset"
+            }
+            cancelText={"Cancel"}
             handleCancel={handleReplaceDataCancel}
-            confirmText={'Replace existing data'}
+            confirmText={"Replace existing data"}
             handleConfirm={handleReplaceDataConfirm}
           />
           <Stack direction="column" spacing={2}>
@@ -184,5 +205,5 @@ const UploadContainer = () => {
       </div>
     </div>
   );
-}
+};
 export default withRouter(UploadContainer);

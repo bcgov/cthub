@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import useKeycloak from '../../app/utilities/useKeycloak';
+import React from "react";
+import PropTypes from "prop-types";
+import useKeycloak from "../../app/utilities/useKeycloak";
 
 const Login = (props) => {
   const { redirectUri } = props;
   const loginOptions = {
-    idpHint: 'idir'
-  }
+    idpHint: "idir",
+  };
   if (redirectUri) {
-    loginOptions.redirectUri = redirectUri
+    loginOptions.redirectUri = redirectUri;
   }
-  const keycloak = useKeycloak()
+  const keycloak = useKeycloak();
 
   return (
     <div id="login-page">
@@ -21,7 +21,12 @@ const Login = (props) => {
         <div className="flex-container">
           <div className="brand-logo" />
           <div className="buttons-section">
-            <button type="button" onClick={() => keycloak.login(loginOptions)} id="link-idir" className="button">
+            <button
+              type="button"
+              onClick={() => keycloak.login(loginOptions)}
+              id="link-idir"
+              className="button"
+            >
               <span className="text"> Login with </span>
               <span className="display-name"> IDIR </span>
             </button>
@@ -33,7 +38,7 @@ const Login = (props) => {
 };
 
 Login.propTypes = {
-  redirectUri: PropTypes.string
+  redirectUri: PropTypes.string,
 };
 
 export default Login;

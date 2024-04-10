@@ -6,57 +6,45 @@ from rest_framework import authentication, exceptions
 
 class KeycloakAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        auth = request.headers.get('Authorization', None)
+        auth = request.headers.get("Authorization", None)
 
         if not auth:
-            raise exceptions.AuthenticationFailed(
-                'Authorization token required'
-            )
+            raise exceptions.AuthenticationFailed("Authorization token required")
 
         try:
             scheme, token = auth.split()
         except ValueError:
-            raise exceptions.AuthenticationFailed(
-                'Authorization token required'
-            )
+            raise exceptions.AuthenticationFailed("Authorization token required")
 
         if not token:
-            raise exceptions.AuthenticationFailed(
-                'Authorization token required'
-            )
+            raise exceptions.AuthenticationFailed("Authorization token required")
 
         keycloak_openid = KeycloakOpenID(
             server_url=settings.KEYCLOAK_URL,
             client_id=settings.KEYCLOAK_CLIENT_ID,
-            realm_name=settings.KEYCLOAK_REALM
+            realm_name=settings.KEYCLOAK_REALM,
         )
 
         # Decode the token from the front-end
-        KEYCLOAK_PUBLIC_KEY = \
-            "-----BEGIN PUBLIC KEY-----\n" + \
-            keycloak_openid.public_key() + \
-            "\n-----END PUBLIC KEY-----"
+        KEYCLOAK_PUBLIC_KEY = (
+            "-----BEGIN PUBLIC KEY-----\n"
+            + keycloak_openid.public_key()
+            + "\n-----END PUBLIC KEY-----"
+        )
 
-        options = {
-            'verify_signature': True,
-            'verify_aud': True,
-            'verify_exp': True
-        }
+        options = {"verify_signature": True, "verify_aud": True, "verify_exp": True}
 
         token_info = keycloak_openid.decode_token(
-            token,
-            key=KEYCLOAK_PUBLIC_KEY,
-            options=options
+            token, key=KEYCLOAK_PUBLIC_KEY, options=options
         )
 
         user_info = keycloak_openid.userinfo(token)
-        if user_info.get('user_id') != token_info.get('user_id'):
-            raise exceptions.AuthenticationFailed(
-                'Invalid Token'
-            )
-        return user_info.get('idir_username'), None
+        if user_info.get("user_id") != token_info.get("user_id"):
+            raise exceptions.AuthenticationFailed("Invalid Token")
+        return user_info.get("idir_username"), None
 
         # user = None
+
     #     if 'user_id' not in user_info:
     #         # try email
     #         if 'email' in user_info:
