@@ -1,9 +1,9 @@
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory } from "react-router-dom";
 
 const DashboardContainer = () => {
   const history = useHistory();
 
-  history.push('/upload');
+  history.push("/upload");
 
   return null;
 };

@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import PropTypes from "prop-types";
+import * as React from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const AlertDialog = (props) => {
   const {
@@ -15,37 +15,35 @@ const AlertDialog = (props) => {
     cancelText,
     handleCancel,
     confirmText,
-    handleConfirm
+    handleConfirm,
   } = props;
 
   if (!open) {
-    return null
+    return null;
   }
   return (
     <div>
       <Dialog
         open={true}
         onClose={() => {
-          handleCancel()
+          handleCancel();
         }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {title}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {dialogue}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
-            handleCancel();
-          }}
+          <Button
+            onClick={() => {
+              handleCancel();
+            }}
           >
             {cancelText}
-
           </Button>
           <Button
             onClick={() => {
@@ -59,11 +57,11 @@ const AlertDialog = (props) => {
       </Dialog>
     </div>
   );
-}
+};
 
 AlertDialog.defaultProps = {
-  dialogue: '',
-  title: '',
+  dialogue: "",
+  title: "",
 };
 AlertDialog.propTypes = {
   open: PropTypes.bool.isRequired,
@@ -72,7 +70,7 @@ AlertDialog.propTypes = {
   cancelText: PropTypes.string.isRequired,
   handleCancel: PropTypes.func.isRequired,
   confirmText: PropTypes.string.isRequired,
-  handleConfirm: PropTypes.func.isRequired
+  handleConfirm: PropTypes.func.isRequired,
 };
 
-export default AlertDialog
+export default AlertDialog;

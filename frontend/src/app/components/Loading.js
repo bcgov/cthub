@@ -1,10 +1,8 @@
-import React from 'react';
-import { CircularProgress } from '@mui/material';
+import React from "react";
+import { CircularProgress } from "@mui/material";
 
-const Loading = ({ color = 'inherit' }) => {
-  return (
-    <CircularProgress sx={{ color: color }} />
-  );
+const Loading = ({ color = "inherit" }) => {
+  return <CircularProgress sx={{ color: color }} />;
 };
 
 export default Loading;

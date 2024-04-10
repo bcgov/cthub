@@ -1,10 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, { useCallback, useRef, useState } from "react";
+import { withRouter } from "react-router-dom";
 
-import { getFilters, getOrderBy } from '../app/utilities/reactTable';
-import IcbcDataTable from './components/IcbcDataTable';
-import ROUTES from './routes';
-import useAxios from '../app/utilities/useAxios';
+import { getFilters, getOrderBy } from "../app/utilities/reactTable";
+import IcbcDataTable from "./components/IcbcDataTable";
+import ROUTES from "./routes";
+import useAxios from "../app/utilities/useAxios";
 
 const IcbcDataContainer = () => {
   const [data, setData] = useState([]);
@@ -12,7 +12,7 @@ const IcbcDataContainer = () => {
   const [pageCount, setPageCount] = useState(-1);
   const [totalRowsCount, setTotalRowsCount] = useState(0);
   const fetchIdRef = useRef(0);
-  const axios = useAxios()
+  const axios = useAxios();
 
   const onFetchData = useCallback((state) => {
     setLoading(true);

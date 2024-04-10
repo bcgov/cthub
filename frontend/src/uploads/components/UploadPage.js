@@ -1,11 +1,18 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 import {
-  Box, Button, MenuItem, Select, Radio, RadioGroup, FormControlLabel, FormControl,
-} from '@mui/material';
-import UploadIcon from '@mui/icons-material/Upload';
-import FileDropArea from './FileDropArea';
-import Loading from '../../app/components/Loading';
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+} from "@mui/material";
+import UploadIcon from "@mui/icons-material/Upload";
+import FileDropArea from "./FileDropArea";
+import Loading from "../../app/components/Loading";
 
 const UploadPage = (props) => {
   const {
@@ -34,19 +41,23 @@ const UploadPage = (props) => {
         {alertElement}
         <div id="dataset-select">
           <span>
-            <h3>
-              Select Program &nbsp; &nbsp;
-            </h3>
+            <h3>Select Program &nbsp; &nbsp;</h3>
           </span>
           <Select
             value={datasetSelected}
-            style={{ minWidth: 220, backgroundColor: 'white'}}
-            onChange={(e) => { setDatasetSelected(e.target.value); setAlert(false); }}
+            style={{ minWidth: 220, backgroundColor: "white" }}
+            onChange={(e) => {
+              setDatasetSelected(e.target.value);
+              setAlert(false);
+            }}
           >
             {selectionList}
           </Select>
-          {datasetSelected && <Button className="text-button" onClick={downloadSpreadsheet}>Download Excel File (program data upload template)</Button>}
-
+          {datasetSelected && (
+            <Button className="text-button" onClick={downloadSpreadsheet}>
+              Download Excel File (program data upload template)
+            </Button>
+          )}
         </div>
         <div id="replace-data-select">
           <FormControl component="fieldset">
@@ -58,13 +69,13 @@ const UploadPage = (props) => {
               defaultValue="add"
             >
               <FormControlLabel
-                disabled={datasetSelected ? false: true}
+                disabled={datasetSelected ? false : true}
                 value="add"
                 control={<Radio />}
                 label="Add to existing data (default)"
               />
               <FormControlLabel
-                disabled={datasetSelected ? false: true}
+                disabled={datasetSelected ? false : true}
                 value="replace"
                 control={<Radio />}
                 label="Replace existing data (data cannot be restored, proceed only if you are certain that the new file contains all required data)."
@@ -74,13 +85,20 @@ const UploadPage = (props) => {
         </div>
         <div>
           <FileDropArea
-            disabled={datasetSelected ? false: true}
+            disabled={datasetSelected ? false : true}
             setAlert={setAlert}
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}
           />
         </div>
-        <Box pt={2} className="upload-bar" alignItems="center" padding={2} display="flex" justifyContent="flex-end">
+        <Box
+          pt={2}
+          className="upload-bar"
+          alignItems="center"
+          padding={2}
+          display="flex"
+          justifyContent="flex-end"
+        >
           {loading ? (
             <Loading color="button-dark-blue" />
           ) : (
@@ -112,10 +130,8 @@ UploadPage.propTypes = {
   setUploadFiles: PropTypes.func.isRequired,
   doUpload: PropTypes.func.isRequired,
   setDatasetSelected: PropTypes.func.isRequired,
-  replaceData: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool,
-  ]).isRequired,
+  replaceData: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
+    .isRequired,
   handleRadioChange: PropTypes.func.isRequired,
   downloadSpreadsheet: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,

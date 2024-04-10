@@ -1,10 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 import {
-  Box, Button, Grid, TextField, Checkbox, Tooltip, IconButton,
-} from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
-import SaveIcon from '@mui/icons-material/Save';
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Checkbox,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
+import SaveIcon from "@mui/icons-material/Save";
 
 const UsersPage = (props) => {
   const {
@@ -24,10 +30,32 @@ const UsersPage = (props) => {
     return (
       <Grid container key={user.idir} alignItems="center">
         <Grid item className="permissions">
-          <Checkbox className="checkbox" name={user.idir} id="uploader" color="default" checked={user.user_permissions.uploader || false} onChange={(event) => { handleCheckboxChange(event); }} />
-          <Tooltip disableHoverListener={!disableAdmin} title="You cannot remove your own admin permission">
+          <Checkbox
+            className="checkbox"
+            name={user.idir}
+            id="uploader"
+            color="default"
+            checked={user.user_permissions.uploader || false}
+            onChange={(event) => {
+              handleCheckboxChange(event);
+            }}
+          />
+          <Tooltip
+            disableHoverListener={!disableAdmin}
+            title="You cannot remove your own admin permission"
+          >
             <span>
-              <Checkbox className="checkbox" name={user.idir} id="admin" color="default" disabled={disableAdmin} checked={user.user_permissions.admin || false} onChange={(event) => { handleCheckboxChange(event); }} />
+              <Checkbox
+                className="checkbox"
+                name={user.idir}
+                id="admin"
+                color="default"
+                disabled={disableAdmin}
+                checked={user.user_permissions.admin || false}
+                onChange={(event) => {
+                  handleCheckboxChange(event);
+                }}
+              />
             </span>
           </Tooltip>
         </Grid>
@@ -35,14 +63,22 @@ const UsersPage = (props) => {
           <span>{user.idir}</span>
         </Grid>
         <Grid item>
-          <Tooltip disableHoverListener={!disableAdmin} title="You cannot delete yourself.">
+          <Tooltip
+            disableHoverListener={!disableAdmin}
+            title="You cannot delete yourself."
+          >
             <span>
               <IconButton
                 padding={0}
                 disabled={disableAdmin}
-                onClick={() => { handleXClick(user.idir); }}
+                onClick={() => {
+                  handleXClick(user.idir);
+                }}
               >
-                <ClearIcon padding={0} sx={{ color: disableAdmin ? 'grey' : 'red' }} />
+                <ClearIcon
+                  padding={0}
+                  sx={{ color: disableAdmin ? "grey" : "red" }}
+                />
               </IconButton>
             </span>
           </Tooltip>
@@ -58,20 +94,47 @@ const UsersPage = (props) => {
           <h2>Admin</h2>
         </div>
         <Grid container>
-          <Box display="flex" md={6} flexDirection="row" className="add-user-box" alignItems="center" padding={2} justifyContent="space-evenly">
-            <Grid container alignItems="center" justifyContent="space-around" spacing={2}>
+          <Box
+            display="flex"
+            md={6}
+            flexDirection="row"
+            className="add-user-box"
+            alignItems="center"
+            padding={2}
+            justifyContent="space-evenly"
+          >
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="space-around"
+              spacing={2}
+            >
               <Grid item>
-                <h3>
-                  IDIR Username
-                </h3>
+                <h3>IDIR Username</h3>
               </Grid>
               <Grid item>
-                <TextField value={newUser} className="user-input" type="text" onChange={(event) => { setNewUser(event.target.value); setMessage(''); }} />
+                <TextField
+                  value={newUser}
+                  className="user-input"
+                  type="text"
+                  onChange={(event) => {
+                    setNewUser(event.target.value);
+                    setMessage("");
+                  }}
+                />
               </Grid>
               <Grid item>
-                <Tooltip disableHoverListener={!!newUser} title="Please type in the IDIR you would like to add.">
+                <Tooltip
+                  disableHoverListener={!!newUser}
+                  title="Please type in the IDIR you would like to add."
+                >
                   <span>
-                    <Button disabled={!newUser} variant="contained" className="button-dark-blue" onClick={handleAddNewUser}>
+                    <Button
+                      disabled={!newUser}
+                      variant="contained"
+                      className="button-dark-blue"
+                      onClick={handleAddNewUser}
+                    >
                       Add User
                     </Button>
                   </span>
@@ -81,7 +144,13 @@ const UsersPage = (props) => {
           </Box>
         </Grid>
         <Grid container display="flex" flexDirection="column">
-          <Box className="permissions" justifyContent="space-around" display="flex" flexDirection="row" paddingTop={1}>
+          <Box
+            className="permissions"
+            justifyContent="space-around"
+            display="flex"
+            flexDirection="row"
+            paddingTop={1}
+          >
             <Box>
               <h4>Upload </h4>
             </Box>
@@ -89,11 +158,20 @@ const UsersPage = (props) => {
               <h4>Admin</h4>
             </Box>
           </Box>
-          {users.map((user) => (
-            userRow(user)
-          ))}
-          <Box className="permissions" justifyContent="space-around" display="flex" paddingTop={3} paddingBottom={3}>
-            <Button variant="contained" className="button-dark-blue" startIcon={<SaveIcon />} onClick={handleSubmitUserUpdates}>
+          {users.map((user) => userRow(user))}
+          <Box
+            className="permissions"
+            justifyContent="space-around"
+            display="flex"
+            paddingTop={3}
+            paddingBottom={3}
+          >
+            <Button
+              variant="contained"
+              className="button-dark-blue"
+              startIcon={<SaveIcon />}
+              onClick={handleSubmitUserUpdates}
+            >
               Save
             </Button>
           </Box>
@@ -103,7 +181,7 @@ const UsersPage = (props) => {
   );
 };
 UsersPage.defaultProps = {
-  newUser: '',
+  newUser: "",
 };
 
 UsersPage.propTypes = {
