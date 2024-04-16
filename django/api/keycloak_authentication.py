@@ -2,15 +2,22 @@ from keycloak import KeycloakOpenID
 
 from django.conf import settings
 from rest_framework import authentication, exceptions
+from api.models.user import User
 
 
 class KeycloakAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         auth = request.headers.get("Authorization", None)
-
+        if settings.KEYCLOAK_TESTING:
+            try:
+                user = User.objects.get(idir=auth['idir'])
+                return user.idir, None
+            except User.DoesNotExist as exc:
+                # print("Testing User does not exist")
+                raise User.DoesNotExist(str(exc))
         if not auth:
             raise exceptions.AuthenticationFailed("Authorization token required")
-
+        
         try:
             scheme, token = auth.split()
         except ValueError:
