@@ -17,7 +17,6 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
                 raise User.DoesNotExist(str(exc))
         if not auth:
             raise exceptions.AuthenticationFailed("Authorization token required")
-        
         try:
             scheme, token = auth.split()
         except ValueError:
