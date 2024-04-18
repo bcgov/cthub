@@ -177,5 +177,54 @@ class UploadTests(TestCase):
         self.assertFalse(response["success"])
         self.assertIn("Worksheet named 'TOP OTHER TRANSACTIONS' not found", response["errors"][0])
 
-    #def test_user_missing_permission(self):
-        #WIP
+    def test_successful_upload(self):
+
+        data = {
+            'approval_number': [1],
+            'application_recieved_date': ['Monday'],
+            'completion_date': ['Tuesday'],
+            'postal_code': ['ABCDEFG'],
+            'vin': ['string'],
+            'application_city_fuel': [0.50],
+            'incentive_type': ['A'],
+            'incentive_cost': [0.50],
+            'cheque_number': ['string'],
+            'budget_code': ['string'],
+            'scrap_date': ['string']
+        }
+
+        rename_columns = {
+            'approval_number': 'Approval Num',
+            'application_recieved_date': "App Recv'd Date",
+            'completion_date': 'Completion Date',
+            'postal_code': 'Postal Code',
+            'vin': 'VIN',
+            'application_city_fuel': 'App City Fuel',
+            'incentive_type': 'Incentive Type',
+            'incentive_cost': 'Incentive Cost',
+            'cheque_number': 'Cheque #',
+            'budget_code': 'Budget Code',
+            'scrap_date': 'Scrap Date'
+        }
+
+        df = pd.DataFrame(data)
+        df.rename(columns=rename_columns, inplace=True)
+        excel_buffer = io.BytesIO()
+        df.to_excel(excel_writer=excel_buffer, sheet_name='TOP OTHER TRANSACTIONS', index=False)
+        excel_buffer.seek(0)
+
+        response = import_from_xls(
+            excel_file=excel_buffer,
+            sheet_name='TOP OTHER TRANSACTIONS',
+            model=ScrapIt,
+            dataset_columns=ScrapItColumns,
+            header_row=0,
+            column_mapping_enum=ScrapItColumnMapping,
+            field_types=self.field_types,
+            replace_data=False,
+            user='Tester',
+            preparation_functions=[prepare_scrap_it]
+        )
+
+        self.assertTrue(response["success"])
+        self.assertIn('All 1 records successfully inserted out of 1.', response['message'])
