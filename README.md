@@ -32,6 +32,19 @@ The Clean Transportation Data Hub provides an evidence base for the Clean Transp
     - This is where you can make changes to your package.json
     - You can technically make changes to your packages without going into your container, but you'll need npm installed into your system
 
+
+  - To run in testing mode
+  if you don't have docker-compose-local-dev.yml locally, create a new file and
+  add the contents from docker-compose plus a line for:
+        - KEYCLOAK_TESTING=True
+  in api environment
+   
+  to run using this docker file:
+  docker-compose -f docker-compose-local-dev.yml up
+
+  this ensures that the authentication skips the actual keycloak authentication
+  and uses the user table to get permissions
+
 # Rebasing Guide
 - To rebase your branch onto the latest release branch:
  - ```git fetch upstream``` 
