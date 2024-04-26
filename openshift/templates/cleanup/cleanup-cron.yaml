@@ -88,13 +88,13 @@ objects:
 
                           env=$(echo $namespace | awk -F '-' '{print $NF}')
 
-                          runningBackendImageTag=$(oc -n $namespace describe dc/cthub-backend-$env | grep Triggers | grep cthub-backend | awk -F '@' '{print $2}' | awk -F ',' '{print $1}')
+                          runningBackendImageTag=$(oc -n $namespace describe dc/cthub-$env-backend | grep Image | awk -F ':' '{print $4}')
 
                           echo "==========> Removing expired backend image tags except  cthub-backend:$runningBackendImageTag"
                           
                           oc -n $namespace get imagetags | grep cthub-backend | grep -v $runningBackendImageTag | awk '{print $1}' | xargs oc -n $namespace delete imagetag || true
 
-                          runningFrontendImageTag=$(oc -n $namespace describe dc/cthub-frontend-$env | grep Triggers | grep cthub-frontend | awk -F '@' '{print $2}' | awk -F ',' '{print $1}')
+                          runningFrontendImageTag=$(oc -n $namespace describe deployment/cthub-$env-frontend| grep Image | awk -F ':' '{print $4}')
 
                           echo "==========> Removing expired frontend image tags except cthub-frontend:$runningFrontendImageTag"
 
