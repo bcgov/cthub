@@ -1,0 +1,72 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: cthub-network-policy
+metadata:
+  name: allow-crunchy-accept
+parameters:
+  - name: ENVIRONMENT
+    displayName: null
+    description: such as dev, test or prod
+    required: true  
+objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-crunchy-accept
+    spec:
+      podSelector:
+        matchLabels:
+          postgres-operator.crunchydata.com/cluster: cthub-${ENVIRONMENT}-crunchy
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/cluster: cthub-${ENVIRONMENT}-crunchy
+        - ports:
+            - protocol: TCP
+              port: 5432
+          from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: cthub-${ENVIRONMENT}
+                  app.kubernetes.io/name: backend
+        - ports:
+            - protocol: TCP
+              port: 5432
+          from:
+            - podSelector:
+                matchLabels:
+                  openshift.io/deployer-pod.type: hook-mid
+        - ports:
+            - protocol: TCP
+              port: 5432
+          from:
+            - podSelector:
+                matchLabels:
+                  cronjob: cthub-db-backup                  
+        - ports:
+            - protocol: TCP
+              port: 9187
+          from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: tools
+                  name: 0ab226
+            - podSelector:
+                matchLabels:
+                  name: crunchy-prometheus              
+        - ports:
+            - protocol: TCP
+              port: 5432
+          from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: ${ENVIRONMENT}
+                  name: 30b186
+            - podSelector:
+                matchLabels:
+                  app: metabase                      
+      policyTypes:
+        - Ingress                  
