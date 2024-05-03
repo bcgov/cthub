@@ -29,6 +29,7 @@ def trim_all_columns(df):
 def extract_data(excel_file, sheet_name, header_row):
     try:
         df = pd.read_excel(excel_file, sheet_name, header=header_row)
+        df = df.fillna('TEMP_NULL')
         df = trim_all_columns(df)
         return df
     except Exception as e:
@@ -84,7 +85,7 @@ def load_data(df, model, field_types, replace_data, user):
             expected_type = field_types.get(column)
             is_nullable = column in nullable_fields
 
-            if pd.isna(value) or value == "":
+            if pd.isna(value) or value == "" or value == 'TEMP_NULL':
                 if is_nullable:
                     row_dict[column] = None
                 else:
