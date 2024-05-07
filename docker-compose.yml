@@ -35,6 +35,12 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+    healthcheck:
+      test: "curl -I --fail --max-time 10 http://localhost:9000/minio/health/live"
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 3
   api:
     build: ./django
     command: >
@@ -59,8 +65,35 @@ services:
       - ./django:/api
     ports:
       - 8000:8000
+    healthcheck:
+      test: "curl --fail --max-time 5 http://localhost:8000/api/healthcheck"
+      start_period: 15s
+      interval: 15s
+      timeout: 10s
+      retries: 2
     depends_on:
       db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+  workers:
+    build: ./django
+    command: >
+      sh -c "python manage.py qcluster"
+    env_file:
+      - minio.env
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_HOST=db
+      - DB_NAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DJANGO_DEBUG=True
+    volumes:
+      - ./django:/api
+    depends_on:
+      api:
         condition: service_healthy
   web:
     build: ./frontend

@@ -40,6 +40,7 @@ CORS_ORIGIN_WHITELIST = [os.getenv("CORS_ORIGIN_WHITELIST", "https://localhost:3
 
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
+    "workers.apps.Config",
     "tfrs.apps.ApiConfig",
     "metabase.apps.MetabaseConfig",
     "corsheaders",
@@ -51,7 +52,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_q",
 ]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -179,3 +183,46 @@ MINIO_PREFIX = os.getenv("MINIO_PREFIX")
 
 DECODER_ACCESS_KEY = os.getenv("DECODER_ACCESS_KEY")
 DECODER_SECRET_KEY = os.getenv("DECODER_SECRET_KEY")
+
+Q_CLUSTER = {
+    "name": "CTHUB",
+    "workers": 4,
+    "timeout": 90,
+    "retry": 120,
+    "queue_limit": 50,
+    "bulk": 10,
+    "orm": "default",
+    "save_limit": -1,
+    "max_attempts": 100,
+}
+
+MAX_DECODE_ATTEMPTS = os.getenv("MAX_DECODE_ATTEMPTS", 5)
+
+VPIC_ENDPOINT = os.getenv(
+    "VPIC_ENDPOINT",
+    "https://vpic.nhtsa.dot.gov/api/vehicles",
+)
+VPIC_VIN_KEY = os.getenv("VPIC_VIN_KEY", "VIN")
+VPIC_ERROR_CODE_NAME = os.getenv("VPIC_ERROR_CODE_NAME", "ErrorCode")
+VPIC_SUCCESS_ERROR_CODE = os.getenv("VPIC_SUCCESS_ERROR_CODE", "0")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "healthcheck": {
+            "()": "api.logging_filters.HealthcheckFilter",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "filters": ["healthcheck"],
+        }
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+        },
+    },
+}

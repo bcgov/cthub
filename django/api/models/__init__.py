@@ -21,3 +21,7 @@ from . import scrap_it
 from . import user
 from . import permission
 from . import user_permission
+from . import app_user
+from . import uploaded_vins_file
+from . import uploaded_vin_record
+from . import decoded_vin_record

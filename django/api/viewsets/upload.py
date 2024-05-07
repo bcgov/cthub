@@ -16,6 +16,7 @@ from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants as constants
 from api.services.spreadsheet_uploader_prep import *
+from api.services.uploaded_vins_file import create_vins_file
 
 
 class UploadViewset(GenericViewSet):
@@ -38,7 +39,9 @@ class UploadViewset(GenericViewSet):
 
         datasets = Datasets.objects.all().exclude(name__in=incomplete_datasets)
         serializer = DatasetsSerializer(datasets, many=True, read_only=True)
-        return Response(serializer.data)
+        serializer_data = serializer.data
+        serializer_data.append({"id": -1, "name": "ICBC Vins"})
+        return Response(serializer_data)
 
     @action(detail=False, methods=["post"])
     @method_decorator(check_upload_permission())
@@ -47,6 +50,10 @@ class UploadViewset(GenericViewSet):
         filename = request.data.get("filename")
         dataset_selected = request.data.get("datasetSelected")
         replace_data = request.data.get("replace", False)
+
+        if dataset_selected == "ICBC Vins":
+            create_vins_file(filename)
+            return Response({"success": True}, status=status.HTTP_200_OK)
 
         try:
             url = minio_get_object(filename)
