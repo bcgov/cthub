@@ -16,7 +16,7 @@ def generate_template(dataset_name):
         "LDV Rebates": LDVRebatesColumns,
         "Public Charging": PublicChargingColumns,
         "Scrap It": ScrapItColumns,
-        "Specialty Use Vehicle Incentive Program": SpecialityUseVehicleIncentiveProgramColumns,
+        "Go Electric Rebates Program": GoElectricRebatesColumns,
     }
 
     if dataset_name not in dataset_column_enum_map:
@@ -33,7 +33,7 @@ def generate_template(dataset_name):
 
         custom_sheet_names = {
             "ARC Project Tracking": "Project_Tracking",
-            "Specialty Use Vehicle Incentive Program": "Sheet1",
+            "Go Electric Rebates": "Main list",
             "Public Charging": "Project_applications",
             "LDV Rebates": "Raw Data",
             "EV Charging Rebates": "Updated",

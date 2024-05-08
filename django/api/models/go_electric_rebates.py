@@ -3,9 +3,10 @@ from django.db import models
 from auditable.models import Auditable
 
 
-class SpecialityUseVehicleIncentives(Auditable):
+class GoElectricRebates(Auditable):
     approvals = models.CharField(blank=True, null=True, max_length=20)
     date = models.DateField(max_length=20, null=True, blank=True)
+    fleet = models.CharField(max_length=20)
     applicant_name = models.CharField(blank=True, null=True, max_length=250)
     max_incentive_amount_requested = models.IntegerField(
         null=True,
@@ -23,6 +24,7 @@ class SpecialityUseVehicleIncentives(Auditable):
     )
     manufacturer = models.CharField(blank=True, max_length=250, null=True)
     model = models.CharField(blank=True, max_length=250, null=True)
+    ger_class = models.CharField(blank=True, null=True, max_length=50)
 
     class Meta:
-        db_table = "speciality_use_vehicle_incentives"
+        db_table = "go_electric_rebates"

@@ -12,7 +12,7 @@ from api.models.hydrogen_fueling import HydrogrenFueling
 from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
 from api.models.scrap_it import ScrapIt
-from api.models.speciality_use_vehicle_incentives import SpecialityUseVehicleIncentives
+from api.models.go_electric_rebates import GoElectricRebates
 from api.services.spreadsheet_uploader_prep import (
     prepare_arc_project_tracking,
     prepare_hydrogen_fleets,
@@ -20,7 +20,7 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_ldv_rebates,
     prepare_public_charging,
     prepare_scrap_it,
-    prepare_speciality_use_vehicle_incentives,
+    prepare_go_electric_rebates,
 )
 
 
@@ -364,23 +364,24 @@ class ScrapItColumnMapping(Enum):
     scrap_date = "Scrap Date"
 
 
-class SpecialityUseVehicleIncentiveProgramColumns(Enum):
+class GoElectricRebatesColumns(Enum):
     APPROVALS = "Approvals"
     DATE = "Date"
-    FLEET = "Fleet"
+    FLEET = "Fleet/Individuals"
     APPLICANT_NAME = "Applicant Name"
     MAX_INCENTIVE_AMOUNT_REQUESTED = "Max Incentive Amount Requested"
     CATEGORY = "Category"
-    INDIVIDUAL = "Individual"
     INCENTIVE_PAID = "Incentive Paid"
     TOTAL_PURCHASE_PRICE_PRE_TAX = "Total Purchase Price (pre-tax)"
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
+    GER_CLASS = "Class"
 
 
-class SpecialityUseVehicleIncentivesColumnMapping(Enum):
+class GoElectricRebatesColumnMapping(Enum):
     approvals = "Approvals"
     date = "Date"
+    fleet = "Fleet/Individuals"
     applicant_name = "Applicant Name"
     max_incentive_amount_requested = "Max Incentive Amount Requested"
     category = "Category"
@@ -389,6 +390,7 @@ class SpecialityUseVehicleIncentivesColumnMapping(Enum):
     total_purchase_price = "Total Purchase Price (pre-tax)"
     manufacturer = "Manufacturer"
     model = "Model"
+    ger_class = "Class"
 
 
 FIELD_TYPES = {
@@ -547,9 +549,10 @@ FIELD_TYPES = {
         "budget_code": str,
         "scrap_date": str,
     },
-    "Specialty Use Vehicle Incentive Program": {
+    "Go Electric Rebates Program": {
         "approvals": str,
-        "date": str,
+        "date": datetime.date,
+        "fleet": str,
         "applicant_name": str,
         "max_incentive_amount_requested": int,
         "category": str,
@@ -558,6 +561,7 @@ FIELD_TYPES = {
         "total_purchase_price": int,
         "manufacturer": str,
         "model": str,
+        "ger_class": str
     },
 }
 
@@ -618,11 +622,11 @@ DATASET_CONFIG = {
         "header_row": 5,
         "preparation_functions": [prepare_scrap_it],
     },
-    "Specialty Use Vehicle Incentive Program": {
-        "model": SpecialityUseVehicleIncentives,
-        "columns": SpecialityUseVehicleIncentiveProgramColumns,
-        "column_mapping": SpecialityUseVehicleIncentivesColumnMapping,
-        "sheet_name": "Sheet1",
-        "preparation_functions": [prepare_speciality_use_vehicle_incentives],
+    "Go Electric Rebates Program": {
+        "model": GoElectricRebates,
+        "columns": GoElectricRebatesColumns,
+        "column_mapping": GoElectricRebatesColumnMapping,
+        "sheet_name": "Main list",
+        "preparation_functions": [prepare_go_electric_rebates],
     },
 }

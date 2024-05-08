@@ -27,7 +27,6 @@ class UploadViewset(GenericViewSet):
 
         incomplete_datasets = [
             "LDV Rebates",
-            "Specialty Use Vehicle Incentive Program",
             "Public Charging",
             "EV Charging Rebates",
             "Hydrogen Fueling",

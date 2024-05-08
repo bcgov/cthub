@@ -75,17 +75,7 @@ def prepare_scrap_it(df):
 
     return df
 
-
-def applicant_type(row):
-    if isinstance((row["Fleet"]), str):
-        return "Fleet"
-    elif isinstance((row["Individual"]), str):
-        return "Individual"
-    else:
-        return ""
-
-
-def prepare_speciality_use_vehicle_incentives(df):
+def prepare_go_electric_rebates(df):
 
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
 
@@ -94,13 +84,5 @@ def prepare_speciality_use_vehicle_incentives(df):
 
     non_num_columns = df.columns.difference(num_columns)
     df[non_num_columns] = df[non_num_columns].fillna("")
-
-    df["Applicant Type"] = df.apply(lambda row: applicant_type(row), axis=1)
-
-    if "Fleet" in df.columns:
-        df = df.drop(columns=["Fleet"])
-
-    if "Individual" in df.columns:
-        df = df.drop(columns=["Individual"])
 
     return df
