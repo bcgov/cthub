@@ -12,7 +12,7 @@ from api.models.user import User
 from api.models.user_permission import UserPermission
 from api.viewsets.user import UserViewSet
 from api.viewsets.upload import UploadViewset
-from api.decorators.permission import check_upload_permission
+from api.decorators.permission import check_upload_permission, check_admin_permission
 class TestUsers(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -86,4 +86,18 @@ class TestUsers(TestCase):
         request_admin.user = 'test_admin_user'
         response = mock_import_function(request_admin)
         self.assertEqual(response.status_code, 403)  # Forbidden!
+
+    def test_change_user_permissions(self):
+        @check_admin_permission()
+        def mock_change_permission_function(request):
+            return HttpResponse()
+        request = self.factory.post('/api/users/update_permissions')
+        request.user = 'test_admin_user'
+        response = mock_change_permission_function(request)
+        self.assertEqual(response.status_code, 200)
+
+        request_uploader = self.factory.post('/api/users/update_permissions')
+        request_uploader.user = 'test_upload_user'
+        response = mock_change_permission_function(request_uploader)
+        self.assertEqual(response.status_code, 403)
 
