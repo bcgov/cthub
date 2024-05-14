@@ -22,6 +22,9 @@ from api.viewsets.icbc_data import IcbcViewset
 from api.viewsets.minio import MinioViewSet
 from api.viewsets.upload import UploadViewset
 from api.viewsets.user import UserViewSet
+from api.viewsets.healthcheck import HealthCheckViewset
+from api.viewsets.decoded_vin_record import DecodedVinRecordViewset
+
 
 ROUTER = routers.SimpleRouter(trailing_slash=False)
 
@@ -31,6 +34,8 @@ ROUTER.register(r"uploads", UploadViewset, basename="uploads")
 
 ROUTER.register(r"minio", MinioViewSet, basename="minio")
 ROUTER.register(r"users", UserViewSet)
+ROUTER.register(r"healthcheck", HealthCheckViewset, basename="healthcheck")
+ROUTER.register(r"decoded-vin-records", DecodedVinRecordViewset)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
