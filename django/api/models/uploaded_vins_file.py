@@ -16,3 +16,5 @@ class UploadedVinsFile(Auditable):
     class Meta:
         db_table = "uploaded_vins_file"
 
+    db_table_comment = "represents a file containing VINs, and parsing information"
+

@@ -24,3 +24,5 @@ class UploadedVinRecord(Auditable):
                 fields=["vin", "postal_code"], name="unique_vin_postal_code"
             )
         ]
+
+    db_table_comment = "represents an uploaded VIN, and associated information"
