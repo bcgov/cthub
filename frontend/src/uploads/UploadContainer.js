@@ -45,9 +45,12 @@ const UploadContainer = () => {
 
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent(
-      `${errorResponse.data.message}\n${errorResponse.data.errors ? "Errors: " + errorResponse.data.errors.join("\n") : ""}`,
-    );
+    setAlertContent("There was an error uploading the file! Please refresh the page.")
+    errorResponse && errorResponse.data && (
+      setAlertContent(
+        `${errorResponse.data.message}\n${errorResponse.data.errors ? "Errors: " + errorResponse.data.errors.join("\n") : ""}`,
+      )
+    )
     setAlertSeverity("error");
     setAlert(true);
   };
@@ -92,6 +95,7 @@ const UploadContainer = () => {
           setUploadFiles([]);
         })
         .catch((error) => {
+          console.log(error)
           showError(error);
         })
         .finally(() => {

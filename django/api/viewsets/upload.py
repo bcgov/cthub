@@ -52,9 +52,11 @@ class UploadViewset(GenericViewSet):
         replace_data = request.data.get("replace", False)
 
         if dataset_selected == "ICBC Vins":
-            create_vins_file(filename)
-            return Response({"success": True}, status=status.HTTP_200_OK)
-
+            try:
+                create_vins_file(filename)
+                return Response({"success": True, "message": "ICBC data successfully uploaded!"}, status=status.HTTP_200_OK)
+            except Exception as error:
+                return Response({"success": False, "errors": str(error)})
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
