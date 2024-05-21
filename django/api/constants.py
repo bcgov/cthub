@@ -367,30 +367,40 @@ class ScrapItColumnMapping(Enum):
 class GoElectricRebatesColumns(Enum):
     APPROVALS = "Approvals"
     DATE = "Date"
-    FLEET = "Fleet/Individuals"
     APPLICANT_NAME = "Applicant Name"
     MAX_INCENTIVE_AMOUNT_REQUESTED = "Max Incentive Amount Requested"
     CATEGORY = "Category"
+    APPLICANT_TYPE = "Fleet/Individuals"
     INCENTIVE_PAID = "Incentive Paid"
     TOTAL_PURCHASE_PRICE_PRE_TAX = "Total Purchase Price (pre-tax)"
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
-    GER_CLASS = "Class"
+    CITY = "City"
+    POSTAL_CODE = "Postal Code"
+    PHONE = "Phone"
+    EMAIL = "Email"
+    VIN = "VIN"
+    VEHICLE_CLASS = "Class"
 
 
 class GoElectricRebatesColumnMapping(Enum):
     approvals = "Approvals"
     date = "Date"
-    fleet = "Fleet/Individuals"
     applicant_name = "Applicant Name"
     max_incentive_amount_requested = "Max Incentive Amount Requested"
     category = "Category"
-    applicant_type = "Applicant Type"
+    applicant_type = "Fleet/Individuals"
     incentive_paid = "Incentive Paid"
     total_purchase_price = "Total Purchase Price (pre-tax)"
     manufacturer = "Manufacturer"
     model = "Model"
-    ger_class = "Class"
+    city = "City"
+    postal_code = "Postal Code"
+    phone = "Phone"
+    email = "Email"
+    vin = "VIN"
+    vehicle_class = "Class"
+
 
 
 FIELD_TYPES = {
@@ -552,7 +562,6 @@ FIELD_TYPES = {
     "Go Electric Rebates Program": {
         "approvals": str,
         "date": datetime.date,
-        "fleet": str,
         "applicant_name": str,
         "max_incentive_amount_requested": int,
         "category": str,
@@ -561,8 +570,14 @@ FIELD_TYPES = {
         "total_purchase_price": int,
         "manufacturer": str,
         "model": str,
-        "ger_class": str
+        "city": str,
+        "postal_code": str,
+        "phone": str,
+        "email": str,
+        "vin": str,
+        "vehicle_class": str,
     },
+
 }
 
 DATASET_CONFIG = {
