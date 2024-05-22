@@ -19,6 +19,7 @@ const UsersContainer = (props) => {
   const [messageSeverity, setMessageSeverity] = useState("");
   const [userToDelete, setUserToDelete] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [saveButtonEnabled, setSaveButtonEnabled] = useState(false);
   const axios = useAxios();
 
   const handleAddNewUser = () => {
@@ -56,6 +57,7 @@ const UsersContainer = (props) => {
         userToChange.user_permissions[permissionType] = checked;
       }),
     );
+    setSaveButtonEnabled(true)
   }, []);
 
   const handleDeleteUserClick = (idir) => {
@@ -139,6 +141,7 @@ const UsersContainer = (props) => {
         setMessage={setMessage}
         newUser={newUser}
         handleXClick={handleDeleteUserClick}
+        saveButtonEnabled={saveButtonEnabled}
       />
     </div>
   );
