@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+import pathlib
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
@@ -50,13 +51,18 @@ class UploadViewset(GenericViewSet):
         filename = request.data.get("filename")
         dataset_selected = request.data.get("datasetSelected")
         replace_data = request.data.get("replace", False)
+        filepath = request.data.get("filepath")
 
         if dataset_selected == "ICBC Vins":
-            try:
-                create_vins_file(filename)
-                return Response({"success": True, "message": "ICBC data successfully uploaded!"}, status=status.HTTP_200_OK)
-            except Exception as error:
-                return Response({"success": False, "errors": str(error)})
+            file_extension = pathlib.Path(filepath).suffix
+            if file_extension == '.csv':
+                try:
+                    create_vins_file(filename)
+                    return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
+                except Exception as error:
+                    return Response({"success": False, "message": str(error)})
+            else:
+                return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)

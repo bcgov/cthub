@@ -45,18 +45,21 @@ const UploadContainer = () => {
 
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent("There was an error uploading the file! Please refresh the page.")
-    errorResponse && errorResponse.data && (
+    setAlertContent("There was an issue uploading the file.")
+    if (errorResponse && errorResponse.data && errorResponse.data.message) {
       setAlertContent(
         `${errorResponse.data.message}\n${errorResponse.data.errors ? "Errors: " + errorResponse.data.errors.join("\n") : ""}`,
       )
-    )
+    } else if (errorResponse && errorResponse.data && errorResponse.status === 403) {
+      setAlertContent("There was an error. Please refresh page and ensure you are logged in.")
+    }
     setAlertSeverity("error");
     setAlert(true);
   };
 
   const doUpload = () =>
     uploadFiles.forEach((file) => {
+      let filepath = file.path;
       setLoading(true);
       const uploadPromises = uploadFiles.map((file) => {
         return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
@@ -70,6 +73,7 @@ const UploadContainer = () => {
               filename,
               datasetSelected,
               replace,
+              filepath,
             });
           });
         });
@@ -95,7 +99,6 @@ const UploadContainer = () => {
           setUploadFiles([]);
         })
         .catch((error) => {
-          console.log(error)
           showError(error);
         })
         .finally(() => {
