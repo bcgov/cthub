@@ -1,8 +1,10 @@
 import axios from "axios";
 import useKeycloak from "./useKeycloak";
 import { API_BASE } from "../../config";
+import { useHistory } from "react-router-dom";
 
 const useAxios = (useDefault = false, opts = {}) => {
+  const history = useHistory();
   const keycloak = useKeycloak();
   if (useDefault) {
     return axios.create(opts);
@@ -19,7 +21,8 @@ const useAxios = (useDefault = false, opts = {}) => {
           Authorization: `Bearer ${keycloak.token}`,
         };
       } catch (error) {
-        // do something here?
+        keycloak.logout();
+        history.push("/upload");
       }
     }
     return config;
