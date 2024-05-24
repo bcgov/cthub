@@ -2,16 +2,16 @@ FROM registry.fedoraproject.org/f33/python3
 
 # Add application sources with correct permissions for OpenShift
 USER 0
-RUN pwd \
-    && ls -l
-ADD app-src .
+WORKDIR /opt/app-root/src
+ADD . .
 RUN chown -R 1001:0 ./
 USER 1001
 
 # # Install the dependencies
-# RUN pip install -U "pip>=19.3.1" && \
-#     pip install -r requirements.txt && \
-#     python manage.py collectstatic --noinput && \
+RUN pip install -U "pip>=19.3.1" && \
+    pip install -r requirements.txt 
+RUN python -version
+# && \     python manage.py collectstatic --noinput && \
 #     python manage.py migrate
 
 # # Run the application
