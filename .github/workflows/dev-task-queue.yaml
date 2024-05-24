@@ -3,6 +3,8 @@
 name: CTHUB 0.2.0 Task Queue Dev CI
 
 on:
+  push:
+    branches: [ task-queue-0.2.0 ]
   workflow_dispatch:
 
 env:
