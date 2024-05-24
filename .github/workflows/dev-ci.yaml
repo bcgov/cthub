@@ -72,6 +72,14 @@ jobs:
           sleep 5s
           oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-frontend-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
           oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+      
+      - name: Build CTHUB Task Queue
+        run: |
+          cd openshift/templates/task-queue
+          oc process -f ./task-queue-bc.yaml NAME=cthub SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+          sleep 5s
+          oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-task-queue-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
+          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
   deploy:
 
