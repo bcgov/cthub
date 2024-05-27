@@ -23,6 +23,7 @@ const UsersPage = (props) => {
     newUser,
     setMessage,
     handleXClick,
+    saveButtonEnabled
   } = props;
 
   const userRow = (user) => {
@@ -171,6 +172,7 @@ const UsersPage = (props) => {
               className="button-dark-blue"
               startIcon={<SaveIcon />}
               onClick={handleSubmitUserUpdates}
+              disabled={!saveButtonEnabled}
             >
               Save
             </Button>
