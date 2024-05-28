@@ -5,7 +5,7 @@ from auditable.models import Auditable
 class UploadedVinsFile(Auditable):
     filename = models.CharField(max_length=32, unique=True)
 
-    chunk_size = models.IntegerField(default=25000)
+    chunk_size = models.IntegerField(default=5000)
 
     chunks_per_run = models.IntegerField(default=4)
 
