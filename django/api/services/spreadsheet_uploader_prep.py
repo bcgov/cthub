@@ -84,5 +84,33 @@ def prepare_go_electric_rebates(df):
 
     non_num_columns = df.columns.difference(num_columns)
     df[non_num_columns] = df[non_num_columns].fillna("")
+    format_dict = {
+        'title': ['Approvals', 'Applicant Name', 'Category', 
+                  'Fleet/Individuals',  'Rebate adjustment (discount)', 
+                  'Manufacturer', 'City'],
+        'upper': ['Model', 'Postal code', 'VIN Number'],
+        'lower': ['Email'],
+        'skip': ['Phone Number']
+}
+    for key in format_dict:
+        df[format_dict[key]] = df[format_dict[key]].apply(format_case, case = key)
 
     return df
+
+def format_case(s, case = 'skip', ignore_list = []):
+    s[s.notna()] = (
+        s[s.notna()] # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
+         .astype(str) # Convert to string
+         .str.strip() # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
+        )
+    
+    if case == 'title':
+        s = s.str.title()
+    elif case == 'upper':
+        s = s.str.upper()
+    elif case == 'lower':
+        s = s.str.lower()
+    elif case == 'skip':
+        pass
+
+    return s
