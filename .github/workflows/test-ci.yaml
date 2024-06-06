@@ -1,11 +1,11 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: CTHUB 0.2.0 Test CI
+name: CTHUB 0.3.0 Test CI
 on:
   workflow_dispatch:
 
 env:
-  VERSION: 0.2.0
+  VERSION: 0.3.0
   GIT_URL: https://github.com/bcgov/cthub.git 
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
