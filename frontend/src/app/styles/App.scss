@@ -1,0 +1,112 @@
+/*
+Base styling for "App"
+ie General Container
+*/
+$bg-alt-black: #1e1f21;
+$bg-primary: #244074;
+$bg-black: #000;
+$bg-white: #fff;
+$default-text-color: #000;
+$default-table-border-color: rgba(249, 249, 249, 0.2);
+$default-table-color: #f9f9f9;
+$highlight: #0078fd;
+$default-link-blue: #568dba;
+$default-background-grey: #f2f2f2;
+$md: 991px;
+$button-background-blue: #003366;
+
+.App {
+  background-color: $default-background-grey;
+  .App-header {
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+    -ms-flex-pack: center;
+    align-items: center;
+    background-color: $bg-white;
+    border-bottom: 2px solid $bg-primary;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    width: 100%;
+
+    .container {
+      margin: 0 auto;
+      // max-width: 1280px;
+      padding: 0 1rem;
+      width: 100%;
+    }
+
+    .logo {
+      background: url("../static/logo.png") center center no-repeat;
+      background-size: 100% auto;
+      height: 100px;
+      width: 200px;
+    }
+  }
+
+  .App-body {
+    padding: 1rem;
+  }
+}
+
+body {
+  background-color: $bg-white;
+  color: $default-text-color;
+  font-family: "Roboto", "Open Sans", sans-serif;
+  font-weight: 400;
+  height: 100%;
+  margin: 0;
+}
+
+h2,
+h3,
+h4 {
+  font-family: "Roboto", "Open Sans", sans-serif;
+  color: #003366;
+  font-weight: 500;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 20px;
+}
+
+h3 {
+  display: inline;
+  font-size: 17px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+.button-dark-blue {
+  background-color: $button-background-blue !important;
+  color: $bg-white;
+
+  &:disabled {
+    background-color: white !important;
+  }
+}
+
+.text-button {
+  color: #1a5a96 !important;
+  text-decoration: underline !important;
+  text-transform: none !important;
+}
+
+.button-lowercase {
+  text-transform: none !important;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.page-content {
+  flex-grow: 1;
+}

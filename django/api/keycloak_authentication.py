@@ -2,59 +2,52 @@ from keycloak import KeycloakOpenID
 
 from django.conf import settings
 from rest_framework import authentication, exceptions
+from api.models.user import User
 
 
 class KeycloakAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        auth = request.headers.get('Authorization', None)
-
+        auth = request.headers.get("Authorization", None)
+        if settings.KEYCLOAK_TESTING:
+            try:
+                user = User.objects.get(idir=auth['idir'])
+                return user.idir, None
+            except User.DoesNotExist as exc:
+                # print("Testing User does not exist")
+                raise User.DoesNotExist(str(exc))
         if not auth:
-            raise exceptions.AuthenticationFailed(
-                'Authorization token required'
-            )
-
+            raise exceptions.AuthenticationFailed("Authorization token required")
         try:
             scheme, token = auth.split()
         except ValueError:
-            raise exceptions.AuthenticationFailed(
-                'Authorization token required'
-            )
+            raise exceptions.AuthenticationFailed("Authorization token required")
 
         if not token:
-            raise exceptions.AuthenticationFailed(
-                'Authorization token required'
-            )
+            raise exceptions.AuthenticationFailed("Authorization token required")
 
         keycloak_openid = KeycloakOpenID(
             server_url=settings.KEYCLOAK_URL,
             client_id=settings.KEYCLOAK_CLIENT_ID,
-            realm_name=settings.KEYCLOAK_REALM
+            realm_name=settings.KEYCLOAK_REALM,
         )
 
         # Decode the token from the front-end
-        KEYCLOAK_PUBLIC_KEY = \
-            "-----BEGIN PUBLIC KEY-----\n" + \
-            keycloak_openid.public_key() + \
-            "\n-----END PUBLIC KEY-----"
-
-        options = {
-            'verify_signature': True,
-            'verify_aud': True,
-            'verify_exp': True
-        }
-
-        token_info = keycloak_openid.decode_token(
-            token,
-            key=KEYCLOAK_PUBLIC_KEY,
-            options=options
+        KEYCLOAK_PUBLIC_KEY = (
+            "-----BEGIN PUBLIC KEY-----\n"
+            + keycloak_openid.public_key()
+            + "\n-----END PUBLIC KEY-----"
         )
 
-        # Get the user from the keycloak server based on the token
+        options = {"verify_signature": True, "verify_aud": True, "verify_exp": True}
+
+        token_info = keycloak_openid.decode_token(
+            token, key=KEYCLOAK_PUBLIC_KEY, options=options
+        )
+
         user_info = keycloak_openid.userinfo(token)
-        if user_info.get('user_id') != token_info.get('user_id'):
-            raise exceptions.AuthenticationFailed(
-                'Invalid Token'
-            )
+        if user_info.get("user_id") != token_info.get("user_id"):
+            raise exceptions.AuthenticationFailed("Invalid Token")
+        return user_info.get("idir_username"), None
 
         # user = None
 

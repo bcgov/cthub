@@ -8,166 +8,337 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CreditClass',
+            name="CreditClass",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('effective_date', models.DateField(blank=True, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('credit_class', models.CharField(max_length=3, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("effective_date", models.DateField(blank=True, null=True)),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("credit_class", models.CharField(max_length=3, unique=True)),
             ],
             options={
-                'db_table': 'credit_class_code',
+                "db_table": "credit_class_code",
             },
         ),
         migrations.CreateModel(
-            name='IcbcUploadDate',
+            name="IcbcUploadDate",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('upload_date', models.DateField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("upload_date", models.DateField()),
             ],
             options={
-                'db_table': 'icbc_upload_date',
+                "db_table": "icbc_upload_date",
             },
         ),
         migrations.CreateModel(
-            name='ModelYear',
+            name="ModelYear",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('effective_date', models.DateField(blank=True, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('name', models.CharField(db_column='description', max_length=250, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("effective_date", models.DateField(blank=True, null=True)),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                (
+                    "name",
+                    models.CharField(
+                        db_column="description", max_length=250, unique=True
+                    ),
+                ),
             ],
             options={
-                'db_table': 'model_year',
+                "db_table": "model_year",
             },
         ),
         migrations.CreateModel(
-            name='Organization',
+            name="Organization",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('name', models.CharField(db_column='organization_name', max_length=500, unique=True)),
-                ('short_name', models.CharField(db_column='short_name', max_length=64, null=True, unique=True)),
-                ('is_active', models.BooleanField(default=False)),
-                ('is_government', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                (
+                    "name",
+                    models.CharField(
+                        db_column="organization_name", max_length=500, unique=True
+                    ),
+                ),
+                (
+                    "short_name",
+                    models.CharField(
+                        db_column="short_name", max_length=64, null=True, unique=True
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=False)),
+                ("is_government", models.BooleanField(default=False)),
             ],
             options={
-                'db_table': 'organization',
+                "db_table": "organization",
             },
         ),
         migrations.CreateModel(
-            name='VehicleClass',
+            name="VehicleClass",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('effective_date', models.DateField(blank=True, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('description', models.CharField(db_column='description', max_length=250)),
-                ('vehicle_class_code', models.CharField(max_length=3, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("effective_date", models.DateField(blank=True, null=True)),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                (
+                    "description",
+                    models.CharField(db_column="description", max_length=250),
+                ),
+                ("vehicle_class_code", models.CharField(max_length=3, unique=True)),
             ],
             options={
-                'db_table': 'vehicle_class_code',
+                "db_table": "vehicle_class_code",
             },
         ),
         migrations.CreateModel(
-            name='ZevType',
+            name="ZevType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('effective_date', models.DateField(blank=True, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('description', models.CharField(db_column='description', max_length=250)),
-                ('vehicle_zev_code', models.CharField(max_length=4, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("effective_date", models.DateField(blank=True, null=True)),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                (
+                    "description",
+                    models.CharField(db_column="description", max_length=250),
+                ),
+                ("vehicle_zev_code", models.CharField(max_length=4, unique=True)),
             ],
             options={
-                'db_table': 'vehicle_zev_type',
+                "db_table": "vehicle_zev_type",
             },
         ),
         migrations.CreateModel(
-            name='IcbcVehicle',
+            name="IcbcVehicle",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('make', models.CharField(db_index=True, max_length=250)),
-                ('model_name', models.CharField(db_index=True, max_length=250)),
-                ('model_year', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.modelyear')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("make", models.CharField(db_index=True, max_length=250)),
+                ("model_name", models.CharField(db_index=True, max_length=250)),
+                (
+                    "model_year",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="api.modelyear"
+                    ),
+                ),
             ],
             options={
-                'db_table': 'icbc_vehicle',
-                'unique_together': {('make', 'model_name', 'model_year')},
-                'index_together': {('make', 'model_name', 'model_year')},
+                "db_table": "icbc_vehicle",
+                "unique_together": {("make", "model_name", "model_year")},
+                "index_together": {("make", "model_name", "model_year")},
             },
         ),
         migrations.CreateModel(
-            name='IcbcRegistrationData',
+            name="IcbcRegistrationData",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('vin', models.CharField(db_index=True, max_length=20, unique=True)),
-                ('icbc_upload_date', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.icbcuploaddate')),
-                ('icbc_vehicle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.icbcvehicle')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("vin", models.CharField(db_index=True, max_length=20, unique=True)),
+                (
+                    "icbc_upload_date",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="api.icbcuploaddate",
+                    ),
+                ),
+                (
+                    "icbc_vehicle",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="api.icbcvehicle",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'icbc_registration_data',
+                "db_table": "icbc_registration_data",
             },
         ),
         migrations.CreateModel(
-            name='Vehicle',
+            name="Vehicle",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('make', models.CharField(max_length=250)),
-                ('range', models.IntegerField()),
-                ('model_name', models.CharField(max_length=250)),
-                ('validation_status', models.CharField(default='DRAFT', max_length=20)),
-                ('weight_kg', models.DecimalField(decimal_places=0, max_digits=6)),
-                ('has_passed_us_06_test', models.BooleanField(default=False)),
-                ('credit_value', models.DecimalField(decimal_places=2, max_digits=20, null=True)),
-                ('is_active', models.BooleanField(default=True)),
-                ('credit_class', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='api.creditclass')),
-                ('model_year', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.modelyear')),
-                ('organization', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.organization')),
-                ('vehicle_class_code', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.vehicleclass')),
-                ('vehicle_zev_type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.zevtype')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("make", models.CharField(max_length=250)),
+                ("range", models.IntegerField()),
+                ("model_name", models.CharField(max_length=250)),
+                ("validation_status", models.CharField(default="DRAFT", max_length=20)),
+                ("weight_kg", models.DecimalField(decimal_places=0, max_digits=6)),
+                ("has_passed_us_06_test", models.BooleanField(default=False)),
+                (
+                    "credit_value",
+                    models.DecimalField(decimal_places=2, max_digits=20, null=True),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "credit_class",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to="api.creditclass",
+                    ),
+                ),
+                (
+                    "model_year",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="api.modelyear"
+                    ),
+                ),
+                (
+                    "organization",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="api.organization",
+                    ),
+                ),
+                (
+                    "vehicle_class_code",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="api.vehicleclass",
+                    ),
+                ),
+                (
+                    "vehicle_zev_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="api.zevtype"
+                    ),
+                ),
             ],
             options={
-                'db_table': 'vehicle',
-                'unique_together': {('make', 'model_name', 'vehicle_zev_type', 'model_year')},
+                "db_table": "vehicle",
+                "unique_together": {
+                    ("make", "model_name", "vehicle_zev_type", "model_year")
+                },
             },
         ),
     ]

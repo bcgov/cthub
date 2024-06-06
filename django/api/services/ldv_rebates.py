@@ -11,44 +11,25 @@ def trim_all_columns(df):
 
 
 def import_from_xls(excel_file):
-    df = pd.read_excel(excel_file, 'Raw Data')
+    row_count = 1
+    df = pd.read_excel(excel_file, "Raw Data")
     df = trim_all_columns(df)
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
-    df['CASL Consent'].replace(
-        to_replace=['YES', 'Y'],
-        value=True,
-        inplace=True
-    )
-    df['CASL Consent'].replace(
-        to_replace=['NO', 'N'],
+    df["CASL Consent"].replace(to_replace=["YES", "Y"], value=True, inplace=True)
+    df["CASL Consent"].replace(to_replace=["NO", "N"], value=False, inplace=True)
+    df["Delivered"].replace(to_replace=["YES", "Y"], value=True, inplace=True)
+    df["Delivered"].replace(
+        to_replace=["NO", "N", "OEM", "INCENTIVE_FUNDS_AVAILABLE"],
         value=False,
-        inplace=True
-    )
-    df['Delivered'].replace(
-        to_replace=['YES', 'Y'],
-        value=True,
-        inplace=True
-    )
-    df['Delivered'].replace(
-        to_replace=['NO', 'N', 'OEM', 'INCENTIVE_FUNDS_AVAILABLE'],
-        value=False,
-        inplace=True
+        inplace=True,
     )
 
-    df['Consent to Contact'].replace(
-        to_replace=['YES', 'Y'],
-        value=True,
-        inplace=True
-    )
-    df['Consent to Contact'].replace(
-        to_replace=['NO', 'N'],
-        value=False,
-        inplace=True
-    )
-    df.fillna('')
+    df["Consent to Contact"].replace(to_replace=["YES", "Y"], value=True, inplace=True)
+    df["Consent to Contact"].replace(to_replace=["NO", "N"], value=False, inplace=True)
+    df.fillna("")
 
-    for _, row in df.iterrows():
-        try:
+    try:
+        for _, row in df.iterrows():
             LdvRebates.objects.create(
                 casl_consent=row["CASL Consent"],
                 date_approved=row["DATE APPROVED"],
@@ -76,9 +57,8 @@ def import_from_xls(excel_file):
                 incentive_amount=row["Incentive Amount"],
                 vin=row["VIN#"],
                 delivered=row["Delivered"],
-                consent_to_contact=row["Consent to Contact"]
+                consent_to_contact=row["Consent to Contact"],
             )
-        except Exception as error:
-            print(error)
-            print(row)
+    except Exception as error:
+        return (error, "data", row_count)
     return True

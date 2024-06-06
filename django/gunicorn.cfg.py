@@ -43,7 +43,11 @@
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-workers = 8
+# workers = 8
+# timeout = 600
+# graceful_timeout = 600
+# keepalive = 5
+
+bind = "0.0.0.0:8080"
+workers = 2
 timeout = 600
-graceful_timeout = 600
-keepalive = 5

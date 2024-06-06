@@ -1,10 +1,6 @@
 version: "3.9"
 
 services:
-  redis:
-    image: redis:latest
-    volumes:
-      - redis:/data
   db:
     image: postgres
     volumes:
@@ -19,15 +15,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  keycloak:
-    build: ./keycloak
-    ports:
-      - 8080:8080
-      - 8443:8443
   metabase:
     image: metabase/metabase
     ports:
       - 3001:3000
+    env_file:
+      - metabase.env
+    depends_on:
+      db:
+        condition: service_healthy
   minio:
     image: minio/minio
     hostname: "minio"
@@ -39,52 +35,12 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
-  superset:
-    env_file: ./superset.env
-    image: apache/superset:latest-dev
-    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
-    user: "root"
-    ports:
-      - 8088:8088
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - ./superset:/app/docker
-      - superset_home:/app/superset_home
-  superset-init:
-    image: apache/superset:latest-dev
-    command: ["/app/docker/docker-init.sh"]
-    env_file: ./superset.env
-    depends_on:
-      - db
-      - redis
-    user: "root"
-    volumes:
-      - ./superset:/app/docker
-      - superset_home:/app/superset_home
-  superset-worker:
-    image: apache/superset:latest-dev
-    command: ["/app/docker/docker-bootstrap.sh", "worker"]
-    env_file: ./superset.env
-    depends_on:
-      - db
-      - redis
-    user: "root"
-    volumes:
-      - ./superset:/app/docker
-      - superset_home:/app/superset_home
-  superset-worker-beat:
-    image: apache/superset:latest-dev
-    command: ["/app/docker/docker-bootstrap.sh", "beat"]
-    env_file: ./superset.env
-    depends_on:
-      - db
-      - redis
-    user: "root"
-    volumes:
-      - ./superset:/app/docker
-      - superset_home:/app/superset_home
+    healthcheck:
+      test: "curl -I --fail --max-time 10 http://localhost:9000/minio/health/live"
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 3
   api:
     build: ./django
     command: >
@@ -109,21 +65,42 @@ services:
       - ./django:/api
     ports:
       - 8000:8000
+    healthcheck:
+      test: "curl --fail --max-time 5 http://localhost:8000/api/healthcheck"
+      start_period: 15s
+      interval: 15s
+      timeout: 10s
+      retries: 2
     depends_on:
       db:
         condition: service_healthy
-  web:
-    build: ./react
+      minio:
+        condition: service_healthy
+  workers:
+    build: ./django
     command: >
-      sh -c "npm install --legacy-peer-deps &&
-             npm start"
+      sh -c "python manage.py qcluster"
     env_file:
-      - keycloak.env
-    environment: 
-      - API_BASE=http://localhost:8000
-      - ENABLE_KEYCLOAK=true
+      - minio.env
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_HOST=db
+      - DB_NAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DJANGO_DEBUG=True
     volumes:
-      - ./react:/web
+      - ./django:/api
+    depends_on:
+      api:
+        condition: service_healthy
+  web:
+    build: ./frontend
+    command: npm run start
+    volumes:
+      - ./frontend:/web
+      - /web/node_modules
     ports:
       - 3000:3000
 

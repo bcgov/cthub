@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0010_chargerrebates_fix_columns'),
+        ("api", "0010_chargerrebates_fix_columns"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='chargerrebates',
-            name='expected_in_service_date',
+            model_name="chargerrebates",
+            name="expected_in_service_date",
             field=models.CharField(blank=True, max_length=200, null=True),
         ),
     ]

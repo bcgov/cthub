@@ -7,11 +7,8 @@ from .mixins.named import Description
 
 class ZevType(Auditable, Description, EffectiveDates):
     vehicle_zev_code = models.CharField(
-        blank=False,
-        max_length=4,
-        null=False,
-        unique=True
+        blank=False, max_length=4, null=False, unique=True
     )
 
     class Meta:
-        db_table = 'vehicle_zev_type'
+        db_table = "vehicle_zev_type"

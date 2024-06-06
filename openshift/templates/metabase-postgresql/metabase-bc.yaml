@@ -25,15 +25,21 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: metabase:v0.41.1
+        name: metabase:v0.44.0
         namespace: 30b186-tools
     postCommit: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: '2'
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 200Mi
     runPolicy: Serial
     source:
-      contextDir: openshift/templates/metabase
+      contextDir: openshift/templates/metabase-postgresql
       git:
-        ref: metabase-docker-0.1.0
+        ref: rebuid-metabase-on-prod-0.2.0
         uri: https://github.com/bcgov/cthub.git
       type: Git
     strategy:

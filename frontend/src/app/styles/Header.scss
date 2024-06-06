@@ -1,0 +1,108 @@
+.cthub-banner {
+  background-color: $banner-blue;
+  display: flex;
+  border-bottom: 3px solid $border-orange;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 6rem;
+  padding-right: 6rem;
+}
+
+.cthub-banner .left,
+.cthub-banner .right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1.25rem;
+  a {
+    color: $white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  img {
+    height: 4.5rem;
+    width: auto;
+  }
+  .logout {
+    color: $white;
+    font-size: 1rem;
+    .logoutButton {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font: inherit;
+      color: inherit;
+    }
+  }
+}
+
+.page-header {
+  background-color: $banner-blue;
+  width: 100%;
+  //height: 191px;
+
+  .title {
+    padding-left: 6rem;
+    h1 {
+      color: $white;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .cthub-banner {
+    font-weight: normal;
+    flex-direction: column;
+    img {
+      margin-left: 1rem;
+      height: 3rem;
+    }
+    .logout {
+      font-size: 0.75rem;
+    }
+  }
+  .page-header {
+    width: 100%;
+    position: relative;
+    margin: 0;
+    height: 180px;
+    .title {
+      margin: 5px 0 0 1rem;
+      padding-left: 0;
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  }
+}
+@media (max-width: 688px) {
+  .page-header {
+    .title {
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+  }
+}
+@media (max-width: 380px) {
+  .page-header {
+    a {
+      font-size: 10pt;
+    }
+    .title {
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+@media (max-width: 330px) {
+  .page-header {
+    .title {
+      h1 {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}

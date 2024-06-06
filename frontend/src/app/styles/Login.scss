@@ -1,0 +1,162 @@
+#login-page {
+  background-image: url("./images/tof.jpg");
+  background-position-x: center;
+  background-position-y: top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+  margin: 0;
+  min-height: 100%;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+
+  #header {
+    height: 15%;
+    margin: 1rem 0;
+    padding: 0 5rem;
+    position: fixed;
+    width: 100%;
+
+    .text {
+      color: $bg-primary;
+      font-size: 2.5rem;
+      line-height: normal;
+      position: relative;
+      top: 2rem;
+    }
+  }
+
+  #link-idir {
+    background-color: $bg-white;
+    border: 1px solid $bg-primary;
+    color: $bg-primary;
+
+    &:hover {
+      background-color: $bg-primary;
+      color: $bg-white;
+    }
+
+    .display-name {
+      font-weight: bold;
+    }
+  }
+
+  #main-content {
+    background-color: rgba(255, 255, 255, 0.8);
+    height: 100%;
+    min-height: 40rem;
+    position: absolute;
+  }
+
+  .brand-logo {
+    background-image: url("./images/BCID_H_rgb_pos.png");
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 10rem;
+    margin: 1rem auto;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  .buttons-section {
+    align-self: center;
+    padding: 1rem 2.5rem;
+    width: 100%;
+    position: relative;
+
+    .button {
+      border-radius: 0.5rem;
+      display: block;
+      font-size: 1.5rem;
+      font-weight: normal;
+      margin: 0.5rem auto 1rem;
+      padding: 1rem 0.5rem;
+      text-align: center;
+      text-decoration: none;
+      width: 100%;
+    }
+  }
+
+  .flex-container {
+    align-content: center;
+    bottom: 0;
+    display: flex;
+    justify-content: left;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  @media (min-width: $md) {
+    #header {
+      padding-left: 35rem;
+    }
+
+    #main-content {
+      width: 30rem;
+    }
+  }
+
+  @media (max-width: $md) {
+    #header {
+      background-color: $bg-white;
+      display: flex;
+      height: auto;
+      margin: 0;
+      min-height: 5rem;
+      padding: 1rem;
+      position: relative;
+      z-index: 999;
+
+      .text {
+        align-self: center;
+        font-size: 4vw;
+        margin: 0 auto;
+        text-align: center;
+        top: unset;
+      }
+    }
+
+    #link-idir {
+      font-size: 1.5rem;
+    }
+
+    .display-name {
+      height: 100%;
+      min-width: 5rem;
+      width: 10vw;
+    }
+
+    #main-content {
+      min-width: 30rem;
+      width: 100%;
+    }
+
+    .buttons-section {
+      min-width: 30rem;
+      padding-bottom: 0;
+      padding-top: 0;
+      width: 50%;
+    }
+
+    .flex-container {
+      flex-direction: column;
+
+      .brand-logo {
+        align-self: center;
+        background-image: url("./images/BCID_V_rgb_pos.png");
+        background-position: center;
+        background-size: contain;
+        height: 20vh;
+        margin: 0;
+        min-height: 15rem;
+        position: relative;
+      }
+    }
+  }
+}
