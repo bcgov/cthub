@@ -35,7 +35,7 @@ def schedule_batch_decode_vins():
             50,
             name="batch_decode_vins",
             schedule_type="C",
-            cron="* * * * *",
+            cron="*/2 * * * *",
             q_options={"timeout": 60, "ack_failure": True},
         )
     except IntegrityError:
