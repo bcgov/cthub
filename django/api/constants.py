@@ -376,11 +376,12 @@ class GoElectricRebatesColumns(Enum):
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
     CITY = "City"
-    POSTAL_CODE = "Postal Code"
-    PHONE = "Phone"
+    POSTAL_CODE = "Postal code"
+    PHONE = "Phone Number"
     EMAIL = "Email"
-    VIN = "VIN"
+    VIN = "VIN Number"
     VEHICLE_CLASS = "Class"
+    REBATE_ADJUSTMENT = "Rebate adjustment (discount)"
 
 
 class GoElectricRebatesColumnMapping(Enum):
@@ -395,11 +396,12 @@ class GoElectricRebatesColumnMapping(Enum):
     manufacturer = "Manufacturer"
     model = "Model"
     city = "City"
-    postal_code = "Postal Code"
-    phone = "Phone"
+    postal_code = "Postal code"
+    phone = "Phone Number"
     email = "Email"
-    vin = "VIN"
+    vin = "VIN Number"
     vehicle_class = "Class"
+    rebate_adjustment = "Rebate adjustment (discount)"
 
 
 
@@ -576,6 +578,7 @@ FIELD_TYPES = {
         "email": str,
         "vin": str,
         "vehicle_class": str,
+        "rebate_adjustment": str,
     },
 
 }

@@ -46,8 +46,8 @@ use the same as above to load fixtures
 
 docker-compose exec api bash
 python manage.py loaddata api/fixtures/0001_add_ldv_rebates_datasets.json 
-
-etc
+or 
+python manage.py loaddata api/fixtures/00*
 
 ## Creating User Account
 After running all the fixtures to create the dataset dropdown list and the user_permissions table.
