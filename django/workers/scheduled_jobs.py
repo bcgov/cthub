@@ -20,8 +20,8 @@ def schedule_read_uploaded_vins_file():
             "workers.tasks.read_uploaded_vins_file",
             name="read_uploaded_vins_file",
             schedule_type="C",
-            cron="*/15 * * * *",
-            q_options={"timeout": 660, "ack_failure": True},
+            cron="*/3 * * * *",
+            q_options={"timeout": 165, "ack_failure": True},
         )
     except IntegrityError:
         pass

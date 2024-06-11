@@ -1,6 +1,5 @@
 from django.conf import settings
 from api.services.minio import get_minio_client, get_minio_object
-from func_timeout import func_timeout, FunctionTimedOut
 from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
 from api.decoder_constants import get_service
@@ -8,6 +7,7 @@ from api.utilities.generic import get_map
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
 from django.db import transaction
+from workers.decorators.tasks import timeout
 
 
 def create_minio_bucket():
@@ -19,14 +19,8 @@ def create_minio_bucket():
 
 
 @transaction.atomic
+@timeout(150)
 def read_uploaded_vins_file():
-    # TODO: this job will probably have to become more involved; it currently just uploads whatever is in the file while skipping records
-    # that encounter uniqueness conflicts.
-    # we'll probably have to do an initial, chunked read from the
-    # file in order to build a map of (vin, postal_code) -> (record chunk index, record index within chunk) of unique records (based on snapshot_date?),
-    # then we'll have to compare the (vin, postal_code) keys to existing records in the database, and
-    # determine which ones need to get bulk-inserted, and which ones bulk-updated.
-    # also have to keep in mind the memory used by any data structures we use
     vins_file = (
         UploadedVinsFile.objects.filter(processed=False)
         .order_by("create_timestamp")
@@ -43,6 +37,7 @@ def read_uploaded_vins_file():
                 pass
 
 
+@timeout(45)
 def batch_decode_vins(service_name, batch_size=50):
     max_decode_attempts = settings.MAX_DECODE_ATTEMPTS
     service = get_service(service_name)
