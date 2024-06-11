@@ -40,18 +40,3 @@ def schedule_batch_decode_vins():
         )
     except IntegrityError:
         pass
-
-
-# def schedule_batch_decode_vins_vinpower():
-#     try:
-#         schedule(
-#             "workers.tasks.batch_decode_vins",
-#             "vinpower",
-#             1,
-#             name="batch_decode_vins_vinpower",
-#             schedule_type="C",
-#             cron="*/2 * * * *",
-#             q_options={"timeout": 60, "ack_failure": True},
-#         )
-#     except IntegrityError:
-#         pass
