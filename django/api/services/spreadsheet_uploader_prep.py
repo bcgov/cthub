@@ -166,4 +166,6 @@ def make_prepositions_consistent(df):
          '\\bAn(?=\\W)': 'an'},
         regex=True
     )
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].applymap(lambda x: x[0].upper() + x[1:]) ##The first letter should be capitalized
+    ##The first letter should be capitalized
+    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']
+        ].applymap(lambda x: x[0].upper() + x[1:])
