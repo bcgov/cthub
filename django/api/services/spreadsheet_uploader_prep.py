@@ -96,6 +96,7 @@ def prepare_go_electric_rebates(df):
         df[format_dict[key]] = df[format_dict[key]].apply(format_case, case = key)
 
     make_names_consistent(df)
+    make_prepositions_consistent(df)
     
     return df
 
@@ -149,3 +150,20 @@ def make_names_consistent(df):
     df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].replace(
         consistent_name_dict,
         regex=True)
+
+def make_prepositions_consistent(df):
+    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].replace(
+    dict.fromkeys(
+    ['(?i)\\bbc(?=\\W)', # Matches word "bc" regardless of case
+     '(?i)\\bb\\.c\\.(?=\\W)'], 'BC'), # Matches word "b.c." regardless of case
+    regex=True
+    ).replace(
+        {'BC Ltd.': 'B.C. Ltd.',
+         '\\bOf(?=\\W)': 'of',
+         '\\bAnd(?=\\W)': 'and', # Matches word "And"
+         '\\bThe(?=\\W)': 'the',
+         '\\bA(?=\\W)': 'a',
+         '\\bAn(?=\\W)': 'an'},
+        regex=True
+    )
+    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].applymap(lambda x: x[0].upper() + x[1:]) ##The first letter should be capitalized
