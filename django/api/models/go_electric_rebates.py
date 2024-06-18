@@ -30,6 +30,6 @@ class GoElectricRebates(Auditable):
     vin = models.CharField(blank=True, max_length=100, null=True)
     vehicle_class = models.CharField(blank=True, null=True, max_length=50)
     rebate_adjustment = models.CharField(blank=True, null=True, max_length=50)
-
+    notes = models.CharField(blank=True, null=True, max_length=250)
     class Meta:
         db_table = "go_electric_rebates"

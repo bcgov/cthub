@@ -382,6 +382,7 @@ class GoElectricRebatesColumns(Enum):
     VIN = "VIN Number"
     VEHICLE_CLASS = "Class"
     REBATE_ADJUSTMENT = "Rebate adjustment (discount)"
+    NOTES = "Notes"
 
 
 class GoElectricRebatesColumnMapping(Enum):
@@ -402,6 +403,7 @@ class GoElectricRebatesColumnMapping(Enum):
     vin = "VIN Number"
     vehicle_class = "Class"
     rebate_adjustment = "Rebate adjustment (discount)"
+    notes = "Notes"
 
 
 
@@ -579,6 +581,7 @@ FIELD_TYPES = {
         "vin": str,
         "vehicle_class": str,
         "rebate_adjustment": str,
+        "notes": str,
     },
 
 }
@@ -644,7 +647,7 @@ DATASET_CONFIG = {
         "model": GoElectricRebates,
         "columns": GoElectricRebatesColumns,
         "column_mapping": GoElectricRebatesColumnMapping,
-        "sheet_name": "Main list",
+        "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
     },
 }

@@ -90,7 +90,8 @@ def prepare_go_electric_rebates(df):
                   'Manufacturer', 'City'],
         'upper': ['Model', 'Postal code', 'VIN Number'],
         'lower': ['Email'],
-        'skip': ['Phone Number']
+        'skip': ['Phone Number'],
+        'sentence': ['Notes'],
 }
     for key in format_dict:
         df[format_dict[key]] = df[format_dict[key]].apply(format_case, case = key)
@@ -106,13 +107,15 @@ def format_case(s, case = 'skip', ignore_list = []):
          .astype(str) # Convert to string
          .str.strip() # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
         )
-    
     if case == 'title':
         s = s.str.title()
     elif case == 'upper':
         s = s.str.upper()
     elif case == 'lower':
         s = s.str.lower()
+    elif case == 'sentence':
+        ##filter out the temporary null records before changing to sentence case
+        s = s[s != 'TEMP_NULL'].str.capitalize()
     elif case == 'skip':
         pass
 
