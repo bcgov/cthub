@@ -51,7 +51,7 @@ objects:
     source:
       git:
         ref: postgrest
-        uri: https://github.com/bcgov-c/tenant-gitops-30b186.git
+        uri: https://github.com/bcgov/cthub.git 
       type: Git
       contextDir: openshift/templates/postgrest
     strategy:
