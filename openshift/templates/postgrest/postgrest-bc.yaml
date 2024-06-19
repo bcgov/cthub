@@ -50,7 +50,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        ref: postgrest
+        ref: postgrest-0.3.0
         uri: https://github.com/bcgov/cthub.git 
       type: Git
       contextDir: openshift/templates/postgrest
