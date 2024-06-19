@@ -188,5 +188,3 @@ def adjust_ger_manufacturer_names(df):
     }
 
     df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
-
-    print(df['Manufacturer'])
