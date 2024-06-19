@@ -1,0 +1,68 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: postgrest-bc
+parameters:
+  - name: GIT_URL
+    displayName:
+    description: cthub repo
+    required: false
+  - name: GIT_REF
+    displayName:
+    description: cthub branch name of the pr
+    required: false
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: postgrest image
+    labels:
+      shared: "true"
+    creationTimestamp: null
+    name: cthub-postgrest
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: cthub-postgrest
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: cthub-postgrest:11.2.2
+    postCommit: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+      requests:
+        cpu: 500m
+        memory: 2Gi
+    runPolicy: Serial
+    source:
+      git:
+        ref: postgrest
+        uri: https://github.com/bcgov-c/tenant-gitops-30b186.git
+      type: Git
+      contextDir: openshift/templates/postgrest
+    strategy:
+      dockerStrategy:
+        noCache: true
+        forcePull: true
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers: 
+      - imageChange: {}
+        type: ImageChange
+      - type: ConfigChange    
+  status:
+    lastVersion: 0
