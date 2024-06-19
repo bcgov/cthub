@@ -97,6 +97,7 @@ def prepare_go_electric_rebates(df):
 
     make_names_consistent(df)
     make_prepositions_consistent(df)
+    adjust_ger_manufacturer_names(df)
     
     return df
 
@@ -169,3 +170,23 @@ def make_prepositions_consistent(df):
     ##The first letter should be capitalized
     df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']
         ].applymap(lambda x: x[0].upper() + x[1:])
+    
+def adjust_ger_manufacturer_names(df):
+    """""
+    This function is currently GER specific updating the manufacturer names to have casing that makes more sense
+    since currently all manufacturer column entries are set to sentence casing.
+
+    """""
+
+    name_replacements = {
+        'International Ic Bus': 'International IC Bus',
+        'Lightning Emotors': 'Lightning eMotors',
+        'Avro Gse': 'Avro GSE',
+        'Bmw': 'BMW',
+        'Ego': 'EGO',
+        'Sc Carts': 'SC Carts'
+    }
+
+    df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
+
+    print(df['Manufacturer'])
