@@ -1,7 +1,7 @@
 from decimal import Decimal
 import numpy as np
 import pandas as pd
-
+import difflib as dl
 
 def prepare_arc_project_tracking(df):
     df["Publicly Announced"] = df["Publicly Announced"].replace(
@@ -100,6 +100,7 @@ def prepare_go_electric_rebates(df):
     make_prepositions_consistent(df)
     adjust_ger_manufacturer_names(df)
     
+
     return df
 
 def format_case(s, case = 'skip', ignore_list = []):
@@ -191,3 +192,50 @@ def adjust_ger_manufacturer_names(df):
     }
 
     df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
+
+
+def typo_checker(df, s, c=0.7):
+    """
+    Check for similar words in a single Pandas Series.
+
+    Parameters
+    ----------
+    s : Panda Series
+    c : Similarity cutoff, higher is more similar
+
+    Returns
+    -------
+    dict
+        A dictionary with similar words
+
+    """
+    if isinstance(s, pd.Series) is False:
+        raise Exception('Function argument "s" has to be Pandas Series type')
+
+    if s.unique().shape[0] == 1:
+        raise Exception('Function argument "s" contains only one unique value, there is nothing to compare')
+    elif s.shape[0] == 0:
+        raise Exception('Function argument "s" is empty, there is nothing to compare')
+    
+    unique_vals = list(set(s)) # Get all unique values from the series
+    unique_vals.sort(reverse=True) # Sort them to check for duplicates later
+
+    match_dict = {}
+    for value in unique_vals:
+        cutoff = c
+        matches = dl.get_close_matches(
+            value, # Value to compare
+            unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:], # All other values to compare value to
+            cutoff = cutoff # Similarity cutoff score, higher values mean more similar
+        )
+    
+        if (len(matches) > 0) & (value not in sum(match_dict.values(), [])):
+            match_dict[value] = matches # Add value to the dictionary if it has matches and if it is not yet in the dictionary
+        else:
+            pass
+
+    if bool(match_dict) == True:
+        # If the dictionary is not empty, return it
+        return match_dict
+    else:
+        print('No issues')

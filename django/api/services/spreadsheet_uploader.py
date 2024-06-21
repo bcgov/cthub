@@ -1,8 +1,10 @@
 from decimal import Decimal, ROUND_HALF_UP
+from rest_framework.response import Response
+from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
-
+from api.services.spreadsheet_uploader_prep import typo_checker
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -57,7 +59,6 @@ def transform_data(
 
     for validate in validation_functions:
         df = validate(df)
-
     column_mapping = {col.name: col.value for col in column_mapping_enum}
     # Need to use the inverse (keys) for mapping the columns to what the database expects in order to use enums
     inverse_column_mapping = {v: k for k, v in column_mapping.items()}
@@ -169,6 +170,7 @@ def import_from_xls(
     user,
     preparation_functions=[],
     validation_functions=[],
+    check_for_warnings=False,
 ):
     try:
         df = extract_data(excel_file, sheet_name, header_row)
@@ -179,6 +181,20 @@ def import_from_xls(
             preparation_functions,
             validation_functions,
         )
+
+        if check_for_warnings:
+            ## do the error checking
+            typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
+            if typo_warnings:
+                return {
+                "success": True,
+                "message": "We encountered some potential typos in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
+                "warning": True,
+                "warnings": typo_warnings,
+            }
+            else:
+                print('no warnings')
+
         result = load_data(df, model, field_types, replace_data, user)
 
         total_rows = result["row_count"]

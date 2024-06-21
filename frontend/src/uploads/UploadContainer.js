@@ -22,8 +22,10 @@ const UploadContainer = () => {
   const [alertSeverity, setAlertSeverity] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
+  const [checkForWarnings, setCheckForWarnings] = useState(true);
   const axios = useAxios();
   const axiosDefault = useAxios(true);
+  const [dataWarning, setDataWarning] = useState({})
 
   const refreshList = () => {
     setRefresh(true);
@@ -61,24 +63,26 @@ const UploadContainer = () => {
     uploadFiles.forEach((file) => {
       let filepath = file.path;
       setLoading(true);
+      
+      if (datasetSelected !== 'Go Electric Rebates Program'){
+        setCheckForWarnings(false)
+      }
+
       const uploadPromises = uploadFiles.map((file) => {
         return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
           const { url: uploadUrl, minio_object_name: filename } = response.data;
           return axiosDefault.put(uploadUrl, file).then(() => {
-            let replace = false;
-            if (replaceData === true) {
-              replace = true;
-            }
             return axios.post(ROUTES_UPLOAD.UPLOAD, {
               filename,
               datasetSelected,
-              replace,
+              replaceData,
               filepath,
+              checkForWarnings
             });
           });
         });
       });
-
+      console.log('uploading...')
       Promise.all(uploadPromises)
         .then((responses) => {
           const errorCheck = responses.some(
@@ -87,14 +91,30 @@ const UploadContainer = () => {
 
           setAlertSeverity(errorCheck ? "success" : "error");
 
+          console.log(responses)
           const message = responses
             .map(
               (response) =>
                 `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
             )
             .join("\n");
-
+          const warnings = responses
+            .map(
+              (response) =>
+                response.data.warnings ? response.data.warnings: ""
+            )
+          //console log warnings
+          //this should be made useable by the alert dialogue component
+          warnings.forEach((warningItem, index) => {
+            Object.keys(warningItem).forEach(company => {
+              console.log(company);
+              warningItem[company].forEach(similarlyNamedCompany => {
+                console.log(similarlyNamedCompany);
+              });
+            });
+          });
           setAlertContent(message);
+          console.log(warnings)
           setAlert(true);
           setUploadFiles([]);
         })
