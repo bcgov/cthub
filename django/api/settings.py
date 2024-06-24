@@ -188,7 +188,7 @@ Q_CLUSTER = {
     "name": "CTHUB",
     "workers": 4,
     "timeout": 90,
-    "retry": 120,
+    "retry": 1800,
     "queue_limit": 50,
     "bulk": 10,
     "orm": "default",
