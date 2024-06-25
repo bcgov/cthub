@@ -99,7 +99,6 @@ def prepare_go_electric_rebates(df):
     make_names_consistent(df)
     make_prepositions_consistent(df)
     adjust_ger_manufacturer_names(df)
-    
 
     return df
 

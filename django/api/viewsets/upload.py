@@ -101,11 +101,10 @@ class UploadViewset(GenericViewSet):
                 check_for_warnings=check_for_warnings
             )
 
-
             if not result["success"]:
                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
             return Response(result, status=status.HTTP_201_CREATED)
-        
+
         except Exception as e:
             return Response(
                 f"An error occurred: {str(e)}", status=status.HTTP_400_BAD_REQUEST
