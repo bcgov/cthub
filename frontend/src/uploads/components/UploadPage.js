@@ -105,7 +105,7 @@ const UploadPage = (props) => {
             <Button
               disabled={uploadFiles.length === 0 || !datasetSelected}
               className="button-dark-blue button-lowercase"
-              onClick={() => doUpload()}
+              onClick={() => doUpload(true)}
               type="button"
               variant="contained"
             >
