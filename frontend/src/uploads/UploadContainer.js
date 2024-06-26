@@ -24,7 +24,14 @@ const UploadContainer = () => {
   const [adminUser, setAdminUser] = useState(false);
   const axios = useAxios();
   const axiosDefault = useAxios(true);
-
+  const [dataWarning, setDataWarning] = useState({})
+  const [alertDialogText, setAlertDialogText] = useState({
+    title: "",
+    content: "",
+    confirmText: "",
+    confirmAction: ()=>{},
+    cancelAction: ()=>{},
+  })
   const refreshList = () => {
     setRefresh(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
@@ -57,28 +64,27 @@ const UploadContainer = () => {
     setAlert(true);
   };
 
-  const doUpload = () =>
+  const doUpload = (checkForWarnings) =>
     uploadFiles.forEach((file) => {
       let filepath = file.path;
-      setLoading(true);
+      setLoading(true);   
+      if (datasetSelected !== 'Go Electric Rebates Program'){
+        checkForWarnings = false
+      }
       const uploadPromises = uploadFiles.map((file) => {
         return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
           const { url: uploadUrl, minio_object_name: filename } = response.data;
           return axiosDefault.put(uploadUrl, file).then(() => {
-            let replace = false;
-            if (replaceData === true) {
-              replace = true;
-            }
             return axios.post(ROUTES_UPLOAD.UPLOAD, {
               filename,
               datasetSelected,
-              replace,
+              replaceData,
               filepath,
+              checkForWarnings
             });
           });
         });
       });
-
       Promise.all(uploadPromises)
         .then((responses) => {
           const errorCheck = responses.some(
@@ -86,16 +92,49 @@ const UploadContainer = () => {
           );
 
           setAlertSeverity(errorCheck ? "success" : "error");
-
           const message = responses
+          .map(
+            (response) =>
+            `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
+          )
+          .join("\n");
+          setAlert(true);
+          setAlertContent(message);
+          const warnings = responses
             .map(
               (response) =>
-                `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
+                response.data.warnings ? response.data.warnings: ""
             )
-            .join("\n");
-
           setAlertContent(message);
-          setAlert(true);
+
+          if (warnings && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
+            setOpenDialog(true)
+            setAlertDialogText({
+              title: "Warning: There are similar names in the data to review",
+              content:(
+                <>
+                <div>
+                  <p>
+                    Click continue to insert these records as is, or click cancel
+                    to exit out and no records will be inserted:
+                  </p>
+                  {warnings.map((warningItem, index) => (
+                    <div key={index}>
+                      {Object.keys(warningItem).map(company => (
+                        <div key={company}>
+                          <strong>{company}:</strong> {warningItem[company].join(', ')}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                </>
+            ),
+              confirmText: "Continue (all records will be inserted as is)", 
+              confirmAction: handleConfirmDataInsert,
+              cancelAction: handleReplaceDataCancel,
+            })}
+
           setUploadFiles([]);
         })
         .catch((error) => {
@@ -135,11 +174,24 @@ const UploadContainer = () => {
     const choice = event.target.value;
     if (choice === "replace") {
       setOpenDialog(true);
+      setAlertDialogText({
+        title: "Replace existing data?",
+        content: "Selecting replace will delete all previously uploaded records for this dataset",
+        confirmText: "Replace existing data", 
+        confirmAction: handleReplaceDataConfirm,
+        cancelAction: handleReplaceDataCancel,
+      })
     } else {
       setReplaceData(false);
     }
   };
+  const handleConfirmDataInsert = () => {
+    setOpenDialog(false);
+    showError(false);
+    setAlertContent("")
+    doUpload(false); //upload with the checkForWarnings flag set to false!
 
+  }
   const handleReplaceDataConfirm = () => {
     setReplaceData(true);
     setOpenDialog(false);
@@ -157,6 +209,7 @@ const UploadContainer = () => {
     return <Loading />;
   }
 
+
   const alertElement =
     alert && alertContent && alertSeverity ? (
       <Alert severity={alertSeverity}>
@@ -169,20 +222,21 @@ const UploadContainer = () => {
       </Alert>
     ) : null;
 
+
   return (
     <div className="row">
       <div className="col-12 mr-2">
         <>
           <AlertDialog
             open={openDialog}
-            title={"Replace existing data?"}
+            title={alertDialogText.title}
             dialogue={
-              "Selecting replace will delete all previously uploaded records for this dataset"
+              alertDialogText.content
             }
             cancelText={"Cancel"}
-            handleCancel={handleReplaceDataCancel}
-            confirmText={"Replace existing data"}
-            handleConfirm={handleReplaceDataConfirm}
+            handleCancel={alertDialogText.cancelAction}
+            confirmText={alertDialogText.confirmText}
+            handleConfirm={alertDialogText.confirmAction}
           />
           <Stack direction="column" spacing={2}>
             <Paper square variant="outlined">

@@ -47,11 +47,14 @@ class UploadViewset(GenericViewSet):
     @action(detail=False, methods=["post"])
     @method_decorator(check_upload_permission())
     def import_data(self, request):
-
         filename = request.data.get("filename")
         dataset_selected = request.data.get("datasetSelected")
         replace_data = request.data.get("replace", False)
         filepath = request.data.get("filepath")
+        check_for_warnings = request.data.get("checkForWarnings")
+        #boolean, if true show warnings before inserting data
+        #after displaying warnings, code can be rerun with show_warnings = false
+        #if warnings have been ignore
 
         if dataset_selected == "ICBC Vins":
             file_extension = pathlib.Path(filepath).suffix
@@ -95,6 +98,7 @@ class UploadViewset(GenericViewSet):
                 field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user=request.user,
+                check_for_warnings=check_for_warnings
             )
 
             if not result["success"]:
