@@ -238,3 +238,45 @@ def typo_checker(df, s, c=0.7):
         return match_dict
     else:
         print('No issues')
+
+def get_validation_error_rows(errors):
+    row_numbers = set()
+    for error in errors:
+        try:
+            row_number = int(error.split()[1][:-1])
+            row_numbers.add(row_number)
+        except (IndexError, ValueError):
+            continue
+    return row_numbers
+
+def validate_phone_numbers(df):
+
+    phone_errors = []
+
+    area_codes = [
+        587, 368, 403, 825, 780,  # Alberta
+        236, 672, 604, 778, 250,  # British Columbia
+        584, 431, 204,            # Manitoba
+        506,                      # New Brunswick
+        709,                      # Newfoundland
+        867,                      # Northwest Territories
+        782, 902,                 # Nova Scotia
+        867,                      # Nunavut
+        365, 226, 647, 519, 289, 742, 807, 548, 753, 249, 683, 437, 905, 343, 613, 705, 416,  # Ontario
+        782, 902,                 # Prince Edward Island
+        450, 418, 873, 468, 367, 819, 579, 581, 438, 354, 514, 263,  # Quebec
+        306, 474, 639,            # Saskatchewan
+        867                       # Yukon
+    ]
+
+    for index, row in df.iterrows():
+
+        number = row['Phone Number']
+        formatted_number = str(number).strip().replace('-', '')
+
+        if len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
+            phone_errors.append(f"Row {index + 1}: Had an invalid phone number - '{number}'.")
+
+    if phone_errors:
+        return phone_errors
+

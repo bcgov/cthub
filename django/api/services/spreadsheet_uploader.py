@@ -4,7 +4,7 @@ from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
-from api.services.spreadsheet_uploader_prep import typo_checker
+from api.services.spreadsheet_uploader_prep import (typo_checker, get_validation_error_rows)
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -57,22 +57,28 @@ def transform_data(
     for prep_func in preparation_functions:
         df = prep_func(df)
 
+    validation_errors = []
     for validate in validation_functions:
-        df = validate(df)
+        errors = validate(df)
+        if errors:
+            validation_errors.extend(errors)
+
     column_mapping = {col.name: col.value for col in column_mapping_enum}
     # Need to use the inverse (keys) for mapping the columns to what the database expects in order to use enums
     inverse_column_mapping = {v: k for k, v in column_mapping.items()}
     df.rename(columns=inverse_column_mapping, inplace=True)
 
-    return df
+    return df, validation_errors
 
 
 @transaction.atomic
-def load_data(df, model, field_types, replace_data, user):
+def load_data(df, model, field_types, replace_data, user, validation_errors):
     row_count = 0
     records_inserted = 0
-    errors = []
+    errors = validation_errors.copy()
     nullable_fields = get_nullable_fields(model)
+
+    validation_error_rows = get_validation_error_rows(errors)
 
     if replace_data:
         model.objects.all().delete()
@@ -139,6 +145,10 @@ def load_data(df, model, field_types, replace_data, user):
                 valid_row = False
                 continue
 
+            if index + 1 in validation_error_rows:
+                valid_row = False
+                continue
+
         if valid_row:
             try:
                 row_dict["update_user"] = user
@@ -154,7 +164,7 @@ def load_data(df, model, field_types, replace_data, user):
     return {
         "row_count": row_count,
         "records_inserted": records_inserted,
-        "errors": errors,
+        "errors": sorted(errors, key=lambda x: int(x.split()[1][:-1])),
     }
 
 
@@ -174,7 +184,7 @@ def import_from_xls(
 ):
     try:
         df = extract_data(excel_file, sheet_name, header_row)
-        df = transform_data(
+        df, validation_errors = transform_data(
             df,
             dataset_columns,
             column_mapping_enum,
@@ -195,7 +205,7 @@ def import_from_xls(
             else:
                 print('no warnings')
 
-        result = load_data(df, model, field_types, replace_data, user)
+        result = load_data(df, model, field_types, replace_data, user, validation_errors)
 
         total_rows = result["row_count"]
         inserted_rows = result["records_inserted"]

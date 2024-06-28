@@ -21,6 +21,7 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_public_charging,
     prepare_scrap_it,
     prepare_go_electric_rebates,
+    validate_phone_numbers
 )
 
 
@@ -649,5 +650,6 @@ DATASET_CONFIG = {
         "column_mapping": GoElectricRebatesColumnMapping,
         "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
+        "validation_functions": [validate_phone_numbers]
     },
 }
