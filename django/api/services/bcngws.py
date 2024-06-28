@@ -2,9 +2,11 @@ import requests
 from django.conf import settings
 
 def get_placenames(names_list):
-    print('places we are looking for: ' , names_list)
     current_index = 1
     total_results = 200 #temporary
+    names_string = ''
+    names_string = ", ".join([str(item) for item in names_list])
+    final_community_list = []
     features_list = [
         "Canadian Forces Base",
         "Canadian Forces Station",
@@ -26,29 +28,26 @@ def get_placenames(names_list):
         "Village (1)"
         ]
     while total_results > current_index:
-        print('current index: ', current_index )
-        data, total_results = get_results(current_index, names_list, total_results)
+        data, total_results = get_results(current_index, names_list, total_results, names_string)
         filtered_features = [
         feature for feature in data['features']
         if feature['properties']['featureType'] in features_list
         ]
-        print('total results: ', total_results)
         for feature in filtered_features:
-           print(feature['properties']['name'], "-", feature['properties']['featureType'])
+           final_community_list.append(feature['properties']['name'])
         current_index += 200
-    print('final_index: ', current_index)
-def get_results(current_index, names_list, total_results):
+    print('total results: ', total_results)
+    return final_community_list
+def get_results(current_index, names_list, total_results, names_string):
     query = {
         'outputFormat': 'json',
-        'name' : names_list,
+        'name' : names_string,
         'itemsPerPage': 200,
         'startIndex': current_index,
         'exactSpelling': 0
         }
-    
     url = settings.PLACENAMES_ENDPOINT
     response = requests.get(url, params=query)
-    print(response.url)
     data = response.json()
     total_results = data['properties']['totalResults']
     return data, total_results

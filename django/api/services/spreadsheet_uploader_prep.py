@@ -242,9 +242,8 @@ def typo_checker(df, s, c=0.7):
 
 def location_checker(df):
     # get list of unique locations from df
-    print('***************************')
     names =df['city'].unique()
     # send request to api with list of names to check if they have a match
-    check = get_placenames(names)
-    print('***************************')
-    return check
+    communities = get_placenames(names)
+
+    return communities, names
