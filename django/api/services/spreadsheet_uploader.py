@@ -4,7 +4,7 @@ from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
-from api.services.spreadsheet_uploader_prep import typo_checker
+from api.services.spreadsheet_uploader_prep import typo_checker, location_checker
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -185,6 +185,18 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
             typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
+            locations, communities_from_spreadsheet = location_checker(df)
+            print('---------------------------------------')
+            ## this is the list of locations found by the api! they are not exact matches
+            ## we should cross check the list of locations we received from the spreadsheet
+            ## and find any that don't match
+            print('what we are looking for: ', communities_from_spreadsheet)
+            
+            print('what we found:', locations)
+
+
+            print('---------------------------------------')
+
             if typo_warnings:
                 return {
                 "success": True,

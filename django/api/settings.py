@@ -228,3 +228,5 @@ LOGGING = {
         },
     },
 }
+
+PLACENAMES_ENDPOINT = "https://apps.gov.bc.ca/pub/bcgnws/names/search"
