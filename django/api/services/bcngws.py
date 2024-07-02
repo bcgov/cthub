@@ -4,7 +4,6 @@ from django.conf import settings
 def get_placename_matches(names_list):
     current_index = 1
     total_results = 200 #temporary
-    names_string = ''
     names_string = ", ".join([str(item) for item in names_list])
     final_community_list = []
     features_list = [
