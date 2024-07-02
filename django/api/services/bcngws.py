@@ -24,7 +24,8 @@ def get_placename_matches(names_list):
         "Regional District",
         "Resort Municipality",
         "Urban Community",
-        "Village (1)"
+        "Village (1)",
+        "Town"
         ]
     while total_results > current_index:
         data, total_results = get_names_from_api(current_index, total_results, names_string)
