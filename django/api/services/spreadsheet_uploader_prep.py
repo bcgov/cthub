@@ -2,7 +2,7 @@ from decimal import Decimal
 import numpy as np
 import pandas as pd
 import difflib as dl
-from api.services.bcngws import get_placenames
+from api.services.bcngws import get_placename_matches
 
 def prepare_arc_project_tracking(df):
     df["Publicly Announced"] = df["Publicly Announced"].replace(
@@ -243,7 +243,7 @@ def typo_checker(df, s, c=0.7):
 def location_checker(df):
     # get list of unique locations from df
     names =df['city'].unique()
-    # send request to api with list of names to check if they have a match
-    communities = get_placenames(names)
+    # send request to api with list of names, returns all the communities that somewhat matched
+    communities = get_placename_matches(names)
 
     return communities, names
