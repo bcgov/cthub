@@ -110,7 +110,7 @@ const UploadContainer = () => {
           if (warnings && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
             setOpenDialog(true)
             setAlertDialogText({
-              title: "Warning: There are similar names in the data to review",
+              title: "Warning: There are errors in the data to review",
               content:(
                 <>
                 <div>
@@ -118,15 +118,30 @@ const UploadContainer = () => {
                     Click continue to insert these records as is, or click cancel
                     to exit out and no records will be inserted:
                   </p>
-                  {warnings.map((warningItem, index) => (
-                    <div key={index}>
-                      {Object.keys(warningItem).map(company => (
-                        <div key={company}>
-                          <strong>{company}:</strong> {warningItem[company].join(', ')}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                  {
+                    <div>
+                    {warnings.map((warning, index) => (
+                      <div key={index}>
+                        {Object.keys(warning).map((key) => {
+                          const warningValue = warning[key];
+                          if (typeof warningValue === "object" && !Array.isArray(warningValue)) {
+                            return Object.keys(warningValue).map((company, idx) => (
+                              <div key={idx}>
+                                <strong>{company}:</strong> {warningValue[company].join(', ')}
+                              </div>
+                            ));
+                          } else {
+                            return warningValue.map((element, idx) => (
+                              <div key={idx}>
+                                {element}
+                              </div>
+                            ));
+                          }
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                  }
                 </div>
                 </>
             ),

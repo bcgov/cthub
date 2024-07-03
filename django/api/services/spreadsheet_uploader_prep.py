@@ -274,9 +274,11 @@ def validate_phone_numbers(df):
         number = row['Phone Number']
         formatted_number = str(number).strip().replace('-', '')
 
-        if len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
+        if formatted_number == '':
+            phone_errors.append(f"Row {index + 1}: Had an empty phone number")
+
+        elif len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
             phone_errors.append(f"Row {index + 1}: Had an invalid phone number - '{number}'.")
 
-    if phone_errors:
-        return phone_errors
+    return 'phone_errors', phone_errors if phone_errors else None
 

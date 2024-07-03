@@ -57,11 +57,11 @@ def transform_data(
     for prep_func in preparation_functions:
         df = prep_func(df)
 
-    validation_errors = []
+    validation_errors = {}
     for validate in validation_functions:
-        errors = validate(df)
+        key, errors = validate(df)
         if errors:
-            validation_errors.extend(errors)
+            validation_errors[key] = errors
 
     column_mapping = {col.name: col.value for col in column_mapping_enum}
     # Need to use the inverse (keys) for mapping the columns to what the database expects in order to use enums
@@ -75,10 +75,10 @@ def transform_data(
 def load_data(df, model, field_types, replace_data, user, validation_errors):
     row_count = 0
     records_inserted = 0
-    errors = validation_errors.copy()
+    errors = []
     nullable_fields = get_nullable_fields(model)
 
-    validation_error_rows = get_validation_error_rows(errors)
+    # validation_error_rows = get_validation_error_rows(errors) This may be used going forward for validation errors that cannot be overwritten.
 
     if replace_data:
         model.objects.all().delete()
@@ -145,9 +145,9 @@ def load_data(df, model, field_types, replace_data, user, validation_errors):
                 valid_row = False
                 continue
 
-            if index + 1 in validation_error_rows:
-                valid_row = False
-                continue
+            # if index + 1 in validation_error_rows:
+            #     valid_row = False
+            #     continue
 
         if valid_row:
             try:
@@ -195,12 +195,15 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
             typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
-            if typo_warnings:
+
+            validation_errors['typo_warnings'] = typo_warnings
+
+            if validation_errors:
                 return {
                 "success": True,
-                "message": "We encountered some potential typos in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
+                "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
                 "warning": True,
-                "warnings": typo_warnings,
+                "warnings": validation_errors,
             }
             else:
                 print('no warnings')
