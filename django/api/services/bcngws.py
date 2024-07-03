@@ -1,52 +1,37 @@
 import requests
 from django.conf import settings
+from api.bcngws_constants import FEATURES
 
-def get_placename_matches(names_list):
-    current_index = 1
-    total_results = 200 #temporary
-    names_string = ", ".join([str(item) for item in names_list])
-    final_community_list = []
-    features_list = [
-        "Canadian Forces Base",
-        "Canadian Forces Station",
-        "City",
-        "Community",
-        "District Municipality (1)",
-        "First Nation Village",
-        "Former Locality",
-        "Indian Government District",
-        "Indian Government District : Land Unit",
-        "Indian Reserve-Réserve indienne",
-        "Locality",
-        "Recreation Facility",
-        "Recreational Community",
-        "Region",
-        "Regional District",
-        "Resort Municipality",
-        "Urban Community",
-        "Village (1)",
-        "Town"
-        ]
-    while total_results > current_index:
-        data, total_results = get_names_from_api(current_index, total_results, names_string)
-        filtered_features = [
-        feature for feature in data['features']
-        if feature['properties']['featureType'] in features_list
-        ]
-        for feature in filtered_features:
-           final_community_list.append(feature['properties']['name'])
-        current_index += 200
-    return final_community_list
-def get_names_from_api(current_index, total_results, names_string):
+
+def get_placename_matches(names_list, page_size, start_index, result):
+    refined_result = result or []
+    names_string = ", ".join(map(str, names_list))
+
     query = {
         'outputFormat': 'json',
-        'name' : names_string,
+        'name': names_string,
         'itemsPerPage': 200,
-        'startIndex': current_index,
+        'startIndex': start_index,
         'exactSpelling': 0
-        }
-    url = settings.PLACENAMES_ENDPOINT
-    response = requests.get(url, params=query)
-    data = response.json()
-    total_results = data['properties']['totalResults']
-    return data, total_results
+    }
+
+    try:
+        response = requests.get(settings.PLACENAMES_ENDPOINT, params=query)
+        response.raise_for_status()  # Raise an exception for HTTP errors (4xx or 5xx)
+        response = response.json()
+
+        filtered_names = [
+            feature['properties']['name']
+            for feature in response['features']
+            if feature['properties']['featureType'] in FEATURES.features_list
+        ]
+
+        refined_result.extend(filtered_names)
+
+        if response['properties']['totalResults'] >= start_index + page_size:
+            refined_result = get_placename_matches(names_list, page_size, start_index + page_size, refined_result)
+
+    except requests.RequestException as e:
+        print(f"Error fetching data: {e}")
+
+    return refined_result

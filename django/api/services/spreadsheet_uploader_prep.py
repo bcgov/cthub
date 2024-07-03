@@ -244,6 +244,5 @@ def location_checker(df):
     # get list of unique locations from df
     names =df['city'].unique()
     # send request to api with list of names, returns all the communities that somewhat matched
-    communities = get_placename_matches(names)
-
+    communities = get_placename_matches(names, 200, 1, [])
     return communities, names

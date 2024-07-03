@@ -160,18 +160,9 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
             typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
-            locations, communities_from_spreadsheet = location_checker(df)
-            print('---------------------------------------')
-            ## this is the list of locations found by the api! they are not exact matches
-            ## we should cross check the list of locations we received from the spreadsheet
-            ## and find any that don't match
-            print('what we are looking for: ', communities_from_spreadsheet)
-            
-            print('what we found:', locations)
-
-
-            print('---------------------------------------')
-
+            locations, names_from_spreadsheet = location_checker(df)
+            locations_set = set(locations)
+            names_without_match = [item for item in names_from_spreadsheet if item not in locations_set]
             if typo_warnings:
                 return {
                 "success": True,
