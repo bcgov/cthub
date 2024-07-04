@@ -4,7 +4,6 @@ from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
-from api.services.spreadsheet_uploader_prep import (typo_checker, get_validation_error_rows)
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -58,8 +57,12 @@ def transform_data(
         df = prep_func(df)
 
     validation_errors = {}
-    for validate in validation_functions:
-        key, errors = validate(df)
+    for x in validation_functions:
+        validate = x["function"]
+        columns = x["columns"]
+        kwargs = x["kwargs"]
+        key = x["error_type"]
+        key, errors = validate(df, columns, kwargs)
         if errors:
             validation_errors[key] = errors
 
@@ -194,9 +197,6 @@ def import_from_xls(
 
         if check_for_warnings:
             ## do the error checking
-            typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
-
-            validation_errors['typo_warnings'] = typo_warnings
 
             if validation_errors:
                 return {

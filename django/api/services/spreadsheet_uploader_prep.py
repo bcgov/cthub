@@ -193,7 +193,7 @@ def adjust_ger_manufacturer_names(df):
     df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
 
 
-def typo_checker(df, s, c=0.7):
+def typo_checker(df, column, kwargs):
     """
     Check for similar words in a single Pandas Series.
 
@@ -208,6 +208,8 @@ def typo_checker(df, s, c=0.7):
         A dictionary with similar words
 
     """
+    s = df[column].dropna()
+
     if isinstance(s, pd.Series) is False:
         raise Exception('Function argument "s" has to be Pandas Series type')
 
@@ -221,7 +223,7 @@ def typo_checker(df, s, c=0.7):
 
     match_dict = {}
     for value in unique_vals:
-        cutoff = c
+        cutoff = kwargs["cutoff"]
         matches = dl.get_close_matches(
             value, # Value to compare
             unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:], # All other values to compare value to
@@ -235,7 +237,7 @@ def typo_checker(df, s, c=0.7):
 
     if bool(match_dict) == True:
         # If the dictionary is not empty, return it
-        return match_dict
+        return 'typo', match_dict
     else:
         print('No issues')
 
@@ -249,9 +251,9 @@ def get_validation_error_rows(errors):
             continue
     return row_numbers
 
-def validate_phone_numbers(df):
+def validate_phone_numbers(df, column, kwargs):
 
-    phone_errors = []
+    phone_errors = {}
 
     area_codes = [
         587, 368, 403, 825, 780,  # Alberta
@@ -271,14 +273,14 @@ def validate_phone_numbers(df):
 
     for index, row in df.iterrows():
 
-        number = row['Phone Number']
+        number = row[column]
         formatted_number = str(number).strip().replace('-', '')
 
         if formatted_number == '':
-            phone_errors.append(f"Row {index + 1}: Had an empty phone number")
+            phone_errors[f"{index + 1}"] = "Had an empty phone number"
 
         elif len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
-            phone_errors.append(f"Row {index + 1}: Had an invalid phone number - '{number}'.")
+            phone_errors[f"{index + 1}"] = f"Had an invalid phone number - '{number}'."
 
     return 'phone_errors', phone_errors if phone_errors else None
 

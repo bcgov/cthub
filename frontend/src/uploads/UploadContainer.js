@@ -124,18 +124,21 @@ const UploadContainer = () => {
                       <div key={index}>
                         {Object.keys(warning).map((key) => {
                           const warningValue = warning[key];
-                          if (typeof warningValue === "object" && !Array.isArray(warningValue)) {
-                            return Object.keys(warningValue).map((company, idx) => (
-                              <div key={idx}>
-                                <strong>{company}:</strong> {warningValue[company].join(', ')}
-                              </div>
-                            ));
-                          } else {
-                            return warningValue.map((element, idx) => (
-                              <div key={idx}>
-                                {element}
-                              </div>
-                            ));
+                          if (typeof warningValue === "object") {
+                            if(Array.isArray(Object.values(warningValue)[0])){
+                              return Object.keys(warningValue).map((company, idx) => (
+                                <div key={idx}>
+                                  <strong>{company}:</strong> {warningValue[company].join(', ')}
+                                </div>
+                              ));
+                            }
+                            else{
+                              return Object.keys(warningValue).map((key, idx) => (
+                                <div key={idx}>
+                                  <strong>{key}:</strong> {warningValue[key]}
+                                </div>
+                              ));
+                            }
                           }
                         })}
                       </div>
