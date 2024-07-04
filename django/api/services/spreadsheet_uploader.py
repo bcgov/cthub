@@ -174,10 +174,6 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
 
-            locations, names_from_spreadsheet = location_checker(df)
-            locations_set = set(locations)
-            names_without_match = [item for item in names_from_spreadsheet if item not in locations_set]
-
             if validation_errors:
                 return {
                     "success": True,
