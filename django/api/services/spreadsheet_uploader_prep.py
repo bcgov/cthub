@@ -193,48 +193,69 @@ def adjust_ger_manufacturer_names(df):
     df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
 
 
-def typo_checker(df, s, c=0.7):
+def typo_checker(header_row, s, c=0.7):
     """
-    Check for similar words in a single Pandas Series.
+    Check for similar words in a single Pandas Series and return lines with each name.
 
     Parameters
     ----------
-    s : Panda Series
+    s : Pandas Series
     c : Similarity cutoff, higher is more similar
 
     Returns
     -------
     dict
-        A dictionary with similar words
+        A dictionary with grouped similar words and their line numbers
 
     """
-    if isinstance(s, pd.Series) is False:
+
+    if not isinstance(s, pd.Series):
         raise Exception('Function argument "s" has to be Pandas Series type')
 
-    if s.unique().shape[0] == 1:
+    if s.nunique() == 1:
         raise Exception('Function argument "s" contains only one unique value, there is nothing to compare')
-    elif s.shape[0] == 0:
+    elif s.empty:
         raise Exception('Function argument "s" is empty, there is nothing to compare')
     
-    unique_vals = list(set(s)) # Get all unique values from the series
-    unique_vals.sort(reverse=True) # Sort them to check for duplicates later
+    unique_vals = list(set(s))  # Get all unique values from the series
+    unique_vals.sort(reverse=True)  # Sort them to check for duplicates later
 
-    match_dict = {}
+    parent = {val: val for val in unique_vals}  # Union-find data structure
+
+    def find(val):
+        if parent[val] != val:
+            parent[val] = find(parent[val])
+        return parent[val]
+
+    def union(val1, val2):
+        root1 = find(val1)
+        root2 = find(val2)
+        if root1 != root2:
+            parent[root2] = root1
+
     for value in unique_vals:
-        cutoff = c
         matches = dl.get_close_matches(
-            value, # Value to compare
-            unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:], # All other values to compare value to
-            cutoff = cutoff # Similarity cutoff score, higher values mean more similar
+            value,  # Value to compare
+            unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:],  # All other values to compare value to
+            cutoff=c  # Similarity cutoff score, higher values mean more similar
         )
     
-        if (len(matches) > 0) & (value not in sum(match_dict.values(), [])):
-            match_dict[value] = matches # Add value to the dictionary if it has matches and if it is not yet in the dictionary
-        else:
-            pass
+        for match in matches:
+            union(value, match)
 
-    if bool(match_dict) == True:
-        # If the dictionary is not empty, return it
-        return match_dict
-    else:
-        print('No issues')
+    groups = {}
+    for value in unique_vals:
+        root = find(value)
+        if root not in groups:
+            groups[root] = {
+                'names': set(),
+                'lines': set()
+            }
+        groups[root]['names'].add(value)
+        groups[root]['lines'].update(s[s == value].index.tolist())
+
+    # Filter out groups that don't have any matches and adjust line numbers to start at 1 plus whatever the header is
+    filtered_groups = {"; ".join(sorted(group['names'])): sorted([line + header_row + 1 for line in group['lines']])
+                       for group in groups.values() if len(group['names']) > 1}
+
+    return filtered_groups

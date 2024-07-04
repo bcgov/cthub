@@ -159,7 +159,7 @@ def import_from_xls(
 
         if check_for_warnings:
             ## do the error checking
-            typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
+            typo_warnings = typo_checker(header_row, df['applicant_name'].dropna(), .8)
             if typo_warnings:
                 return {
                 "success": True,
