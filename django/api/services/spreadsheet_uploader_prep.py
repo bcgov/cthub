@@ -16,7 +16,6 @@ def prepare_hydrogen_fleets(df):
     df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
     return df
 
-
 def prepare_hydrogen_fueling(df):
 
     decimal_columns = ["Capital Funding Awarded", "O&M Funding Potential"]
@@ -194,7 +193,7 @@ def adjust_ger_manufacturer_names(df):
     df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
 
 
-def typo_checker(df, s, c=0.7):
+def typo_checker(df, column, kwargs):
     """
     Check for similar words in a single Pandas Series.
 
@@ -209,6 +208,8 @@ def typo_checker(df, s, c=0.7):
         A dictionary with similar words
 
     """
+    s = df[column].dropna()
+
     if isinstance(s, pd.Series) is False:
         raise Exception('Function argument "s" has to be Pandas Series type')
 
@@ -222,7 +223,7 @@ def typo_checker(df, s, c=0.7):
 
     match_dict = {}
     for value in unique_vals:
-        cutoff = c
+        cutoff = kwargs["cutoff"]
         matches = dl.get_close_matches(
             value, # Value to compare
             unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:], # All other values to compare value to
@@ -236,9 +237,52 @@ def typo_checker(df, s, c=0.7):
 
     if bool(match_dict) == True:
         # If the dictionary is not empty, return it
-        return match_dict
+        return 'typo', match_dict
     else:
         print('No issues')
+
+def get_validation_error_rows(errors):
+    row_numbers = set()
+    for error in errors:
+        try:
+            row_number = int(error.split()[1][:-1])
+            row_numbers.add(row_number)
+        except (IndexError, ValueError):
+            continue
+    return row_numbers
+
+def validate_phone_numbers(df, column, kwargs):
+
+    phone_errors = {}
+
+    area_codes = [
+        587, 368, 403, 825, 780,  # Alberta
+        236, 672, 604, 778, 250,  # British Columbia
+        584, 431, 204,            # Manitoba
+        506,                      # New Brunswick
+        709,                      # Newfoundland
+        867,                      # Northwest Territories
+        782, 902,                 # Nova Scotia
+        867,                      # Nunavut
+        365, 226, 647, 519, 289, 742, 807, 548, 753, 249, 683, 437, 905, 343, 613, 705, 416,  # Ontario
+        782, 902,                 # Prince Edward Island
+        450, 418, 873, 468, 367, 819, 579, 581, 438, 354, 514, 263,  # Quebec
+        306, 474, 639,            # Saskatchewan
+        867                       # Yukon
+    ]
+
+    for index, row in df.iterrows():
+
+        number = row[column]
+        formatted_number = str(number).strip().replace('-', '')
+
+        if formatted_number == '':
+            phone_errors[f"{index + 1}"] = "Had an empty phone number"
+
+        elif len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
+            phone_errors[f"{index + 1}"] = f"Had an invalid phone number - '{number}'."
+
+    return 'phone_errors', phone_errors if phone_errors else None
 
 def location_checker(df):
     # get list of unique locations from df
