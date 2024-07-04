@@ -4,6 +4,7 @@ from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
+from api.services.spreadsheet_uploader_prep import location_checker
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -91,59 +92,34 @@ def load_data(df, model, field_types, replace_data, user, validation_errors):
         valid_row = True
 
         for column, value in row_dict.items():
-
             expected_type = field_types.get(column)
             is_nullable = column in nullable_fields
+
+            if expected_type in [int, float, Decimal] and value != 'TEMP_NULL':
+                value = str(value).replace(',', '').strip()
+                try:
+                    if expected_type == int:
+                        row_dict[column] = int(float(value))
+                    elif expected_type == Decimal:
+                        row_dict[column] = Decimal(value).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                    else:
+                        row_dict[column] = float(value)
+                except ValueError:
+                    errors.append(
+                        f"Row {index + 1}: Unable to convert value to {expected_type.__name__} for '{column}'. Value was '{value}'."
+                    )
+                    valid_row = False
+                    continue
 
             if pd.isna(value) or value == "" or value == 'TEMP_NULL':
                 if is_nullable:
                     row_dict[column] = None
                 else:
                     row_dict[column] = get_field_default(model, column)
-            elif expected_type == float:
-                if isinstance(value, int):
-                    row_dict[column] = float(value)
-                elif isinstance(value, float):
-                    row_dict[column] = round(value, 2)
-                elif isinstance(value, str) and value.strip() != "":
-                    try:
-                        float_value = float(value)
-                        row_dict[column] = round(float_value, 2)
-                    except ValueError:
-                        errors.append(
-                            f"Row {index + 1}: Unable to convert value to float for '{column}'. Value was '{value}'."
-                        )
-                        valid_row = False
-                        continue
-            elif expected_type == int and (
-                (isinstance(value, str) and value.strip() != "")
-                or isinstance(value, float)
-            ):
-                try:
-                    row_dict[column] = int(value)
-                except ValueError:
-                    errors.append(
-                        f"Row {index + 1}: Unable to convert value to int for '{column}'. Value was '{value}'."
-                    )
-                    valid_row = False
-                    continue
-            elif expected_type == Decimal and (
-                (isinstance(value, int) or isinstance(value, float))
-            ):
-                try:
-                    decimal_value = Decimal(value).quantize(
-                        Decimal("0.01"), rounding=ROUND_HALF_UP
-                    )
-                    row_dict[column] = decimal_value
-                except ValueError:
-                    errors.append(
-                        f"Row {index + 1}: Unable to convert value to int for '{column}'. Value was '{value}'."
-                    )
-                    valid_row = False
-                    continue
-            elif not isinstance(value, expected_type) and value != "":
+
+            elif not isinstance(row_dict[column], expected_type) and value != "":
                 errors.append(
-                    f"Row {index + 1}: Incorrect type for '{column}'. Expected {expected_type.__name__}, got {type(value).__name__}."
+                    f"Row {index + 1}: Incorrect type for '{column}'. Expected {expected_type.__name__}, got {type(row_dict[column]).__name__}."
                 )
                 valid_row = False
                 continue
@@ -198,13 +174,17 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
 
+            locations, names_from_spreadsheet = location_checker(df)
+            locations_set = set(locations)
+            names_without_match = [item for item in names_from_spreadsheet if item not in locations_set]
+
             if validation_errors:
                 return {
-                "success": True,
-                "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
-                "warning": True,
-                "warnings": validation_errors,
-            }
+                    "success": True,
+                    "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
+                    "warning": True,
+                    "warnings": validation_errors,
+                }
             else:
                 print('no warnings')
 

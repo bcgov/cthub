@@ -2,6 +2,7 @@ from decimal import Decimal
 import numpy as np
 import pandas as pd
 import difflib as dl
+from api.services.bcngws import get_placename_matches
 
 def prepare_arc_project_tracking(df):
     df["Publicly Announced"] = df["Publicly Announced"].replace(
@@ -14,7 +15,6 @@ def prepare_hydrogen_fleets(df):
     df.applymap(lambda s: s.upper() if type(s) == str else s)
     df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
     return df
-
 
 def prepare_hydrogen_fueling(df):
 
@@ -284,3 +284,10 @@ def validate_phone_numbers(df, column, kwargs):
 
     return 'phone_errors', phone_errors if phone_errors else None
 
+def location_checker(df):
+    # get list of unique locations from df
+    names =df['city'].unique()
+    communities = []
+    # send request to api with list of names, returns all the communities that somewhat matched
+    get_placename_matches(names, 200, 1, communities)
+    return communities, names
