@@ -4,7 +4,7 @@ from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
-from api.services.spreadsheet_uploader_prep import typo_checker
+from api.services.spreadsheet_uploader_prep import typo_checker, location_checker
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -160,6 +160,9 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
             typo_warnings = typo_checker(df, df['applicant_name'].dropna(), .8)
+            locations, names_from_spreadsheet = location_checker(df)
+            locations_set = set(locations)
+            names_without_match = [item for item in names_from_spreadsheet if item not in locations_set]
             if typo_warnings:
                 return {
                 "success": True,
