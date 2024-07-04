@@ -4,7 +4,6 @@ from api.bcngws_constants import FEATURES
 
 
 def get_placename_matches(names_list, page_size, start_index, result):
-    refined_result = result or []
     names_string = ", ".join(map(str, names_list))
 
     query = {
@@ -26,12 +25,10 @@ def get_placename_matches(names_list, page_size, start_index, result):
             if feature['properties']['featureType'] in FEATURES.features_list
         ]
 
-        refined_result.extend(filtered_names)
+        result.extend(filtered_names)
 
         if response['properties']['totalResults'] >= start_index + page_size:
-            refined_result = get_placename_matches(names_list, page_size, start_index + page_size, refined_result)
+            get_placename_matches(names_list, page_size, start_index + page_size, result)
 
     except requests.RequestException as e:
         print(f"Error fetching data: {e}")
-
-    return refined_result
