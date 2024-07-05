@@ -99,7 +99,6 @@ def prepare_go_electric_rebates(df):
     make_names_consistent(df)
     make_prepositions_consistent(df)
     adjust_ger_manufacturer_names(df)
-
     return df
 
 def format_case(s, case = 'skip', ignore_list = []):
@@ -208,8 +207,8 @@ def typo_checker(df, column, kwargs):
 
     """
     s = df[column].dropna()
-    header_row = kwargs["header"]
-    if not isinstance(s, pd.Series):
+    header_rows = kwargs["header"]
+    if isinstance(s, pd.Series) is False:
         raise Exception('Function argument "s" has to be Pandas Series type')
 
     if s.nunique() == 1:
@@ -271,7 +270,7 @@ def get_validation_error_rows(errors):
     return row_numbers
 
 def validate_phone_numbers(df, column, kwargs):
-
+    header_rows = kwargs["header"]
     phone_errors = {}
 
     area_codes = [
@@ -299,15 +298,23 @@ def validate_phone_numbers(df, column, kwargs):
             phone_errors[f"{index + 1}"] = "Had an empty phone number"
 
         elif len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
-            phone_errors[f"{index + 1}"] = f"Had an invalid phone number - '{number}'."
+            phone_errors[f"{index + header_rows + 1}"] = f"Had an invalid phone number - '{number}'."
 
     return 'phone_errors', phone_errors if phone_errors else None
 
-def location_checker(df):
-    # get list of unique locations from df
-    names =df['city'].unique()
+
+def location_checker(df, column, kwargs):
+    names_dict = df[column].to_dict()
+    header_rows = kwargs["header"]
     communities = []
-    # send request to api with list of names, returns all the communities that somewhat matched
-    get_placename_matches(names, 200, 1, communities)
-    return communities, names
+    # Send request to API with list of names, returns all the communities that somewhat matched
+    get_placename_matches(names_dict, 200, 1, communities)
+    locations_set = set(communities)
+    # Find names that don't have a match in the locations_set
+    names_without_match = {
+    row + header_rows + 1: f"{name} was not found in our geographic names dataset"
+    for row, name in names_dict.items()
+    if name not in locations_set
+}
+    return 'Location Not Found', names_without_match if names_without_match else None
 

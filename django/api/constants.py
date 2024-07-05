@@ -22,7 +22,8 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_scrap_it,
     prepare_go_electric_rebates,
     validate_phone_numbers,
-    typo_checker
+    typo_checker,
+    location_checker
 )
 
 
@@ -652,8 +653,9 @@ DATASET_CONFIG = {
         "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
         "validation_functions": [
-            {"error_type": "Phone Error", "function": validate_phone_numbers, "columns": "Phone Number", "kwargs": {}},
-            {"error_type": "Typo", "function": typo_checker, "columns": "Applicant Name", "kwargs": {"cutoff": 0.8, "header": 1}}
+            {"error_type": "Phone Error", "function": validate_phone_numbers, "columns": "Phone Number", "kwargs": {"header": 1}},
+            {"error_type": "Typo", "function": typo_checker, "columns": "Applicant Name", "kwargs": {"cutoff": 0.8, "header": 1}},
+            {"error_type": "Location Not Found", "function": location_checker, "columns": "City", "kwargs": {"header":1}}
             ]
     },
 }

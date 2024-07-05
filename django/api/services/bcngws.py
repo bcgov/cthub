@@ -3,8 +3,8 @@ from django.conf import settings
 from api.bcngws_constants import FEATURES
 
 
-def get_placename_matches(names_list, page_size, start_index, result):
-    names_string = ", ".join(map(str, names_list))
+def get_placename_matches(names_dict, page_size, start_index, result):
+    names_string = ", ".join(map(str, names_dict.values()))
 
     query = {
         'outputFormat': 'json',
@@ -28,7 +28,7 @@ def get_placename_matches(names_list, page_size, start_index, result):
         result.extend(filtered_names)
 
         if response['properties']['totalResults'] >= start_index + page_size:
-            get_placename_matches(names_list, page_size, start_index + page_size, result)
+            get_placename_matches(names_dict, page_size, start_index + page_size, result)
 
     except requests.RequestException as e:
         print(f"Error fetching data: {e}")
