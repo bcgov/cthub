@@ -207,8 +207,8 @@ def typo_checker(df, column, kwargs):
 
     """
     s = df[column].dropna()
-    header_rows = kwargs["header"]
-    if isinstance(s, pd.Series) is False:
+    header_row = kwargs["header"]
+    if not isinstance(s, pd.Series):
         raise Exception('Function argument "s" has to be Pandas Series type')
 
     if s.nunique() == 1:
