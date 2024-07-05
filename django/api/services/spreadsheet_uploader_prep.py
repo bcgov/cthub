@@ -199,47 +199,66 @@ def typo_checker(df, column, kwargs):
 
     Parameters
     ----------
-    s : Panda Series
     c : Similarity cutoff, higher is more similar
 
     Returns
     -------
     dict
-        A dictionary with similar words
+        A dictionary with grouped similar words and their line numbers
 
     """
     s = df[column].dropna()
-
-    if isinstance(s, pd.Series) is False:
+    header_row = kwargs["header"]
+    if not isinstance(s, pd.Series):
         raise Exception('Function argument "s" has to be Pandas Series type')
 
-    if s.unique().shape[0] == 1:
+    if s.nunique() == 1:
         raise Exception('Function argument "s" contains only one unique value, there is nothing to compare')
-    elif s.shape[0] == 0:
+    elif s.empty:
         raise Exception('Function argument "s" is empty, there is nothing to compare')
-    
-    unique_vals = list(set(s)) # Get all unique values from the series
-    unique_vals.sort(reverse=True) # Sort them to check for duplicates later
 
-    match_dict = {}
+    unique_vals = list(set(s))  # Get all unique values from the series
+    unique_vals.sort(reverse=True)  # Sort them to check for duplicates later
+
+    parent = {val: val for val in unique_vals}  # Union-find data structure
+
+    def find(val):
+        if parent[val] != val:
+            parent[val] = find(parent[val])
+        return parent[val]
+
+    def union(val1, val2):
+        root1 = find(val1)
+        root2 = find(val2)
+        if root1 != root2:
+            parent[root2] = root1
+
     for value in unique_vals:
-        cutoff = kwargs["cutoff"]
         matches = dl.get_close_matches(
-            value, # Value to compare
-            unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:], # All other values to compare value to
-            cutoff = cutoff # Similarity cutoff score, higher values mean more similar
+            value,  # Value to compare
+            unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:],  # All other values to compare value to
+            cutoff = kwargs["cutoff"]  # Similarity cutoff score, higher values mean more similar
         )
-    
-        if (len(matches) > 0) & (value not in sum(match_dict.values(), [])):
-            match_dict[value] = matches # Add value to the dictionary if it has matches and if it is not yet in the dictionary
-        else:
-            pass
 
-    if bool(match_dict) == True:
-        # If the dictionary is not empty, return it
-        return 'typo', match_dict
-    else:
-        print('No issues')
+        for match in matches:
+            union(value, match)
+
+    groups = {}
+    for value in unique_vals:
+        root = find(value)
+        if root not in groups:
+            groups[root] = {
+                'names': set(),
+                'lines': set()
+            }
+        groups[root]['names'].add(value)
+        groups[root]['lines'].update(s[s == value].index.tolist())
+
+    # Filter out groups that don't have any matches and adjust line numbers to start at 1 plus whatever the header is
+    filtered_groups = {", ".join(sorted([str(line + header_row + 1) for line in group['lines']])): sorted(group['names'])
+                   for group in groups.values() if len(group['names']) > 1}
+    return 'typos', filtered_groups if filtered_groups else None
+
 
 def get_validation_error_rows(errors):
     row_numbers = set()
@@ -291,3 +310,4 @@ def location_checker(df):
     # send request to api with list of names, returns all the communities that somewhat matched
     get_placename_matches(names, 200, 1, communities)
     return communities, names
+

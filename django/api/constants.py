@@ -653,7 +653,7 @@ DATASET_CONFIG = {
         "preparation_functions": [prepare_go_electric_rebates],
         "validation_functions": [
             {"error_type": "Phone Error", "function": validate_phone_numbers, "columns": "Phone Number", "kwargs": {}},
-            {"error_type": "Typo", "function": typo_checker, "columns": "Applicant Name", "kwargs": {"cutoff": 0.8}}
+            {"error_type": "Typo", "function": typo_checker, "columns": "Applicant Name", "kwargs": {"cutoff": 0.8, "header": 1}}
             ]
     },
 }
