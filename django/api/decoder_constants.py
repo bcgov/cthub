@@ -1,4 +1,3 @@
-import os
 from enum import Enum
 from functools import partial
 from api.models.decoded_vin_record import VpicDecodedVinRecord, VinpowerDecodedVinRecord
