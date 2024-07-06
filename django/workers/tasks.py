@@ -37,8 +37,7 @@ def read_uploaded_vins_file():
                 pass
 
 
-@transaction.atomic
-@timeout(45)
+@timeout(90)
 def batch_decode_vins(service_name, batch_size=50):
     max_decode_attempts = settings.MAX_DECODE_ATTEMPTS
     service = get_service(service_name)

@@ -13,7 +13,7 @@ def timeout(time):
 
             def throw_timeout():
                 ctypes.pythonapi.PyThreadState_SetAsyncExc(
-                    ctypes.c_long(current_thread_id),
+                    ctypes.c_ulong(current_thread_id),
                     ctypes.py_object(TaskTimeoutException),
                 )
 
