@@ -48,6 +48,8 @@ jobs:
 
       - name: Check out repository
         uses: actions/checkout@v4.1.1
+        with: 
+          ref: spring-build-0.3.0
 
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
