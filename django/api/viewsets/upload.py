@@ -49,7 +49,7 @@ class UploadViewset(GenericViewSet):
     def import_data(self, request):
         filename = request.data.get("filename")
         dataset_selected = request.data.get("datasetSelected")
-        replace_data = request.data.get("replace", False)
+        replace_data = request.data.get("replaceData", False)
         filepath = request.data.get("filepath")
         check_for_warnings = request.data.get("checkForWarnings")
         #boolean, if true show warnings before inserting data
