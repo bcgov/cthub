@@ -2,7 +2,7 @@ from datetime import datetime
 import pandas as pd
 from django.utils import timezone
 from api.models.uploaded_vin_record import UploadedVinRecord
-from api.decoder_constants import get_service
+from api.constants.decoder import get_service
 
 
 def parse_and_save(uploaded_vins_file, file_response):

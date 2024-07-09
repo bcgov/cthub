@@ -1,8 +1,10 @@
 from decimal import Decimal
-import numpy as np
 import pandas as pd
 import difflib as dl
 from api.services.bcngws import get_placename_matches
+from email_validator import validate_email, EmailNotValidError
+from api.utilities.series import get_map_of_values_to_indices
+from api.constants.misc import AREA_CODES
 
 def prepare_arc_project_tracking(df):
     df["Publicly Announced"] = df["Publicly Announced"].replace(
@@ -192,71 +194,28 @@ def adjust_ger_manufacturer_names(df):
     df[['Manufacturer']] = df[['Manufacturer']].replace(name_replacements, regex=False)
 
 
-def typo_checker(df, column, kwargs):
-    """
-    Check for similar words in a single Pandas Series.
+def typo_checker(df, *columns, **kwargs):
+    result = {}
+    for column in columns:
+        indices = []
+        series = df[column]
+        unique_vals = set(series)
 
-    Parameters
-    ----------
-    c : Similarity cutoff, higher is more similar
-
-    Returns
-    -------
-    dict
-        A dictionary with grouped similar words and their line numbers
-
-    """
-    s = df[column].dropna()
-    header_row = kwargs["header"]
-    if not isinstance(s, pd.Series):
-        raise Exception('Function argument "s" has to be Pandas Series type')
-
-    if s.nunique() == 1:
-        raise Exception('Function argument "s" contains only one unique value, there is nothing to compare')
-    elif s.empty:
-        raise Exception('Function argument "s" is empty, there is nothing to compare')
-
-    unique_vals = list(set(s))  # Get all unique values from the series
-    unique_vals.sort(reverse=True)  # Sort them to check for duplicates later
-
-    parent = {val: val for val in unique_vals}  # Union-find data structure
-
-    def find(val):
-        if parent[val] != val:
-            parent[val] = find(parent[val])
-        return parent[val]
-
-    def union(val1, val2):
-        root1 = find(val1)
-        root2 = find(val2)
-        if root1 != root2:
-            parent[root2] = root1
-
-    for value in unique_vals:
-        matches = dl.get_close_matches(
-            value,  # Value to compare
-            unique_vals[:unique_vals.index(value)] + unique_vals[unique_vals.index(value)+1:],  # All other values to compare value to
-            cutoff = kwargs["cutoff"]  # Similarity cutoff score, higher values mean more similar
-        )
-
-        for match in matches:
-            union(value, match)
-
-    groups = {}
-    for value in unique_vals:
-        root = find(value)
-        if root not in groups:
-            groups[root] = {
-                'names': set(),
-                'lines': set()
-            }
-        groups[root]['names'].add(value)
-        groups[root]['lines'].update(s[s == value].index.tolist())
-
-    # Filter out groups that don't have any matches and adjust line numbers to start at 1 plus whatever the header is
-    filtered_groups = {", ".join(sorted([str(line + header_row + 1) for line in group['lines']])): sorted(group['names'])
-                   for group in groups.values() if len(group['names']) > 1}
-    return 'typos', filtered_groups if filtered_groups else None
+        map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
+        for value in unique_vals:
+            singleton = set()
+            singleton.add(value)
+            matches = dl.get_close_matches(
+                value,
+                unique_vals.difference(singleton),
+                cutoff = kwargs["cutoff"]
+            )
+            if matches:
+                indices_to_add = map_of_values_to_indices[value]
+                indices.extend(indices_to_add)
+        if indices:
+            result[column] = sorted(list(set(indices)))
+    return result
 
 
 def get_validation_error_rows(errors):
@@ -269,52 +228,52 @@ def get_validation_error_rows(errors):
             continue
     return row_numbers
 
-def validate_phone_numbers(df, column, kwargs):
-    header_rows = kwargs["header"]
-    phone_errors = {}
 
-    area_codes = [
-        587, 368, 403, 825, 780,  # Alberta
-        236, 672, 604, 778, 250,  # British Columbia
-        584, 431, 204,            # Manitoba
-        506,                      # New Brunswick
-        709,                      # Newfoundland
-        867,                      # Northwest Territories
-        782, 902,                 # Nova Scotia
-        867,                      # Nunavut
-        365, 226, 647, 519, 289, 742, 807, 548, 753, 249, 683, 437, 905, 343, 613, 705, 416,  # Ontario
-        782, 902,                 # Prince Edward Island
-        450, 418, 873, 468, 367, 819, 579, 581, 438, 354, 514, 263,  # Quebec
-        306, 474, 639,            # Saskatchewan
-        867                       # Yukon
-    ]
-
-    for index, row in df.iterrows():
-
-        number = row[column]
-        formatted_number = str(number).strip().replace('-', '')
-
-        if formatted_number == '':
-            phone_errors[f"{index + 1}"] = "Had an empty phone number"
-
-        elif len(formatted_number) != 10 or int(formatted_number[:3]) not in area_codes:
-            phone_errors[f"{index + header_rows + 1}"] = f"Had an invalid phone number - '{number}'."
-
-    return 'phone_errors', phone_errors if phone_errors else None
+def validate_phone_numbers(df, *columns, **kwargs):
+    result = {}
+    for column in columns:
+        indices = []
+        series = df[column]
+        for index, phone_number in series.items():
+            formatted_number = str(phone_number).strip().replace('-', '')
+            if formatted_number == '' or len(formatted_number) != 10 or int(formatted_number[:3]) not in AREA_CODES:
+                indices.append(index + kwargs.get("indices_offset", 0))
+        if indices:
+            result[column] = indices
+    return result
 
 
-def location_checker(df, column, kwargs):
-    names_dict = df[column].to_dict()
-    header_rows = kwargs["header"]
-    communities = []
-    # Send request to API with list of names, returns all the communities that somewhat matched
-    get_placename_matches(names_dict, 200, 1, communities)
-    locations_set = set(communities)
-    # Find names that don't have a match in the locations_set
-    names_without_match = {
-    row + header_rows + 1: f"{name} was not found in our geographic names dataset"
-    for row, name in names_dict.items()
-    if name not in locations_set
-}
-    return 'Location Not Found', names_without_match if names_without_match else None
+def location_checker(df, *columns, **kwargs):
+    result = {}
+    for column in columns:
+        indices = []
+        series = df[column]
+        map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
+        values = series.to_list()
+        unique_values = set(series)
 
+        communities = set()
+        # populate communities by calling the bcngws API with the values:
+        get_placename_matches(values, 200, 1, communities)
+        names_without_match = unique_values.difference(communities)
+        for name in names_without_match:
+            indices_to_add = map_of_values_to_indices[name]
+            indices.extend(indices_to_add)
+        if indices:
+            result[column] = sorted(list(set(indices)))
+    return result
+
+
+def email_validator(df, *columns, **kwargs):
+    result = {}
+    for column in columns:
+        indices = []
+        series = df[column]
+        for index, value in series.items():
+            try:
+                validate_email(value)
+            except EmailNotValidError:
+                indices.append(index + kwargs.get("indices_offset", 0))
+        if indices:
+            result[column] = indices
+    return result

@@ -1,5 +1,5 @@
 from api.models.uploaded_vin_record import UploadedVinRecord
-from api.decoder_constants import get_service
+from api.constants.decoder import get_service
 from api.services.uploaded_vin_record import (
     set_decode_successful,
     get_number_of_decode_attempts,

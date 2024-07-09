@@ -8,6 +8,7 @@ import AlertDialog from "../app/components/AlertDialog";
 import UsersContainer from "../users/UsersContainer";
 import Loading from "../app/components/Loading";
 import useAxios from "../app/utilities/useAxios";
+import WarningsList from "./components/WarningsList";
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
@@ -100,14 +101,17 @@ const UploadContainer = () => {
           .join("\n");
           setAlert(true);
           setAlertContent(message);
-          const warnings = responses
-            .map(
-              (response) =>
-                response.data.warnings ? response.data.warnings: ""
-            )
+          const warnings = {}
+          for (const [index, response] of responses.entries()) {
+            const filename = uploadFiles[index].name
+            const responseWarnings = response.data.warnings
+            if (responseWarnings) {
+              warnings[filename] = responseWarnings
+            }
+          }
           setAlertContent(message);
 
-          if (warnings && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
+          if (Object.keys(warnings).length > 0 && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
             setOpenDialog(true)
             setAlertDialogText({
               title: "Warning: There are errors in the data to review",
@@ -118,33 +122,7 @@ const UploadContainer = () => {
                     Click continue to insert these records as is, or click cancel
                     to exit out and no records will be inserted:
                   </p>
-                  {
-                    <div>
-                    {warnings.map((warning, index) => (
-                      <div key={index}>
-                        {Object.keys(warning).map((key) => {
-                          const warningValue = warning[key];
-                          if (typeof warningValue === "object") {
-                            if(Array.isArray(Object.values(warningValue)[0])){
-                              return Object.keys(warningValue).map((company, idx) => (
-                                <div key={idx}>
-                                  <strong>{company}:</strong> {warningValue[company].join(', ')}
-                                </div>
-                              ));
-                            }
-                            else{
-                              return Object.keys(warningValue).map((key, idx) => (
-                                <div key={idx}>
-                                  <strong>{key}:</strong> {warningValue[key]}
-                                </div>
-                              ));
-                            }
-                          }
-                        })}
-                      </div>
-                    ))}
-                  </div>
-                  }
+                  <WarningsList warnings={warnings} />
                 </div>
                 </>
             ),

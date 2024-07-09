@@ -1,6 +1,6 @@
 import pandas as pd
 from io import BytesIO
-from api.constants import *
+from api.constants.constants import *
 
 
 def generate_template(dataset_name):
