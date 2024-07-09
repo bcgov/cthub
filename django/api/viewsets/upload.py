@@ -15,7 +15,7 @@ from api.serializers.datasets import DatasetsSerializer
 from api.services.minio import minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
-import api.constants as constants
+import api.constants.constants as constants
 from api.services.spreadsheet_uploader_prep import *
 from api.services.uploaded_vins_file import create_vins_file
 

@@ -2,7 +2,7 @@ from django.conf import settings
 from api.services.minio import get_minio_client, get_minio_object
 from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
-from api.decoder_constants import get_service
+from api.constants.decoder import get_service
 from api.utilities.generic import get_map
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save

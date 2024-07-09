@@ -1,10 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
-from rest_framework.response import Response
-from rest_framework import status
 import pandas as pd
 import traceback
 from django.db import transaction
-from api.services.spreadsheet_uploader_prep import location_checker
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -63,7 +60,7 @@ def transform_data(
         columns = x["columns"]
         kwargs = x["kwargs"]
         key = x["error_type"]
-        key, errors = validate(df, columns, kwargs)
+        errors = validate(df, *columns, **kwargs)
         if errors:
             validation_errors[key] = errors
 
