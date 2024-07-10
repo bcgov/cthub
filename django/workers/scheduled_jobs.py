@@ -47,7 +47,7 @@ def schedule_batch_decode_vins_vinpower():
         schedule(
             "workers.tasks.batch_decode_vins",
             "vinpower",
-            2000,
+            1000,
             name="vinpower_batch_decode_vins",
             schedule_type="C",
             cron="*/2 * * * *",
