@@ -24,6 +24,7 @@ from api.services.spreadsheet_uploader_prep import (
     location_checker,
     email_validator
 )
+from api.services.resolvers import get_google_resolver
 
 
 class ARCProjectTrackingColumns(Enum):
@@ -655,7 +656,7 @@ DATASET_CONFIG = {
             {"error_type": "Phone Error", "function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
             {"error_type": "Potential Typo", "function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
             {"error_type": "Location Not Found", "function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
-            {"error_type": "Invalid Email", "function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2}}
+            {"error_type": "Invalid Email", "function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}}
         ]
     },
 }

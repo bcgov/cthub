@@ -24,4 +24,5 @@ openpyxl==3.0.9
 minio==7.1.1
 xlsxwriter==3.2.0
 xmltodict==0.13.0
+dnspython==2.6.1
 email-validator==2.2.0
