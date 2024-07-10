@@ -52,9 +52,11 @@ def batch_decode_vins(service_name, batch_size=50):
             service.NUMBER_OF_CURRENT_DECODE_ATTEMPTS.value,
             "create_timestamp",
         ]
-        uploaded_vin_records = UploadedVinRecord.objects.filter(**filters).order_by(
-            *order_by
-        )[:batch_size]
+        uploaded_vin_records = (
+            UploadedVinRecord.objects.defer("data")
+            .filter(**filters)
+            .order_by(*order_by)[:batch_size]
+        )
         uploaded_vins = set()
         for uploaded_record in uploaded_vin_records:
             uploaded_vins.add(uploaded_record.vin)
