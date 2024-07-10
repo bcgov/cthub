@@ -16,3 +16,4 @@ build/*
 .vscode
 _site/
 *.css
+libs/*

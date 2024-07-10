@@ -211,8 +211,13 @@ def typo_checker(df, *columns, **kwargs):
                 cutoff = kwargs["cutoff"]
             )
             if matches:
-                indices_to_add = map_of_values_to_indices[value]
-                indices.extend(indices_to_add)
+                value_indices = map_of_values_to_indices[value]
+                indices.extend(value_indices)
+                # it appears that difflib's "is similar" predicate S is not symmetric (i.e. aSb does not imply bSa)
+                # so we have to do:
+                for match in matches:
+                    match_indices = map_of_values_to_indices[match]
+                    indices.extend(match_indices)
         if indices:
             result[column] = sorted(list(set(indices)))
     return result
@@ -260,18 +265,23 @@ def location_checker(df, *columns, **kwargs):
             indices_to_add = map_of_values_to_indices[name]
             indices.extend(indices_to_add)
         if indices:
-            result[column] = sorted(list(set(indices)))
+            indices.sort()
+            result[column] = indices
     return result
 
 
 def email_validator(df, *columns, **kwargs):
+    resolver = None
+    get_resolver = kwargs.get("get_resolver")
+    if get_resolver is not None:
+        resolver = get_resolver()
     result = {}
     for column in columns:
         indices = []
         series = df[column]
         for index, value in series.items():
             try:
-                validate_email(value)
+                validate_email(value, dns_resolver=resolver)
             except EmailNotValidError:
                 indices.append(index + kwargs.get("indices_offset", 0))
         if indices:

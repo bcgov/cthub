@@ -26,4 +26,4 @@ RUN ./mvnw dependency:resolve
 
 COPY src ./src
 
-CMD ["./mvnw", "-Denvironment=localDev", "spring-boot:run"]
+CMD ["./mvnw", "-Denvironment=production", "spring-boot:run"]
