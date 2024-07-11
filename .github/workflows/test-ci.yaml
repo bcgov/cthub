@@ -70,6 +70,7 @@ jobs:
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          oc tag ${{ env.DEV_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
   
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
@@ -81,17 +82,11 @@ jobs:
       - name: Update frontend tag
         uses: mikefarah/yq@v4.40.5
         with:
-            cmd: yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-
-      - name: Update backend tag
-        uses: mikefarah/yq@v4.40.5
-        with:
-            cmd: yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-
-      - name: Update task-queue tag
-        uses: mikefarah/yq@v4.40.5
-        with:
-            cmd: yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+            cmd: |
+              yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+              yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+              yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
 
       - name: GitHub Commit & Push
         run: |
