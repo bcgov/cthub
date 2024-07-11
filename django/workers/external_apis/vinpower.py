@@ -14,7 +14,7 @@ def batch_decode(uploaded_vin_records):
         vins.append(record.vin)
     headers = {"content-type": "application/json"}
     response = requests.get(url, data=json.dumps(vins), headers=headers)
-    response.raise_for_status
+    response.raise_for_status()
 
     data = response.json()
     for vin in vins:
