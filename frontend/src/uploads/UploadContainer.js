@@ -9,6 +9,7 @@ import UsersContainer from "../users/UsersContainer";
 import Loading from "../app/components/Loading";
 import useAxios from "../app/utilities/useAxios";
 import WarningsList from "./components/WarningsList";
+import UploadIssues from "./components/UploadIssues";
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
@@ -23,16 +24,42 @@ const UploadContainer = () => {
   const [alertSeverity, setAlertSeverity] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
-  const axios = useAxios();
-  const axiosDefault = useAxios(true);
-  const [dataWarning, setDataWarning] = useState({})
+  const [uploadIssueArray, setUploadIssueArray] = useState(
+    [{"Column": "Date",
+    "Error Type": "The date must be in the proper format",
+    "Expected Format": "YYYY-MM-DD", 
+    "Severity": "Error",
+    "Rows": [1,2,3],
+   },
+{   "Column": "Applicant Name",
+    "Error Type": "contains null values ",
+    "Expected Format": "Smith, John", 
+    "Severity": "Error",
+    "Rows": [4,6]
+  },
+{    "Column": "Phone",
+    "Error Type": "phone number not formatted correctly ",
+    "Expected Format": "213-1234-1231",
+    "Severity": "Warning",
+    "Rows": [7,8,9]
+   },
+{    "Column": "Company Name",
+    "Error Type": "contains null values ",
+    "Expected Format": "Smith, John",  
+    "Severity": "Warning",
+    "Rows": [9, 12,13, 14,15,16,17,28,27,43,23,2323,23,23,65,342,23,7,56,53,56,67,78,89,45,3,2,1, 54, 56, 76,78,79,90,34,23,22,21,255,26,27,27,28]
+   }
+  ]);
   const [alertDialogText, setAlertDialogText] = useState({
     title: "",
     content: "",
     confirmText: "",
     confirmAction: ()=>{},
     cancelAction: ()=>{},
+    cancelText: "cancel"
   })
+  const axios = useAxios();
+  const axiosDefault = useAxios(true);
   const refreshList = () => {
     setRefresh(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
@@ -112,24 +139,31 @@ const UploadContainer = () => {
           setAlertContent(message);
 
           if (Object.keys(warnings).length > 0 && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
-            setOpenDialog(true)
+            
+            //popup for showing issues
             setAlertDialogText({
-              title: "Warning: There are errors in the data to review",
+              title: "Your file has been processed and contains the following errors and warnings!",
               content:(
                 <>
                 <div>
-                  <p>
-                    Click continue to insert these records as is, or click cancel
-                    to exit out and no records will be inserted:
-                  </p>
-                  <WarningsList warnings={warnings} />
+                  {/* {*errors* &&  */}
+                    <p>
+                      <span className="error">48 Errors </span>- Must fix before uploading
+                    </p>
+                  {/* } */}
+                  {/* {*warnings* &&  */}
+                    <p>
+                      <span className="warning">14 Warnings </span>- Can upload without fixing
+                    </p>
+                  {/* } */}
                 </div>
                 </>
             ),
-              confirmText: "Continue (all records will be inserted as is)", 
-              confirmAction: handleConfirmDataInsert,
-              cancelAction: handleReplaceDataCancel,
-            })}
+              cancelText: "View Details", 
+              cancelAction: ()=> setOpenDialog(false),
+            })
+          setOpenDialog(true)
+          }
 
           setUploadFiles([]);
         })
@@ -170,6 +204,7 @@ const UploadContainer = () => {
     const choice = event.target.value;
     if (choice === "replace") {
       setOpenDialog(true);
+      //popup for replacing data
       setAlertDialogText({
         title: "Replace existing data?",
         content: "Selecting replace will delete all previously uploaded records for this dataset",
@@ -205,8 +240,8 @@ const UploadContainer = () => {
     return <Loading />;
   }
 
-
   const alertElement =
+  //on page alert
     alert && alertContent && alertSeverity ? (
       <Alert severity={alertSeverity}>
         {alertContent.split("\n").map((line, index) => (
@@ -218,22 +253,30 @@ const UploadContainer = () => {
       </Alert>
     ) : null;
 
-
+   //on page alert
+    // alert && alertContent && alertSeverity ? (
+    //   <UploadIssues alertSeverity={alertSeverity} alertContent={alertContent}/>
+    // ) : null;
   return (
     <div className="row">
       <div className="col-12 mr-2">
         <>
+        {uploadIssueArray &&
+          <UploadIssues issues={uploadIssueArray}/>
+        }
           <AlertDialog
+          // popup
             open={openDialog}
             title={alertDialogText.title}
             dialogue={
               alertDialogText.content
             }
-            cancelText={"Cancel"}
+            cancelText={alertDialogText.cancelText}
             handleCancel={alertDialogText.cancelAction}
             confirmText={alertDialogText.confirmText}
             handleConfirm={alertDialogText.confirmAction}
           />
+  
           <Stack direction="column" spacing={2}>
             <Paper square variant="outlined">
               <UploadPage

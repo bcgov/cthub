@@ -14,6 +14,8 @@ $default-link-blue: #568dba;
 $default-background-grey: #f2f2f2;
 $md: 991px;
 $button-background-blue: #003366;
+$error-red: #ce3e39;
+$warning-yellow: #fcba19;
 
 .App {
   background-color: $default-background-grey;
@@ -110,3 +112,15 @@ h4 {
 .page-content {
   flex-grow: 1;
 }
+
+.error {
+  color: $error-red;
+
+}
+.warning {
+  color: $warning-yellow;
+;
+}
+.showMore {
+  color: $default-link-blue;
+  text-decoration: underline;}
