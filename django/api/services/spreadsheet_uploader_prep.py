@@ -298,7 +298,7 @@ def validate_field_values(df, *columns, **kwargs):
             indices = []
             series = df[column]
             for index, value in series.items():
-                if str(value) not in allowed_values[column]:
+                if str(value) not in allowed_values[column] and value != '' and value != None and not pd.isna(value):
                     indices.append(index + kwargs.get("indices_offset", 0))
             if indices:
                 result[column] = indices

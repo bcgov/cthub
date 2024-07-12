@@ -12,11 +12,11 @@ def get_field_default(model, field):
 
 
 def get_nullable_fields(model):
-    nullable_fields = {}
+    nullable_fields = []
 
     for field in model._meta.get_fields():
         if hasattr(field, "null") and field.null:
-            nullable_fields[field.name] = True
+            nullable_fields.append(field.name)
     return nullable_fields
 
 
@@ -28,7 +28,6 @@ def trim_all_columns(df):
 def extract_data(excel_file, sheet_name, header_row):
     try:
         df = pd.read_excel(excel_file, sheet_name, header=header_row)
-        df = df.fillna('TEMP_NULL')
         df = trim_all_columns(df)
         return df
     except Exception as e:
@@ -92,7 +91,15 @@ def load_data(df, model, field_types, replace_data, user, validation_errors):
             expected_type = field_types.get(column)
             is_nullable = column in nullable_fields
 
-            if expected_type in [int, float, Decimal] and value != 'TEMP_NULL':
+            if pd.isna(value) or value == "" or value is None:
+                if is_nullable:
+                    row_dict[column] = None
+                else:
+                    errors.append(f"Row {index + 1}: Has an empty cell where one is expected in '{column}'")
+                    valid_row = False
+                    continue
+
+            if expected_type in [int, float, Decimal] and value != None and pd.notna(value):
                 value = str(value).replace(',', '').strip()
                 try:
                     if expected_type == int:
@@ -107,12 +114,6 @@ def load_data(df, model, field_types, replace_data, user, validation_errors):
                     )
                     valid_row = False
                     continue
-
-            if pd.isna(value) or value == "" or value == 'TEMP_NULL':
-                if is_nullable:
-                    row_dict[column] = None
-                else:
-                    row_dict[column] = get_field_default(model, column)
 
             elif not isinstance(row_dict[column], expected_type) and value != "":
                 errors.append(
@@ -200,6 +201,7 @@ def import_from_xls(
                 "errors": result["errors"],
                 "rows_processed": result["row_count"],
             }
+        
         else:
             return {
                 "success": True,
