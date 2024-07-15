@@ -2,6 +2,8 @@ import requests
 from django.conf import settings
 from api.constants.misc import RELEVANT_FEATURES
 
+# names should be a list of location names, page_size should be an integer >=1, <=200
+# start_index should be an integer, result should be a set
 def get_placename_matches(names, page_size, start_index, result):
     names_string = ", ".join(names)
 
@@ -14,6 +16,7 @@ def get_placename_matches(names, page_size, start_index, result):
 
     try:
         response = requests.get(settings.PLACENAMES_ENDPOINT, params=query)
+        response.raise_for_status()
         response = response.json()
 
         for feature in response["features"]:
