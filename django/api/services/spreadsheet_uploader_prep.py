@@ -248,7 +248,7 @@ def validate_phone_numbers(df, *columns, **kwargs):
     return result
 
 
-def location_checker(df, *columns, **kwargs):
+def location_checker(df, *columns, batch_size=50, **kwargs):
     result = {}
     for column in columns:
         indices = []
@@ -258,8 +258,12 @@ def location_checker(df, *columns, **kwargs):
         unique_values = set(series)
 
         communities = set()
-        # populate communities by calling the bcngws API with the values:
-        get_placename_matches(values, 200, 1, communities)
+        for i in range(0, len(values), batch_size):
+            batch_values = values[i:i + batch_size]
+            # Send request to API with list of names, returns all the communities that somewhat matched
+            get_placename_matches(batch_values, 200, 1, communities)
+
+        # Find names that don't have a match in the locations_set
         names_without_match = unique_values.difference(communities)
         for name in names_without_match:
             indices_to_add = map_of_values_to_indices[name]
@@ -267,6 +271,7 @@ def location_checker(df, *columns, **kwargs):
         if indices:
             indices.sort()
             result[column] = indices
+            
     return result
 
 
