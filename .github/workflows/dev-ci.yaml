@@ -113,7 +113,7 @@ jobs:
         with:
             cmd: |
               yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
-              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml]
+              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
               yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
               yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
 

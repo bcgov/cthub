@@ -3,7 +3,7 @@ from api.services.minio import get_minio_client, get_minio_object
 from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
 from api.constants.decoder import get_service
-from api.utilities.generic import get_map
+from api.utilities.generic import get_unified_map
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
 from django.db import transaction
@@ -61,10 +61,14 @@ def batch_decode_vins(service_name, batch_size=50):
         for uploaded_record in uploaded_vin_records:
             uploaded_vins.add(uploaded_record.vin)
         vins_to_update = set()
-        decoded_records_to_update_map = get_map(
-            "vin", decoded_vin_model.objects.filter(vin__in=uploaded_vins)
+        vins_to_decoded_record_ids_map = get_unified_map(
+            "vin",
+            "id",
+            decoded_vin_model.objects.only("id", "vin")
+            .filter(vin__in=uploaded_vins)
+            .values(),
         )
-        for decoded_vin in decoded_records_to_update_map:
+        for decoded_vin in vins_to_decoded_record_ids_map:
             vins_to_update.add(decoded_vin)
         vins_to_insert = uploaded_vins.difference(vins_to_update)
 
@@ -74,7 +78,7 @@ def batch_decode_vins(service_name, batch_size=50):
         save_decoded_data(
             uploaded_vin_records,
             vins_to_insert,
-            decoded_records_to_update_map,
+            vins_to_decoded_record_ids_map,
             service_name,
             decoded_data,
         )

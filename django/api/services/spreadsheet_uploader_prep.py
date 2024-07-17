@@ -287,3 +287,20 @@ def email_validator(df, *columns, **kwargs):
         if indices:
             result[column] = indices
     return result
+
+def validate_field_values(df, *columns, **kwargs):
+
+    allowed_values = kwargs.get("fields_and_values")
+
+    result = {}
+    for column in df.columns:
+        if column in allowed_values:
+            indices = []
+            series = df[column]
+            for index, value in series.items():
+                if str(value) not in allowed_values[column] and value != '' and value != None and not pd.isna(value):
+                    indices.append(index + kwargs.get("indices_offset", 0))
+            if indices:
+                result[column] = indices
+    
+    return result
