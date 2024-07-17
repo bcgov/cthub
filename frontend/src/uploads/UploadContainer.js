@@ -24,42 +24,21 @@ const UploadContainer = () => {
   const [alertSeverity, setAlertSeverity] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
-  const [uploadIssueArray, setUploadIssueArray] = useState(
-    [{"Column": "Date",
-    "Error Type": "The date must be in the proper format",
-    "Expected Format": "YYYY-MM-DD", 
-    "Severity": "Error",
-    "Rows": [1,2,3],
-   },
-{   "Column": "Applicant Name",
-    "Error Type": "contains null values ",
-    "Expected Format": "Smith, John", 
-    "Severity": "Error",
-    "Rows": [4,6]
-  },
-{    "Column": "Phone",
-    "Error Type": "phone number not formatted correctly ",
-    "Expected Format": "213-1234-1231",
-    "Severity": "Warning",
-    "Rows": [7,8,9]
-   },
-{    "Column": "Company Name",
-    "Error Type": "contains null values ",
-    "Expected Format": "Smith, John",  
-    "Severity": "Warning",
-    "Rows": [9, 12,13, 14,15,16,17,28,27,43,23,2323,23,23,65,342,23,7,56,53,56,67,78,89,45,3,2,1, 54, 56, 76,78,79,90,34,23,22,21,255,26,27,27,28]
-   }
-  ]);
+  const [totalIssueCount, setTotalIssueCount] = useState({});
+  const [groupedErrors, setGroupedErrors] = useState({});
+  const [groupedWarnings, setGroupedWarnings] = useState({});
   const [alertDialogText, setAlertDialogText] = useState({
     title: "",
     content: "",
     confirmText: "",
-    confirmAction: ()=>{},
-    cancelAction: ()=>{},
-    cancelText: "cancel"
-  })
+    confirmAction: () => {},
+    cancelAction: () => {},
+    cancelText: "cancel",
+  });
+
   const axios = useAxios();
   const axiosDefault = useAxios(true);
+
   const refreshList = () => {
     setRefresh(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
@@ -78,26 +57,80 @@ const UploadContainer = () => {
     });
   };
 
+  const groupAndCountRows = (issueArray) => {
+    const groupedErrors = {};
+    const groupedWarnings = {};
+    const totalIssueCount = {
+      errors: 0,
+      warnings: 0,
+    };
+
+    issueArray.forEach((issue) => {
+      const column = Object.keys(issue)[0];
+      const errorDetails = issue[column];
+
+      Object.keys(errorDetails).forEach((errorType) => {
+        const severity = errorDetails[errorType].Severity;
+        const expectedType = errorDetails[errorType]["Expected Type"];
+        const expectedFormat = errorDetails[errorType]["Expected Format"];
+        const rows = errorDetails[errorType].Rows;
+        const rowCount = rows.length;
+
+        if (severity === "Error") {
+          totalIssueCount.errors += rowCount;
+          if (!groupedErrors[column]) {
+            groupedErrors[column] = {};
+          }
+          if (!groupedErrors[column][errorType]) {
+            groupedErrors[column][errorType] = {
+              ExpectedType: expectedType,
+              Rows: rows,
+            };
+          }
+        } else if (severity === "Warning") {
+          totalIssueCount.warnings += rowCount;
+          if (!groupedWarnings[column]) {
+            groupedWarnings[column] = {};
+          }
+          if (!groupedWarnings[column][errorType]) {
+            groupedWarnings[column][errorType] = {
+              ExpectedFormat: expectedFormat,
+              Rows: rows,
+            };
+          }
+        }
+      });
+    });
+
+    return { groupedErrors, groupedWarnings, totalIssueCount };
+  };
+
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent("There was an issue uploading the file.")
+    setAlertContent("There was an issue uploading the file.");
     if (errorResponse && errorResponse.data && errorResponse.data.message) {
       setAlertContent(
         `${errorResponse.data.message}\n${errorResponse.data.errors ? "Errors: " + errorResponse.data.errors.join("\n") : ""}`,
-      )
-    } else if (errorResponse && errorResponse.data && errorResponse.status === 403) {
-      setAlertContent("There was an error. Please refresh page and ensure you are logged in.")
+      );
+    } else if (
+      errorResponse &&
+      errorResponse.data &&
+      errorResponse.status === 403
+    ) {
+      setAlertContent(
+        "There was an error. Please refresh page and ensure you are logged in.",
+      );
     }
     setAlertSeverity("error");
     setAlert(true);
   };
 
-  const doUpload = (checkForWarnings) =>
+  const doUpload = (checkForWarnings) => {
     uploadFiles.forEach((file) => {
       let filepath = file.path;
-      setLoading(true);   
-      if (datasetSelected !== 'Go Electric Rebates Program'){
-        checkForWarnings = false
+      setLoading(true);
+      if (datasetSelected !== "Go Electric Rebates Program") {
+        checkForWarnings = false;
       }
       const uploadPromises = uploadFiles.map((file) => {
         return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
@@ -108,7 +141,7 @@ const UploadContainer = () => {
               datasetSelected,
               replaceData,
               filepath,
-              checkForWarnings
+              checkForWarnings,
             });
           });
         });
@@ -121,51 +154,98 @@ const UploadContainer = () => {
 
           setAlertSeverity(errorCheck ? "success" : "error");
           const message = responses
-          .map(
-            (response) =>
-            `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
-          )
-          .join("\n");
+            .map(
+              (response) =>
+                `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
+            )
+            .join("\n");
           setAlert(true);
           setAlertContent(message);
-          const warnings = {}
+          const warnings = {};
           for (const [index, response] of responses.entries()) {
-            const filename = uploadFiles[index].name
-            const responseWarnings = response.data.warnings
+            const filename = uploadFiles[index].name;
+            const responseWarnings = response.data.warnings;
             if (responseWarnings) {
-              warnings[filename] = responseWarnings
+              warnings[filename] = responseWarnings;
             }
           }
           setAlertContent(message);
 
-          if (Object.keys(warnings).length > 0 && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
-            
+          if (Object.keys(warnings).length > 0 && checkForWarnings === true) {
+            // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
+            const fakeResponse = [
+              {
+                // 'Applicant Name': {
+                //   "blank": {
+                //     "Expected Type": "must not be blank",
+                //     Severity: "Error",
+                //     Rows: [
+                //       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                //       18, 19, 20, 21, 22, 23, 24,
+                //     ],
+                //   },
+                // },
+                'Phone': {
+                  "phone number not formatted correctly": {
+                    "Expected Type": "213-1234-1231",
+                    Severity: "Warning",
+                    Rows: [
+                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                      18, 19, 20, 21, 22, 23, 24,
+                    ],
+                  },
+                },
+              },
+              {
+                "Company Name": {
+                  "contains null values": {
+                    "Expected Format": "Smith, John",
+                    Severity: "Warning",
+                    Rows: [
+                      9, 12, 13, 14, 15, 16, 17, 28, 27, 43, 23, 2323, 24, 25,
+                      65, 342, 23, 7, 56, 53, 56, 67, 78, 89, 45, 3, 2, 1, 54,
+                      56, 76, 78, 79, 90, 34, 23, 22, 21, 255, 26, 27, 27, 28,
+                    ],
+                  },
+                },
+              },
+            ];
+            // Call groupAndCountRows to get data and pass to state
+            const { groupedErrors, groupedWarnings, totalIssueCount } =
+              groupAndCountRows(fakeResponse);
+            setGroupedErrors(groupedErrors);
+            setGroupedWarnings(groupedWarnings);
+            setTotalIssueCount(totalIssueCount);
             //popup for showing issues
             setAlertDialogText({
-              title: "Your file has been processed and contains the following errors and warnings!",
-              content:(
+              title:
+                "Your file has been processed and contains the following errors and warnings!",
+              content: (
                 <>
-                <div>
-                  {/* {*errors* &&  */}
-                    <p>
-                      <span className="error">48 Errors </span>- Must fix before uploading
-                    </p>
-                  {/* } */}
-                  {/* {*warnings* &&  */}
-                    <p>
-                      <span className="warning">14 Warnings </span>- Can upload without fixing
-                    </p>
-                  {/* } */}
-                </div>
+                  {totalIssueCount.errors >= 1 && (
+                    <div>
+                      <span className="error">
+                        {totalIssueCount.errors} Errors
+                      </span>{" "}
+                      - Must fix before uploading
+                    </div>
+                  )}
+                  {totalIssueCount.warnings >= 1 && (
+                    <div>
+                      <span className="warning">
+                        {totalIssueCount.warnings} Warnings
+                      </span>{" "}
+                      - Can upload without fixing
+                    </div>
+                  )}
                 </>
-            ),
-              cancelText: "View Details", 
-              cancelAction: ()=> setOpenDialog(false),
-            })
-          setOpenDialog(true)
+              ),
+              cancelAction: () => setOpenDialog(false),
+              confirmText: "View Details",
+              confirmAction: () => setOpenDialog(false),
+            });
+            setOpenDialog(true);
           }
-
-          setUploadFiles([]);
         })
         .catch((error) => {
           showError(error);
@@ -174,6 +254,7 @@ const UploadContainer = () => {
           setLoading(false);
         });
     });
+  };
 
   const downloadSpreadsheet = () => {
     axios
@@ -207,22 +288,28 @@ const UploadContainer = () => {
       //popup for replacing data
       setAlertDialogText({
         title: "Replace existing data?",
-        content: "Selecting replace will delete all previously uploaded records for this dataset",
-        confirmText: "Replace existing data", 
+        content:
+          "Selecting replace will delete all previously uploaded records for this dataset",
+        confirmText: "Replace existing data",
         confirmAction: handleReplaceDataConfirm,
         cancelAction: handleReplaceDataCancel,
-      })
+      });
     } else {
       setReplaceData(false);
     }
   };
-  const handleConfirmDataInsert = () => {
-    setOpenDialog(false);
-    showError(false);
-    setAlertContent("")
-    doUpload(false); //upload with the checkForWarnings flag set to false!
 
-  }
+  const handleConfirmDataInsert = () => {
+    setGroupedWarnings({})
+    setGroupedErrors({})
+    setTotalIssueCount({})
+    setOpenDialog(false);
+    setAlert(false);
+    setAlertContent("");
+    doUpload(false); // Upload with the checkForWarnings flag set to false!
+    setUploadFiles([])
+  };
+
   const handleReplaceDataConfirm = () => {
     setReplaceData(true);
     setOpenDialog(false);
@@ -233,7 +320,7 @@ const UploadContainer = () => {
   };
 
   useEffect(() => {
-    refreshList(true);
+    refreshList();
   }, []);
 
   if (refresh) {
@@ -241,7 +328,6 @@ const UploadContainer = () => {
   }
 
   const alertElement =
-  //on page alert
     alert && alertContent && alertSeverity ? (
       <Alert severity={alertSeverity}>
         {alertContent.split("\n").map((line, index) => (
@@ -253,31 +339,30 @@ const UploadContainer = () => {
       </Alert>
     ) : null;
 
-   //on page alert
-    // alert && alertContent && alertSeverity ? (
-    //   <UploadIssues alertSeverity={alertSeverity} alertContent={alertContent}/>
-    // ) : null;
   return (
     <div className="row">
       <div className="col-12 mr-2">
         <>
-        {uploadIssueArray &&
-          <UploadIssues issues={uploadIssueArray}/>
-        }
           <AlertDialog
-          // popup
             open={openDialog}
             title={alertDialogText.title}
-            dialogue={
-              alertDialogText.content
-            }
+            dialogue={alertDialogText.content}
             cancelText={alertDialogText.cancelText}
             handleCancel={alertDialogText.cancelAction}
             confirmText={alertDialogText.confirmText}
             handleConfirm={alertDialogText.confirmAction}
           />
-  
           <Stack direction="column" spacing={2}>
+            {(totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
+              <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
+                <UploadIssues
+                  confirmUpload={handleConfirmDataInsert}
+                  groupedErrors={groupedErrors}
+                  groupedWarnings={groupedWarnings}
+                  totalIssueCount={totalIssueCount}
+                />
+              </Paper>
+            )}
             <Paper square variant="outlined">
               <UploadPage
                 alertElement={alertElement}
@@ -296,7 +381,7 @@ const UploadContainer = () => {
               />
             </Paper>
             {adminUser && (
-              <Paper square variant="outlined">
+              <Paper square variant="outlined" sx={{ mt: 2 }}>
                 <UsersContainer currentUser={currentUser} />
               </Paper>
             )}
@@ -306,4 +391,5 @@ const UploadContainer = () => {
     </div>
   );
 };
+
 export default withRouter(UploadContainer);

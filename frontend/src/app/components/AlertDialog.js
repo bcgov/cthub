@@ -6,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const AlertDialog = (props) => {
   const {
@@ -32,11 +32,13 @@ const AlertDialog = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title"><InfoOutlinedIcon className="error" /> {title}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          <InfoOutlinedIcon className="error" /> {title}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContent id="alert-dialog-description">
             {dialogue}
-          </DialogContentText>
+          </DialogContent>
         </DialogContent>
         <DialogActions>
           <Button
@@ -46,7 +48,7 @@ const AlertDialog = (props) => {
           >
             {cancelText}
           </Button>
-          {confirmText &&
+          {confirmText && (
             <Button
               onClick={() => {
                 handleConfirm();
@@ -55,7 +57,7 @@ const AlertDialog = (props) => {
             >
               {confirmText}
             </Button>
-          }
+          )}
         </DialogActions>
       </Dialog>
     </div>
@@ -65,18 +67,17 @@ const AlertDialog = (props) => {
 AlertDialog.defaultProps = {
   dialogue: "",
   title: "",
-  cancelText: "cancel"
+  cancelText: "cancel",
+  confirmText: "",
 };
 AlertDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   title: PropTypes.string,
-  dialogue: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.object
-  ]).isRequired,
+  dialogue: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
   cancelText: PropTypes.string,
   handleCancel: PropTypes.func.isRequired,
-  confirmText: PropTypes.string.isRequired,
+  confirmText: PropTypes.string,
   handleConfirm: PropTypes.func.isRequired,
 };
 

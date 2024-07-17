@@ -16,6 +16,7 @@ $md: 991px;
 $button-background-blue: #003366;
 $error-red: #ce3e39;
 $warning-yellow: #fcba19;
+$default-blue: #003366;
 
 .App {
   background-color: $default-background-grey;
@@ -65,7 +66,7 @@ h2,
 h3,
 h4 {
   font-family: "Roboto", "Open Sans", sans-serif;
-  color: #003366;
+  color: $default-blue;
   font-weight: 500;
 }
 
@@ -115,12 +116,11 @@ h4 {
 
 .error {
   color: $error-red;
-
 }
 .warning {
   color: $warning-yellow;
-;
 }
 .showMore {
   color: $default-link-blue;
-  text-decoration: underline;}
+  text-decoration: underline;
+}
