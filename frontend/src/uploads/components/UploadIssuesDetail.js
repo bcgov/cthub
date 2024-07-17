@@ -6,8 +6,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
   const [showAllRowsMap, setShowAllRowsMap] = useState({}); // State to toggle showing all rows for each issue
-  const classname = type === "errors" ? "error" : "warning";
-
+  const classname = type === "error" ? "error" : "warning";
   const toggleShowAllRows = (column, errorType) => {
     const key = `${column}_${errorType}`;
     setShowAllRowsMap((prevState) => ({
@@ -20,7 +19,7 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
     <Box
       p={2}
       sx={{
-        border: type === "errors" ? "1px solid #ce3e39" : "1px solid #fcba19",
+        border: type === "Error" ? "1px solid #ce3e39" : "1px solid #fcba19",
         mb: "1rem",
       }}
     >
@@ -39,14 +38,14 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
           <strong>Column: {column}</strong>
           {Object.keys(issues[column]).map((errorType, index) => (
             <div key={index} style={{ marginTop: "0.5rem" }}>
-              <div>Error Name: {errorType}</div>
+              <div>{type.charAt(0).toUpperCase() + type.slice(1)} Name: {errorType}</div>
               <div>
                 Expected value:{" "}
                 {issues[column][errorType].ExpectedType ||
                   issues[column][errorType].ExpectedFormat}
               </div>
               <div>
-                Rows with this error:{" "}
+                Rows with {type}:{" "}
                 <b>
                   {issues[column][errorType].Rows.slice(
                     0,
