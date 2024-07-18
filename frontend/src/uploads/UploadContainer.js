@@ -104,7 +104,7 @@ const UploadContainer = () => {
           const warnings = {}
           for (const [index, response] of responses.entries()) {
             const filename = uploadFiles[index].name
-            const responseWarnings = response.data.warnings
+            const responseWarnings = response.data.errors_and_warnings
             if (responseWarnings) {
               warnings[filename] = responseWarnings
             }
