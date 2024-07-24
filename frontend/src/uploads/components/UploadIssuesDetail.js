@@ -15,8 +15,6 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
     }));
   };
 
-  console.log(issues)
-
   return (
     <Box
       p={2}
