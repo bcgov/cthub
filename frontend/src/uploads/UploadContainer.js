@@ -9,6 +9,7 @@ import UsersContainer from "../users/UsersContainer";
 import Loading from "../app/components/Loading";
 import useAxios from "../app/utilities/useAxios";
 import WarningsList from "./components/WarningsList";
+import UploadIssues from "./components/UploadIssues";
 
 const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
@@ -23,16 +24,21 @@ const UploadContainer = () => {
   const [alertSeverity, setAlertSeverity] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
-  const axios = useAxios();
-  const axiosDefault = useAxios(true);
-  const [dataWarning, setDataWarning] = useState({})
+  const [totalIssueCount, setTotalIssueCount] = useState({});
+  const [groupedErrors, setGroupedErrors] = useState({});
+  const [groupedWarnings, setGroupedWarnings] = useState({});
   const [alertDialogText, setAlertDialogText] = useState({
     title: "",
     content: "",
     confirmText: "",
-    confirmAction: ()=>{},
-    cancelAction: ()=>{},
-  })
+    confirmAction: () => {},
+    cancelAction: () => {},
+    cancelText: "cancel",
+  });
+
+  const axios = useAxios();
+  const axiosDefault = useAxios(true);
+
   const refreshList = () => {
     setRefresh(true);
     axios.get(ROUTES_UPLOAD.LIST).then((response) => {
@@ -51,95 +57,172 @@ const UploadContainer = () => {
     });
   };
 
+  const groupAndCountRows = (issueArray) => {
+    const groupedErrors = {};
+    const groupedWarnings = {};
+    const totalIssueCount = {
+      errors: 0,
+      warnings: 0,
+    };
+  
+    issueArray.forEach((issue) => {
+  
+      Object.keys(issue).forEach((column) => {
+        const errorDetails = issue[column];
+  
+        Object.keys(errorDetails).forEach((errorType) => {
+          const severity = errorDetails[errorType].Severity;
+          const expectedType = errorDetails[errorType]["Expected Type"];
+          const rows = errorDetails[errorType].Rows;
+          const rowCount = rows.length;
+  
+          if (severity === "Error") {
+            totalIssueCount.errors += rowCount;
+            if (!groupedErrors[column]) {
+              groupedErrors[column] = {};
+            }
+            if (!groupedErrors[column][errorType]) {
+              groupedErrors[column][errorType] = {
+                ExpectedType: expectedType,
+                Rows: rows,
+              };
+            } else {
+              groupedErrors[column][errorType].Rows.push(...rows);
+            }
+          } else if (severity === "Warning") {
+            totalIssueCount.warnings += rowCount;
+            if (!groupedWarnings[column]) {
+              groupedWarnings[column] = {};
+            }
+            if (!groupedWarnings[column][errorType]) {
+              groupedWarnings[column][errorType] = {
+                ExpectedType: expectedType,
+                Rows: rows,
+              };
+            } else {
+              groupedWarnings[column][errorType].Rows.push(...rows);
+            }
+          }
+        });
+      });
+    });
+  
+    return { groupedErrors, groupedWarnings, totalIssueCount };
+  };
+  
+  
+
   const showError = (error) => {
     const { response: errorResponse } = error;
-    setAlertContent("There was an issue uploading the file.")
+    setAlertContent("There was an issue uploading the file.");
     if (errorResponse && errorResponse.data && errorResponse.data.message) {
       setAlertContent(
         `${errorResponse.data.message}\n${errorResponse.data.errors ? "Errors: " + errorResponse.data.errors.join("\n") : ""}`,
-      )
-    } else if (errorResponse && errorResponse.data && errorResponse.status === 403) {
-      setAlertContent("There was an error. Please refresh page and ensure you are logged in.")
+      );
+    } else if (
+      errorResponse &&
+      errorResponse.data &&
+      errorResponse.status === 403
+    ) {
+      setAlertContent(
+        "There was an error. Please refresh page and ensure you are logged in.",
+      );
     }
     setAlertSeverity("error");
     setAlert(true);
   };
 
-  const doUpload = (checkForWarnings) =>
-    uploadFiles.forEach((file) => {
+  const doUpload = (checkForWarnings) => {
+    setLoading(true);
+
+    const uploadPromises = uploadFiles.map((file) => {
       let filepath = file.path;
-      setLoading(true);   
-      if (datasetSelected !== 'Go Electric Rebates Program'){
-        checkForWarnings = false
-      }
-      const uploadPromises = uploadFiles.map((file) => {
-        return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
-          const { url: uploadUrl, minio_object_name: filename } = response.data;
-          return axiosDefault.put(uploadUrl, file).then(() => {
-            return axios.post(ROUTES_UPLOAD.UPLOAD, {
-              filename,
-              datasetSelected,
-              replaceData,
-              filepath,
-              checkForWarnings
-            });
+      return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
+        const { url: uploadUrl, minio_object_name: filename } = response.data;
+        return axiosDefault.put(uploadUrl, file).then(() => {
+          return axios.post(ROUTES_UPLOAD.UPLOAD, {
+            filename,
+            datasetSelected,
+            replaceData,
+            filepath,
+            checkForWarnings,
           });
         });
       });
-      Promise.all(uploadPromises)
-        .then((responses) => {
-          const errorCheck = responses.some(
-            (response) => response.data.success,
-          );
+    });
 
-          setAlertSeverity(errorCheck ? "success" : "error");
-          const message = responses
+    Promise.all(uploadPromises)
+      .then((responses) => {
+        const errorCheck = responses.some(
+          (response) => !response.data.success
+        );
+
+        setAlertSeverity(errorCheck ? "error" : "success");
+        const message = responses
           .map(
             (response) =>
-            `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
+              `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`
           )
           .join("\n");
-          setAlert(true);
-          setAlertContent(message);
-          const warnings = {}
-          for (const [index, response] of responses.entries()) {
-            const filename = uploadFiles[index].name
-            const responseWarnings = response.data.errors_and_warnings
-            if (responseWarnings) {
-              warnings[filename] = responseWarnings
-            }
+        setAlert(true);
+        setAlertContent(message);
+
+        const warnings = {};
+        responses.forEach((response, index) => {
+          const responseWarnings = response.data.errors_and_warnings;
+          if (responseWarnings) {
+            warnings[uploadFiles[index].name] = responseWarnings;
           }
-          setAlertContent(message);
-
-          if (Object.keys(warnings).length > 0 && checkForWarnings == true) { // ie it is the first attempt to upload (when upload is called from the dialog its set to false)
-            setOpenDialog(true)
-            setAlertDialogText({
-              title: "Warning: There are errors in the data to review",
-              content:(
-                <>
-                <div>
-                  <p>
-                    Click continue to insert these records as is, or click cancel
-                    to exit out and no records will be inserted:
-                  </p>
-                  <WarningsList warnings={warnings} />
-                </div>
-                </>
-            ),
-              confirmText: "Continue (all records will be inserted as is)", 
-              confirmAction: handleConfirmDataInsert,
-              cancelAction: handleReplaceDataCancel,
-            })}
-
-          setUploadFiles([]);
-        })
-        .catch((error) => {
-          showError(error);
-        })
-        .finally(() => {
-          setLoading(false);
         });
-    });
+
+        if (Object.keys(warnings).length > 0 && checkForWarnings) {
+          const { groupedErrors, groupedWarnings, totalIssueCount } =
+            groupAndCountRows(Object.values(warnings));
+          setGroupedErrors(groupedErrors);
+          setGroupedWarnings(groupedWarnings);
+          setTotalIssueCount(totalIssueCount);
+
+          console.log("Errors and Warnings grouped:", { groupedErrors, groupedWarnings, totalIssueCount });
+
+          setAlertDialogText({
+            title:
+              "Your file has been processed and contains the following errors and warnings!",
+            content: (
+              <>
+                {totalIssueCount.errors >= 1 && (
+                  <div>
+                    <span className="error">
+                      {totalIssueCount.errors} Errors
+                    </span>
+                    - Must fix before uploading
+                  </div>
+                )}
+                {totalIssueCount.warnings >= 1 && (
+                  <div>
+                    <span className="warning">
+                      {totalIssueCount.warnings} Warnings
+                    </span>
+                    - Can upload without fixing
+                  </div>
+                )}
+              </>
+            ),
+            cancelAction: () => setOpenDialog(false),
+            confirmText: "View Details",
+            confirmAction: () => setOpenDialog(false),
+          });
+          setOpenDialog(true);
+
+          console.log("Open Dialog set to true");
+        }
+      })
+      .catch((error) => {
+        showError(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const downloadSpreadsheet = () => {
     axios
@@ -170,24 +253,31 @@ const UploadContainer = () => {
     const choice = event.target.value;
     if (choice === "replace") {
       setOpenDialog(true);
+      //popup for replacing data
       setAlertDialogText({
         title: "Replace existing data?",
-        content: "Selecting replace will delete all previously uploaded records for this dataset",
-        confirmText: "Replace existing data", 
+        content:
+          "Selecting replace will delete all previously uploaded records for this dataset",
+        confirmText: "Replace existing data",
         confirmAction: handleReplaceDataConfirm,
         cancelAction: handleReplaceDataCancel,
-      })
+      });
     } else {
       setReplaceData(false);
     }
   };
-  const handleConfirmDataInsert = () => {
-    setOpenDialog(false);
-    showError(false);
-    setAlertContent("")
-    doUpload(false); //upload with the checkForWarnings flag set to false!
 
-  }
+  const handleConfirmDataInsert = () => {
+    setGroupedWarnings({})
+    setGroupedErrors({})
+    setTotalIssueCount({})
+    setOpenDialog(false);
+    setAlert(false);
+    setAlertContent("");
+    doUpload(false); // Upload with the checkForWarnings flag set to false!
+    setUploadFiles([])
+  };
+
   const handleReplaceDataConfirm = () => {
     setReplaceData(true);
     setOpenDialog(false);
@@ -198,13 +288,12 @@ const UploadContainer = () => {
   };
 
   useEffect(() => {
-    refreshList(true);
+    refreshList();
   }, []);
 
   if (refresh) {
     return <Loading />;
   }
-
 
   const alertElement =
     alert && alertContent && alertSeverity ? (
@@ -218,49 +307,58 @@ const UploadContainer = () => {
       </Alert>
     ) : null;
 
-
-  return (
-    <div className="row">
-      <div className="col-12 mr-2">
-        <>
-          <AlertDialog
-            open={openDialog}
-            title={alertDialogText.title}
-            dialogue={
-              alertDialogText.content
-            }
-            cancelText={"Cancel"}
-            handleCancel={alertDialogText.cancelAction}
-            confirmText={alertDialogText.confirmText}
-            handleConfirm={alertDialogText.confirmAction}
-          />
-          <Stack direction="column" spacing={2}>
-            <Paper square variant="outlined">
-              <UploadPage
-                alertElement={alertElement}
-                uploadFiles={uploadFiles}
-                datasetList={datasetList}
-                doUpload={doUpload}
-                setDatasetSelected={setDatasetSelected}
-                datasetSelected={datasetSelected}
-                setUploadFiles={setUploadFiles}
-                setReplaceData={setReplaceData}
-                replaceData={replaceData}
-                handleRadioChange={handleRadioChange}
-                downloadSpreadsheet={downloadSpreadsheet}
-                setAlert={setAlert}
-                loading={loading}
-              />
-            </Paper>
-            {adminUser && (
+    return (
+      <div className="row">
+        <div className="col-12 mr-2">
+          <>
+            <AlertDialog
+              open={openDialog}
+              title={alertDialogText.title}
+              dialogue={alertDialogText.content} // Corrected prop name
+              cancelText={alertDialogText.cancelText}
+              handleCancel={alertDialogText.cancelAction}
+              confirmText={alertDialogText.confirmText}
+              handleConfirm={alertDialogText.confirmAction}
+            />
+            <Stack direction="column" spacing={2}>
+              {(totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
+                <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
+                  {console.log('Grouped Errors', groupedWarnings)}
+                  <UploadIssues
+                    confirmUpload={handleConfirmDataInsert}
+                    groupedErrors={groupedErrors}
+                    groupedWarnings={groupedWarnings}
+                    totalIssueCount={totalIssueCount}
+                  />
+                </Paper>
+              )}
               <Paper square variant="outlined">
-                <UsersContainer currentUser={currentUser} />
+                <UploadPage
+                  alertElement={alertElement}
+                  uploadFiles={uploadFiles}
+                  datasetList={datasetList}
+                  doUpload={doUpload}
+                  setDatasetSelected={setDatasetSelected}
+                  datasetSelected={datasetSelected}
+                  setUploadFiles={setUploadFiles}
+                  setReplaceData={setReplaceData}
+                  replaceData={replaceData}
+                  handleRadioChange={handleRadioChange}
+                  downloadSpreadsheet={downloadSpreadsheet}
+                  setAlert={setAlert}
+                  loading={loading}
+                />
               </Paper>
-            )}
-          </Stack>
-        </>
+              {adminUser && (
+                <Paper square variant="outlined" sx={{ mt: 2 }}>
+                  <UsersContainer currentUser={currentUser} />
+                </Paper>
+              )}
+            </Stack>
+          </>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+
 export default withRouter(UploadContainer);

@@ -139,8 +139,7 @@ def transform_data(
 
 
 @transaction.atomic
-def load_data(df, model, replace_data, user, errors):
-    row_count = 0
+def load_data(df, model, replace_data, user):
     records_inserted = 0
 
     if replace_data:
@@ -148,22 +147,15 @@ def load_data(df, model, replace_data, user, errors):
         
     for index, row in df.iterrows():
         row_dict = row.to_dict()
+        row_dict["update_user"] = user
 
-        try:
-            row_dict["update_user"] = user
-            model_instance = model(**row_dict)
-            model_instance.full_clean()
-            model_instance.save()
-            records_inserted += 1
-        except Exception as e:
-            errors.append(f"Row {index + 1}: {e}")
-
-        row_count += 1
+        model_instance = model(**row_dict)
+        model_instance.save()
+        records_inserted += 1
 
     return {
-        "row_count": row_count,
+        "row_count": len(df),
         "records_inserted": records_inserted,
-        "errors": sorted(errors, key=lambda x: int(x.split()[1][:-1])),
     }
 
 
@@ -179,7 +171,7 @@ def import_from_xls(
     user,
     preparation_functions=[],
     validation_functions=[],
-    check_for_warnings=False,
+    check_for_warnings=True,
 ):
     try:
         df = extract_data(excel_file, sheet_name, header_row)
@@ -211,27 +203,12 @@ def import_from_xls(
         total_rows = result["row_count"]
         inserted_rows = result["records_inserted"]
 
-        if result["errors"] and result["records_inserted"] > 0:
-            return {
-                "success": True,
-                "message": f"{inserted_rows} out of {total_rows} rows successfully inserted with some errors encountered.",
-                "errors": result["errors"],
-                "rows_processed": result["row_count"],
+        return {
+            "success": True,
+            "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
+            "rows_processed": result["row_count"],
             }
-        elif len(result["errors"]) > 0:
-            return {
-                "success": False,
-                "message": "Errors encountered with no successful insertions.",
-                "errors": result["errors"],
-                "rows_processed": result["row_count"],
-            }
-        
-        else:
-            return {
-                "success": True,
-                "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
-                "rows_processed": result["row_count"],
-            }
+    
     except Exception as error:
         traceback.print_exc()
         error_msg = f"Unexpected error: {str(error)}"
