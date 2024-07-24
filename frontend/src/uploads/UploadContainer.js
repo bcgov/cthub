@@ -182,8 +182,6 @@ const UploadContainer = () => {
           setGroupedWarnings(groupedWarnings);
           setTotalIssueCount(totalIssueCount);
 
-          console.log("Errors and Warnings grouped:", { groupedErrors, groupedWarnings, totalIssueCount });
-
           setAlertDialogText({
             title:
               "Your file has been processed and contains the following errors and warnings!",
@@ -213,7 +211,6 @@ const UploadContainer = () => {
           });
           setOpenDialog(true);
 
-          console.log("Open Dialog set to true");
         }
       })
       .catch((error) => {
@@ -323,7 +320,6 @@ const UploadContainer = () => {
             <Stack direction="column" spacing={2}>
               {(totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
                 <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
-                  {console.log('Grouped Errors', groupedWarnings)}
                   <UploadIssues
                     confirmUpload={handleConfirmDataInsert}
                     groupedErrors={groupedErrors}
