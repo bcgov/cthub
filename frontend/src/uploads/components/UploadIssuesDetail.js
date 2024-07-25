@@ -19,7 +19,7 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
     <Box
       p={2}
       sx={{
-        border: type === "Error" ? "1px solid #ce3e39" : "1px solid #fcba19",
+        border: type === "error" ? "1px solid #ce3e39" : "1px solid #fcba19",
         mb: "1rem",
       }}
     >

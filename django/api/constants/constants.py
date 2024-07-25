@@ -655,11 +655,11 @@ DATASET_CONFIG = {
         "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
         "validation_functions": [
-            {"error_type": "Phone Error", "function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
-            {"error_type": "Potential Typo", "function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
-            {"error_type": "Location Not Found", "function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
-            {"error_type": "Invalid Email", "function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
-            {"error_type": "Invalid Value", "function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}}
+            {"function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
+            {"function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
+            {"function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
+            {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
+            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}}
         ]
     },
 }

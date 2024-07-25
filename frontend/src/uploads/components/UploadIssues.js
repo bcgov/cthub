@@ -74,7 +74,7 @@ const UploadIssues = ({
           <AccordionDetails>
             {totalIssueCount.errors >= 1 && (
               <UploadIssuesDetail
-                type={"error"}
+                type="error"
                 issues={groupedErrors}
                 totalIssueCount={totalIssueCount.errors}
                 msg={errorMsg}
@@ -82,7 +82,7 @@ const UploadIssues = ({
             )}
             {totalIssueCount.warnings >= 1 && (
               <UploadIssuesDetail
-                type={"warning"}
+                type="warning"
                 issues={groupedWarnings}
                 totalIssueCount={totalIssueCount.warnings}
                 msg={warningMsg}
