@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { Box, Button } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
@@ -23,13 +23,13 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
         mb: "1rem",
       }}
     >
-      <InfoOutlinedIcon
+      <ErrorOutlineIcon
         className={classname}
         sx={{ marginLeft: 1, marginRight: 1 }}
       />
       <span className={classname}>
         <strong>
-          {totalIssueCount} {type}&nbsp;
+          {totalIssueCount} {type == 'error' ? 'Errors' : 'Warnings'}&nbsp;
         </strong>
       </span>
       ({msg})
@@ -38,7 +38,10 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
           <strong>Column: {column}</strong>
           {Object.keys(issues[column]).map((errorType, index) => (
             <div key={index} style={{ marginTop: "0.5rem" }}>
-              <div>{type.charAt(0).toUpperCase() + type.slice(1)} Name: {errorType}</div>
+              <div>
+                {(Object.keys(issues[column]).length > 1 ? `(${index + 1}) ` : '')}
+                {type.charAt(0).toUpperCase() + type.slice(1)} Name: {errorType}
+                </div>
               <div>
                 Expected value:{" "}
                 {issues[column][errorType].ExpectedType ||
