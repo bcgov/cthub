@@ -256,10 +256,11 @@ def location_checker(df, *columns, batch_size=50, **kwargs):
         map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
         values = series.to_list()
         unique_values = set(series)
+        unique_values_list = list(values)
 
         communities = set()
-        for i in range(0, len(values), batch_size):
-            batch_values = values[i:i + batch_size]
+        for i in range(0, len(unique_values_list), batch_size):
+            batch_values = unique_values_list[i:i + batch_size]
             # Send request to API with list of names, returns all the communities that somewhat matched
             get_placename_matches(batch_values, 200, 1, communities)
 
