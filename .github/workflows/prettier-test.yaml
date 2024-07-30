@@ -1,0 +1,25 @@
+name: CTHUB prettier test
+
+on:
+  push:
+    branches: [ prettier-0.3.0 ]
+  workflow_dispatch:
+
+jobs:
+  
+  test-prettier:
+
+    name: prettier
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.3
+        with:
+          prettier_options: --write **/*.{js,md,py}
