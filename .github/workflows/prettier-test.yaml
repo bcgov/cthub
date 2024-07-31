@@ -22,6 +22,7 @@ jobs:
       - name: Test yarn
         run: |
           yarn --version
+          yarn add --exact prettier @prettier/plugin-python
 
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
