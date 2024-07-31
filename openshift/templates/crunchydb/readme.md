@@ -28,5 +28,4 @@ CREATE EXTENSION IF NOT EXISTS set_user WITH SCHEMA public;
 ### Dump and restore cthub data
 
 pg_dump -f cthub-data.sql -n public -d cthub  
-psql cthub < ./cthub-data.sql >> ./cthub-restore.log 2>&1  
-
+psql cthub < ./cthub-data.sql >> ./cthub-restore.log 2>&1
