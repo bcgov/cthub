@@ -2,6 +2,7 @@ from decimal import Decimal
 import pandas as pd
 import difflib as dl
 from api.services.bcngws import get_placename_matches
+from api.models.regions import Regions
 from email_validator import validate_email, EmailNotValidError
 from api.utilities.series import get_map_of_values_to_indices
 from api.constants.misc import AREA_CODES
@@ -321,4 +322,28 @@ def validate_field_values(df, *columns, **kwargs):
                     }
                 }
     
+    return result
+
+def region_checker(df, *columns, **kwargs):
+    valid_regions = set(Regions.objects.values_list('name', flat=True))
+
+    result = {}
+    indices = []
+    for column in columns:
+        for index, value in df[column].items():
+            values_list = [item.strip() for item in value.split(',')]
+            if all(value in valid_regions for value in values_list):
+                continue
+            else:
+                indices.append(index + kwargs.get('indices_offset', 0))
+
+    if indices:
+        result[column] = {
+                    "Invalid Region": {
+                        "Expected Type": "The following rows have an invalid region",
+                        "Rows": indices,
+                        "Severity": "Error"
+                    }
+                }
+        
     return result

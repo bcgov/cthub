@@ -25,3 +25,4 @@ from . import app_user
 from . import uploaded_vins_file
 from . import uploaded_vin_record
 from . import decoded_vin_record
+from . import regions
