@@ -2,16 +2,25 @@
 const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
 const path = require("path");
 
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+  const oc = new OpenShiftClientX(
+    Object.assign({ namespace: phases.build.namespace }, options),
+  );
   const phase = "build";
   let objects = [];
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
+  const templatesLocalBaseUrl = oc.toFileUrl(
+    path.resolve(__dirname, "../../openshift"),
+  );
 
   // The building of your cool app goes here ▼▼▼
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/build.yaml`, {}));
+  objects = objects.concat(
+    oc.processDeploymentTemplate(
+      `${templatesLocalBaseUrl}/templates/patroni-2.1.1/templates/build.yaml`,
+      {},
+    ),
+  );
 
   oc.applyRecommendedLabels(
     objects,

@@ -64,18 +64,17 @@ const UploadContainer = () => {
       errors: 0,
       warnings: 0,
     };
-  
+
     issueArray.forEach((issue) => {
-  
       Object.keys(issue).forEach((column) => {
         const errorDetails = issue[column];
-  
+
         Object.keys(errorDetails).forEach((errorType) => {
           const severity = errorDetails[errorType].Severity;
           const expectedType = errorDetails[errorType]["Expected Type"];
           const rows = errorDetails[errorType].Rows;
           const rowCount = rows.length;
-  
+
           if (severity === "Error") {
             totalIssueCount.errors += rowCount;
             if (!groupedErrors[column]) {
@@ -106,11 +105,9 @@ const UploadContainer = () => {
         });
       });
     });
-  
+
     return { groupedErrors, groupedWarnings, totalIssueCount };
   };
-  
-  
 
   const showError = (error) => {
     const { response: errorResponse } = error;
@@ -153,15 +150,13 @@ const UploadContainer = () => {
 
     Promise.all(uploadPromises)
       .then((responses) => {
-        const errorCheck = responses.some(
-          (response) => !response.data.success
-        );
+        const errorCheck = responses.some((response) => !response.data.success);
 
         setAlertSeverity(errorCheck ? "error" : "success");
         const message = responses
           .map(
             (response) =>
-              `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`
+              `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
           )
           .join("\n");
         setAlert(true);
@@ -210,7 +205,6 @@ const UploadContainer = () => {
             confirmAction: () => setOpenDialog(false),
           });
           setOpenDialog(true);
-
         }
       })
       .catch((error) => {
@@ -265,14 +259,14 @@ const UploadContainer = () => {
   };
 
   const handleConfirmDataInsert = () => {
-    setGroupedWarnings({})
-    setGroupedErrors({})
-    setTotalIssueCount({})
+    setGroupedWarnings({});
+    setGroupedErrors({});
+    setTotalIssueCount({});
     setOpenDialog(false);
     setAlert(false);
     setAlertContent("");
     doUpload(false); // Upload with the checkForWarnings flag set to false!
-    setUploadFiles([])
+    setUploadFiles([]);
   };
 
   const handleReplaceDataConfirm = () => {
@@ -304,57 +298,57 @@ const UploadContainer = () => {
       </Alert>
     ) : null;
 
-    return (
-      <div className="row">
-        <div className="col-12 mr-2">
-          <>
-            <AlertDialog
-              open={openDialog}
-              title={alertDialogText.title}
-              dialogue={alertDialogText.content} // Corrected prop name
-              cancelText={alertDialogText.cancelText}
-              handleCancel={alertDialogText.cancelAction}
-              confirmText={alertDialogText.confirmText}
-              handleConfirm={alertDialogText.confirmAction}
-            />
-            <Stack direction="column" spacing={2}>
-              {(totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
-                <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
-                  <UploadIssues
-                    confirmUpload={handleConfirmDataInsert}
-                    groupedErrors={groupedErrors}
-                    groupedWarnings={groupedWarnings}
-                    totalIssueCount={totalIssueCount}
-                  />
-                </Paper>
-              )}
-              <Paper square variant="outlined">
-                <UploadPage
-                  alertElement={alertElement}
-                  uploadFiles={uploadFiles}
-                  datasetList={datasetList}
-                  doUpload={doUpload}
-                  setDatasetSelected={setDatasetSelected}
-                  datasetSelected={datasetSelected}
-                  setUploadFiles={setUploadFiles}
-                  setReplaceData={setReplaceData}
-                  replaceData={replaceData}
-                  handleRadioChange={handleRadioChange}
-                  downloadSpreadsheet={downloadSpreadsheet}
-                  setAlert={setAlert}
-                  loading={loading}
+  return (
+    <div className="row">
+      <div className="col-12 mr-2">
+        <>
+          <AlertDialog
+            open={openDialog}
+            title={alertDialogText.title}
+            dialogue={alertDialogText.content} // Corrected prop name
+            cancelText={alertDialogText.cancelText}
+            handleCancel={alertDialogText.cancelAction}
+            confirmText={alertDialogText.confirmText}
+            handleConfirm={alertDialogText.confirmAction}
+          />
+          <Stack direction="column" spacing={2}>
+            {(totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
+              <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
+                <UploadIssues
+                  confirmUpload={handleConfirmDataInsert}
+                  groupedErrors={groupedErrors}
+                  groupedWarnings={groupedWarnings}
+                  totalIssueCount={totalIssueCount}
                 />
               </Paper>
-              {adminUser && (
-                <Paper square variant="outlined" sx={{ mt: 2 }}>
-                  <UsersContainer currentUser={currentUser} />
-                </Paper>
-              )}
-            </Stack>
-          </>
-        </div>
+            )}
+            <Paper square variant="outlined">
+              <UploadPage
+                alertElement={alertElement}
+                uploadFiles={uploadFiles}
+                datasetList={datasetList}
+                doUpload={doUpload}
+                setDatasetSelected={setDatasetSelected}
+                datasetSelected={datasetSelected}
+                setUploadFiles={setUploadFiles}
+                setReplaceData={setReplaceData}
+                replaceData={replaceData}
+                handleRadioChange={handleRadioChange}
+                downloadSpreadsheet={downloadSpreadsheet}
+                setAlert={setAlert}
+                loading={loading}
+              />
+            </Paper>
+            {adminUser && (
+              <Paper square variant="outlined" sx={{ mt: 2 }}>
+                <UsersContainer currentUser={currentUser} />
+              </Paper>
+            )}
+          </Stack>
+        </>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default withRouter(UploadContainer);

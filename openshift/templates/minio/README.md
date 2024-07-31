@@ -1,8 +1,8 @@
 ### Files included
 
-* minio-bc.yaml minio build config
-* minio-dc.yaml minio deployment config
-* secret-template.yaml the secret template
+- minio-bc.yaml minio build config
+- minio-dc.yaml minio deployment config
+- secret-template.yaml the secret template
 
 ### build minio
 

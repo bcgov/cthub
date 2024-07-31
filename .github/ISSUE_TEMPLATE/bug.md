@@ -2,9 +2,8 @@
 name: Bug
 about: An undesirable behaviour that needs correction
 title: Bug
-labels: ''
-assignees: ''
-
+labels: ""
+assignees: ""
 ---
 
 **Describe the Bug**
@@ -22,6 +21,7 @@ A clear and concise description of any implications.
 **Steps To Reproduce**
 Steps to reproduce the behaviour:
 User/Role:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'

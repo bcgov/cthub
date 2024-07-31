@@ -27,15 +27,16 @@ const getTargetPhases = (env, phases) => {
   return target_phase;
 };
 
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+  const oc = new OpenShiftClientX(
+    Object.assign({ namespace: phases.build.namespace }, options),
+  );
   const target_phases = getTargetPhases(options.env, phases);
 
-  target_phases.forEach(k => {
+  target_phases.forEach((k) => {
     if (phases.hasOwnProperty(k)) {
-
       const phase = phases[k];
       oc.namespace(phase.namespace);
 
@@ -44,7 +45,7 @@ module.exports = settings => {
         namespace: phase.namespace,
       });
 
-      buildConfigs.forEach(bc => {
+      buildConfigs.forEach((bc) => {
         if (bc.spec.output.to.kind == "ImageStreamTag") {
           oc.delete([`ImageStreamTag/${bc.spec.output.to.name}`], {
             "ignore-not-found": "true",
@@ -56,9 +57,8 @@ module.exports = settings => {
           "ignore-not-found": "true",
           wait: "true",
           namespace: phase.namespace,
-        });        
+        });
       });
-
     }
   });
 };

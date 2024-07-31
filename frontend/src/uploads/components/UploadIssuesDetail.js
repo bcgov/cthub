@@ -38,7 +38,9 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
           <strong>Column: {column}</strong>
           {Object.keys(issues[column]).map((errorType, index) => (
             <div key={index} style={{ marginTop: "0.5rem" }}>
-              <div>{type.charAt(0).toUpperCase() + type.slice(1)} Name: {errorType}</div>
+              <div>
+                {type.charAt(0).toUpperCase() + type.slice(1)} Name: {errorType}
+              </div>
               <div>
                 Expected value:{" "}
                 {issues[column][errorType].ExpectedType ||

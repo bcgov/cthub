@@ -27,17 +27,17 @@ const getTargetPhases = (env, phases) => {
   return target_phase;
 };
 
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+  const oc = new OpenShiftClientX(
+    Object.assign({ namespace: phases.build.namespace }, options),
+  );
   const target_phases = getTargetPhases(options.env, phases);
 
-  target_phases.forEach(k => {
-
+  target_phases.forEach((k) => {
     //k is dve, test or prod
     if (phases.hasOwnProperty(k)) {
-
       const phase = phases[k];
       oc.namespace(phase.namespace);
 
@@ -45,17 +45,20 @@ module.exports = settings => {
         selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
       });
-      deploymentConfigs.forEach(dc => {
-        dc.spec.triggers.forEach(trigger => {
+      deploymentConfigs.forEach((dc) => {
+        dc.spec.triggers.forEach((trigger) => {
           if (
-              trigger.type == "ImageChange" &&
-              trigger.imageChangeParams.from.kind == "ImageStreamTag"
+            trigger.type == "ImageChange" &&
+            trigger.imageChangeParams.from.kind == "ImageStreamTag"
           ) {
-            oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
-              "ignore-not-found": "true",
-              wait: "true",
-              namespace: phase.namespace,
-            });
+            oc.delete(
+              [`ImageStreamTag/${trigger.imageChangeParams.from.name}`],
+              {
+                "ignore-not-found": "true",
+                wait: "true",
+                namespace: phase.namespace,
+              },
+            );
           }
         });
         oc.delete([`DeploymentConfig/${dc.metadata.name}`], {
@@ -66,44 +69,42 @@ module.exports = settings => {
       });
       oc.raw(
         "delete",
-        ["Secret,configmap,endpoints,RoleBinding,role,ServiceAccount,Endpoints,service,route"],
+        [
+          "Secret,configmap,endpoints,RoleBinding,role,ServiceAccount,Endpoints,service,route",
+        ],
         {
           selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
           wait: "true",
           namespace: phase.namespace,
-        }
+        },
       );
 
       //get all statefulsets before they are deleted
       const statefulsets = oc.get("statefulset", {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
-      });   
+      });
       //remove all the PVCs associated with each statefulset, after they get deleted by above delete all operation
-      statefulsets.forEach(statefulset => {
+      statefulsets.forEach((statefulset) => {
         //delete StatefulSet
         oc.delete([`StatefulSet/${statefulset.metadata.name}`], {
           "ignore-not-found": "true",
           wait: "true",
           namespace: phase.namespace,
-        });        
+        });
         //delete configmaps create by patroni
         let patroniConfigmaps = oc.get("configmap", {
           selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
           namespace: phase.namespace,
         });
-        if(Object.entries(patroniConfigmaps).length > 0) {
-          oc.raw(
-            "delete",
-            ["configmap"],
-            {
-              selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
-              wait: "true",
-              "ignore-not-found": "true",
-              namespace: phase.namespace,
-            },
-          );        
-        };
+        if (Object.entries(patroniConfigmaps).length > 0) {
+          oc.raw("delete", ["configmap"], {
+            selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
+            wait: "true",
+            "ignore-not-found": "true",
+            namespace: phase.namespace,
+          });
+        }
         //delete PVCs mounted for statfulset
         oc.raw("delete", ["pvc"], {
           selector: `app=${phase.instance},statefulset=${statefulset.metadata.name},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
@@ -111,22 +112,20 @@ module.exports = settings => {
           wait: "true",
           namespace: phase.namespace,
         });
-
       });
 
       //remove all PR's network policies
       const knps = oc.get("networkpolicies", {
         selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
-      });   
-      knps.forEach(knp => {
-        oc.delete([`networkpolicy/${knp.metadata.name}`], {
-            "ignore-not-found": "true",
-            wait: "true",
-            namespace: phase.namespace,
-          });       
       });
-
+      knps.forEach((knp) => {
+        oc.delete([`networkpolicy/${knp.metadata.name}`], {
+          "ignore-not-found": "true",
+          wait: "true",
+          namespace: phase.namespace,
+        });
+      });
     }
   });
 };

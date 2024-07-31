@@ -57,7 +57,7 @@ const UsersContainer = (props) => {
         userToChange.user_permissions[permissionType] = checked;
       }),
     );
-    setSaveButtonEnabled(true)
+    setSaveButtonEnabled(true);
   }, []);
 
   const handleDeleteUserClick = (idir) => {

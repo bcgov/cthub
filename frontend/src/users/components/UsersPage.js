@@ -23,7 +23,7 @@ const UsersPage = (props) => {
     newUser,
     setMessage,
     handleXClick,
-    saveButtonEnabled
+    saveButtonEnabled,
   } = props;
 
   const userRow = (user) => {
