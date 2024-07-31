@@ -19,6 +19,10 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Test yarn
+        run: |
+          yarn --version
+
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
