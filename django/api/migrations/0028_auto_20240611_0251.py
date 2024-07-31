@@ -4,24 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0027_goelectricrebates_rebate_adjustment'),
+        ("api", "0027_goelectricrebates_rebate_adjustment"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='uploadedvinsfile',
-            name='chunks_per_run',
+            model_name="uploadedvinsfile",
+            name="chunks_per_run",
         ),
         migrations.AddField(
-            model_name='uploadedvinrecord',
-            name='timestamp',
+            model_name="uploadedvinrecord",
+            name="timestamp",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='uploadedvinrecord',
-            name='postal_code',
+            model_name="uploadedvinrecord",
+            name="postal_code",
             field=models.CharField(max_length=7),
         ),
     ]

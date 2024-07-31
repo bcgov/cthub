@@ -6,17 +6,8 @@ from tfrs.models.mixins.EffectiveDates import EffectiveDates
 
 
 class CreditTradeStatus(Auditable, DisplayOrder, EffectiveDates):
-    status = models.CharField(
-        max_length=25,
-        blank=True,
-        null=True,
-        unique=True
-    )
-    description = models.CharField(
-        max_length=4000,
-        blank=True,
-        null=True
-    )
+    status = models.CharField(max_length=25, blank=True, null=True, unique=True)
+    description = models.CharField(max_length=4000, blank=True, null=True)
 
     class Meta:
-        db_table = 'credit_trade_status'
+        db_table = "credit_trade_status"

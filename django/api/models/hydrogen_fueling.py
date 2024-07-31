@@ -9,7 +9,6 @@ from auditable.models import Auditable
 
 
 class HydrogrenFueling(EffectiveDates, Auditable):
-
     class Meta:
         db_table = "hydrogen_fueling"
 

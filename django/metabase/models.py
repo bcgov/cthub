@@ -13,28 +13,40 @@ class Action(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     type = models.TextField()
-    model = models.ForeignKey('ReportCard', models.DO_NOTHING)
+    model = models.ForeignKey("ReportCard", models.DO_NOTHING)
     name = models.CharField(max_length=254)
     description = models.TextField(blank=True, null=True)
     parameters = models.TextField(blank=True, null=True)
     parameter_mappings = models.TextField(blank=True, null=True)
     visualization_settings = models.TextField(blank=True, null=True)
     public_uuid = models.CharField(unique=True, max_length=36, blank=True, null=True)
-    made_public_by = models.ForeignKey('CoreUser', models.DO_NOTHING, related_name="made_public_actions", blank=True, null=True)
-    creator = models.ForeignKey('CoreUser', models.DO_NOTHING, related_name="created_actions", blank=True, null=True)
+    made_public_by = models.ForeignKey(
+        "CoreUser",
+        models.DO_NOTHING,
+        related_name="made_public_actions",
+        blank=True,
+        null=True,
+    )
+    creator = models.ForeignKey(
+        "CoreUser",
+        models.DO_NOTHING,
+        related_name="created_actions",
+        blank=True,
+        null=True,
+    )
     archived = models.BooleanField()
     entity_id = models.CharField(unique=True, max_length=21, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'action'
+        db_table = "action"
 
 
 class Activity(models.Model):
     id = models.IntegerField(primary_key=True)
     topic = models.CharField(max_length=32)
     timestamp = models.DateTimeField()
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING, blank=True, null=True)
     model = models.CharField(max_length=16, blank=True, null=True)
     model_id = models.IntegerField(blank=True, null=True)
     database_id = models.IntegerField(blank=True, null=True)
@@ -44,56 +56,59 @@ class Activity(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'activity'
+        db_table = "activity"
 
 
 class ApplicationPermissionsRevision(models.Model):
     id = models.IntegerField(primary_key=True)
     before = models.TextField()
     after = models.TextField()
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING)
     created_at = models.DateTimeField()
     remark = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'application_permissions_revision'
+        db_table = "application_permissions_revision"
 
 
 class BookmarkOrdering(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING)
     type = models.CharField(max_length=255)
     item_id = models.IntegerField()
     ordering = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'bookmark_ordering'
-        unique_together = (('user', 'type', 'item_id'), ('user', 'ordering'),)
+        db_table = "bookmark_ordering"
+        unique_together = (
+            ("user", "type", "item_id"),
+            ("user", "ordering"),
+        )
 
 
 class CardBookmark(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING)
-    card = models.ForeignKey('ReportCard', models.DO_NOTHING)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING)
+    card = models.ForeignKey("ReportCard", models.DO_NOTHING)
     created_at = models.DateTimeField()
 
     class Meta:
         managed = False
-        db_table = 'card_bookmark'
-        unique_together = (('user', 'card'),)
+        db_table = "card_bookmark"
+        unique_together = (("user", "card"),)
 
 
 class CardLabel(models.Model):
     id = models.IntegerField(primary_key=True)
-    card = models.ForeignKey('ReportCard', models.DO_NOTHING)
-    label = models.ForeignKey('Label', models.DO_NOTHING)
+    card = models.ForeignKey("ReportCard", models.DO_NOTHING)
+    label = models.ForeignKey("Label", models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'card_label'
-        unique_together = (('card', 'label'),)
+        db_table = "card_label"
+        unique_together = (("card", "label"),)
 
 
 class Collection(models.Model):
@@ -103,7 +118,9 @@ class Collection(models.Model):
     color = models.CharField(max_length=7)
     archived = models.BooleanField()
     location = models.CharField(max_length=254)
-    personal_owner = models.OneToOneField('CoreUser', models.DO_NOTHING, blank=True, null=True)
+    personal_owner = models.OneToOneField(
+        "CoreUser", models.DO_NOTHING, blank=True, null=True
+    )
     slug = models.CharField(max_length=254)
     namespace = models.CharField(max_length=254, blank=True, null=True)
     authority_level = models.CharField(max_length=255, blank=True, null=True)
@@ -112,37 +129,37 @@ class Collection(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'collection'
+        db_table = "collection"
 
 
 class CollectionBookmark(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING)
     collection = models.ForeignKey(Collection, models.DO_NOTHING)
     created_at = models.DateTimeField()
 
     class Meta:
         managed = False
-        db_table = 'collection_bookmark'
-        unique_together = (('user', 'collection'),)
+        db_table = "collection_bookmark"
+        unique_together = (("user", "collection"),)
 
 
 class CollectionPermissionGraphRevision(models.Model):
     id = models.IntegerField(primary_key=True)
     before = models.TextField()
     after = models.TextField()
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING)
     created_at = models.DateTimeField()
     remark = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'collection_permission_graph_revision'
+        db_table = "collection_permission_graph_revision"
 
 
 class ComputationJob(models.Model):
     id = models.IntegerField(primary_key=True)
-    creator = models.ForeignKey('CoreUser', models.DO_NOTHING, blank=True, null=True)
+    creator = models.ForeignKey("CoreUser", models.DO_NOTHING, blank=True, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     type = models.CharField(max_length=254)
@@ -152,7 +169,7 @@ class ComputationJob(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'computation_job'
+        db_table = "computation_job"
 
 
 class ComputationJobResult(models.Model):
@@ -165,18 +182,18 @@ class ComputationJobResult(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'computation_job_result'
+        db_table = "computation_job_result"
 
 
 class CoreSession(models.Model):
     id = models.CharField(primary_key=True, max_length=254)
-    user = models.ForeignKey('CoreUser', models.DO_NOTHING)
+    user = models.ForeignKey("CoreUser", models.DO_NOTHING)
     created_at = models.DateTimeField()
     anti_csrf_token = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'core_session'
+        db_table = "core_session"
 
 
 class CoreUser(models.Model):
@@ -204,41 +221,41 @@ class CoreUser(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'core_user'
+        db_table = "core_user"
 
 
 class DashboardBookmark(models.Model):
     id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(CoreUser, models.DO_NOTHING)
-    dashboard = models.ForeignKey('ReportDashboard', models.DO_NOTHING)
+    dashboard = models.ForeignKey("ReportDashboard", models.DO_NOTHING)
     created_at = models.DateTimeField()
 
     class Meta:
         managed = False
-        db_table = 'dashboard_bookmark'
-        unique_together = (('user', 'dashboard'),)
+        db_table = "dashboard_bookmark"
+        unique_together = (("user", "dashboard"),)
 
 
 class DashboardFavorite(models.Model):
     id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(CoreUser, models.DO_NOTHING)
-    dashboard = models.ForeignKey('ReportDashboard', models.DO_NOTHING)
+    dashboard = models.ForeignKey("ReportDashboard", models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'dashboard_favorite'
-        unique_together = (('user', 'dashboard'),)
+        db_table = "dashboard_favorite"
+        unique_together = (("user", "dashboard"),)
 
 
 class DashboardcardSeries(models.Model):
     id = models.IntegerField(primary_key=True)
-    dashboardcard = models.ForeignKey('ReportDashboardcard', models.DO_NOTHING)
-    card = models.ForeignKey('ReportCard', models.DO_NOTHING)
+    dashboardcard = models.ForeignKey("ReportDashboardcard", models.DO_NOTHING)
+    card = models.ForeignKey("ReportCard", models.DO_NOTHING)
     position = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'dashboardcard_series'
+        db_table = "dashboardcard_series"
 
 
 class DataMigrations(models.Model):
@@ -247,7 +264,7 @@ class DataMigrations(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'data_migrations'
+        db_table = "data_migrations"
 
 
 # class Databasechangelog(models.Model):
@@ -293,22 +310,30 @@ class Dependency(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'dependency'
+        db_table = "dependency"
 
 
 class Dimension(models.Model):
     id = models.IntegerField(primary_key=True)
-    field = models.OneToOneField('MetabaseField', models.DO_NOTHING, related_name="field_dimensions")
+    field = models.OneToOneField(
+        "MetabaseField", models.DO_NOTHING, related_name="field_dimensions"
+    )
     name = models.CharField(max_length=254)
     type = models.CharField(max_length=254)
-    human_readable_field = models.ForeignKey('MetabaseField', models.DO_NOTHING, related_name="human_readable_field_dimensions", blank=True, null=True)
+    human_readable_field = models.ForeignKey(
+        "MetabaseField",
+        models.DO_NOTHING,
+        related_name="human_readable_field_dimensions",
+        blank=True,
+        null=True,
+    )
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     entity_id = models.CharField(unique=True, max_length=21, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'dimension'
+        db_table = "dimension"
 
 
 class HttpAction(models.Model):
@@ -319,7 +344,7 @@ class HttpAction(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'http_action'
+        db_table = "http_action"
 
 
 class ImplicitAction(models.Model):
@@ -328,7 +353,7 @@ class ImplicitAction(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'implicit_action'
+        db_table = "implicit_action"
 
 
 class Label(models.Model):
@@ -339,7 +364,7 @@ class Label(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'label'
+        db_table = "label"
 
 
 class LoginHistory(models.Model):
@@ -353,7 +378,7 @@ class LoginHistory(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'login_history'
+        db_table = "login_history"
 
 
 class MetabaseDatabase(models.Model):
@@ -383,7 +408,7 @@ class MetabaseDatabase(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'metabase_database'
+        db_table = "metabase_database"
 
 
 class MetabaseField(models.Model):
@@ -397,8 +422,8 @@ class MetabaseField(models.Model):
     description = models.TextField(blank=True, null=True)
     preview_display = models.BooleanField()
     position = models.IntegerField()
-    table = models.ForeignKey('MetabaseTable', models.DO_NOTHING)
-    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    table = models.ForeignKey("MetabaseTable", models.DO_NOTHING)
+    parent = models.ForeignKey("self", models.DO_NOTHING, blank=True, null=True)
     display_name = models.CharField(max_length=254, blank=True, null=True)
     visibility_type = models.CharField(max_length=32)
     fk_target_field_id = models.IntegerField(blank=True, null=True)
@@ -420,8 +445,11 @@ class MetabaseField(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'metabase_field'
-        unique_together = (('table', 'parent', 'name'), ('table', 'name'),)
+        db_table = "metabase_field"
+        unique_together = (
+            ("table", "parent", "name"),
+            ("table", "name"),
+        )
 
 
 class MetabaseFieldvalues(models.Model):
@@ -438,7 +466,7 @@ class MetabaseFieldvalues(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'metabase_fieldvalues'
+        db_table = "metabase_fieldvalues"
 
 
 class MetabaseTable(models.Model):
@@ -461,8 +489,11 @@ class MetabaseTable(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'metabase_table'
-        unique_together = (('db', 'schema', 'name'), ('db', 'name'),)
+        db_table = "metabase_table"
+        unique_together = (
+            ("db", "schema", "name"),
+            ("db", "name"),
+        )
 
 
 class Metric(models.Model):
@@ -483,7 +514,7 @@ class Metric(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'metric'
+        db_table = "metric"
 
 
 class MetricImportantField(models.Model):
@@ -493,8 +524,8 @@ class MetricImportantField(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'metric_important_field'
-        unique_together = (('metric', 'field'),)
+        db_table = "metric_important_field"
+        unique_together = (("metric", "field"),)
 
 
 class ModerationReview(models.Model):
@@ -510,7 +541,7 @@ class ModerationReview(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'moderation_review'
+        db_table = "moderation_review"
 
 
 class NativeQuerySnippet(models.Model):
@@ -527,14 +558,14 @@ class NativeQuerySnippet(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'native_query_snippet'
+        db_table = "native_query_snippet"
 
 
 class ParameterCard(models.Model):
     id = models.IntegerField(primary_key=True)
     updated_at = models.DateTimeField()
     created_at = models.DateTimeField()
-    card = models.ForeignKey('ReportCard', models.DO_NOTHING)
+    card = models.ForeignKey("ReportCard", models.DO_NOTHING)
     parameterized_object_type = models.CharField(max_length=32)
     parameterized_object_id = models.IntegerField()
     parameter_id = models.CharField(max_length=36)
@@ -542,19 +573,21 @@ class ParameterCard(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'parameter_card'
-        unique_together = (('parameterized_object_id', 'parameterized_object_type', 'parameter_id'),)
+        db_table = "parameter_card"
+        unique_together = (
+            ("parameterized_object_id", "parameterized_object_type", "parameter_id"),
+        )
 
 
 class Permissions(models.Model):
     id = models.IntegerField(primary_key=True)
     object = models.CharField(max_length=254)
-    group = models.ForeignKey('PermissionsGroup', models.DO_NOTHING)
+    group = models.ForeignKey("PermissionsGroup", models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'permissions'
-        unique_together = (('group', 'object'),)
+        db_table = "permissions"
+        unique_together = (("group", "object"),)
 
 
 class PermissionsGroup(models.Model):
@@ -563,7 +596,7 @@ class PermissionsGroup(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'permissions_group'
+        db_table = "permissions_group"
 
 
 class PermissionsGroupMembership(models.Model):
@@ -574,8 +607,8 @@ class PermissionsGroupMembership(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'permissions_group_membership'
-        unique_together = (('user', 'group'),)
+        db_table = "permissions_group_membership"
+        unique_together = (("user", "group"),)
 
 
 class PermissionsRevision(models.Model):
@@ -588,13 +621,13 @@ class PermissionsRevision(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'permissions_revision'
+        db_table = "permissions_revision"
 
 
 class PersistedInfo(models.Model):
     id = models.IntegerField(primary_key=True)
     database = models.ForeignKey(MetabaseDatabase, models.DO_NOTHING)
-    card = models.OneToOneField('ReportCard', models.DO_NOTHING)
+    card = models.OneToOneField("ReportCard", models.DO_NOTHING)
     question_slug = models.TextField()
     table_name = models.TextField()
     definition = models.TextField(blank=True, null=True)
@@ -610,7 +643,7 @@ class PersistedInfo(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'persisted_info'
+        db_table = "persisted_info"
 
 
 class Pulse(models.Model):
@@ -626,28 +659,32 @@ class Pulse(models.Model):
     collection = models.ForeignKey(Collection, models.DO_NOTHING, blank=True, null=True)
     collection_position = models.SmallIntegerField(blank=True, null=True)
     archived = models.BooleanField(blank=True, null=True)
-    dashboard = models.ForeignKey('ReportDashboard', models.DO_NOTHING, blank=True, null=True)
+    dashboard = models.ForeignKey(
+        "ReportDashboard", models.DO_NOTHING, blank=True, null=True
+    )
     parameters = models.TextField()
     entity_id = models.CharField(unique=True, max_length=21, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'pulse'
+        db_table = "pulse"
 
 
 class PulseCard(models.Model):
     id = models.IntegerField(primary_key=True)
     pulse = models.ForeignKey(Pulse, models.DO_NOTHING)
-    card = models.ForeignKey('ReportCard', models.DO_NOTHING)
+    card = models.ForeignKey("ReportCard", models.DO_NOTHING)
     position = models.IntegerField()
     include_csv = models.BooleanField()
     include_xls = models.BooleanField()
-    dashboard_card = models.ForeignKey('ReportDashboardcard', models.DO_NOTHING, blank=True, null=True)
+    dashboard_card = models.ForeignKey(
+        "ReportDashboardcard", models.DO_NOTHING, blank=True, null=True
+    )
     entity_id = models.CharField(unique=True, max_length=21, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'pulse_card'
+        db_table = "pulse_card"
 
 
 class PulseChannel(models.Model):
@@ -666,7 +703,7 @@ class PulseChannel(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'pulse_channel'
+        db_table = "pulse_channel"
 
 
 class PulseChannelRecipient(models.Model):
@@ -676,19 +713,21 @@ class PulseChannelRecipient(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'pulse_channel_recipient'
+        db_table = "pulse_channel_recipient"
 
 
 class QrtzBlobTriggers(models.Model):
-    sched_name = models.OneToOneField('QrtzTriggers', models.DO_NOTHING, db_column='sched_name', primary_key=True)
+    sched_name = models.OneToOneField(
+        "QrtzTriggers", models.DO_NOTHING, db_column="sched_name", primary_key=True
+    )
     trigger_name = models.CharField(max_length=200)
     trigger_group = models.CharField(max_length=200)
     blob_data = models.BinaryField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'qrtz_blob_triggers'
-        unique_together = (('sched_name', 'trigger_name', 'trigger_group'),)
+        db_table = "qrtz_blob_triggers"
+        unique_together = (("sched_name", "trigger_name", "trigger_group"),)
 
 
 class QrtzCalendars(models.Model):
@@ -698,12 +737,14 @@ class QrtzCalendars(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_calendars'
-        unique_together = (('sched_name', 'calendar_name'),)
+        db_table = "qrtz_calendars"
+        unique_together = (("sched_name", "calendar_name"),)
 
 
 class QrtzCronTriggers(models.Model):
-    sched_name = models.OneToOneField('QrtzTriggers', models.DO_NOTHING, db_column='sched_name', primary_key=True)
+    sched_name = models.OneToOneField(
+        "QrtzTriggers", models.DO_NOTHING, db_column="sched_name", primary_key=True
+    )
     trigger_name = models.CharField(max_length=200)
     trigger_group = models.CharField(max_length=200)
     cron_expression = models.CharField(max_length=120)
@@ -711,8 +752,8 @@ class QrtzCronTriggers(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_cron_triggers'
-        unique_together = (('sched_name', 'trigger_name', 'trigger_group'),)
+        db_table = "qrtz_cron_triggers"
+        unique_together = (("sched_name", "trigger_name", "trigger_group"),)
 
 
 class QrtzFiredTriggers(models.Model):
@@ -732,8 +773,8 @@ class QrtzFiredTriggers(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_fired_triggers'
-        unique_together = (('sched_name', 'entry_id'),)
+        db_table = "qrtz_fired_triggers"
+        unique_together = (("sched_name", "entry_id"),)
 
 
 class QrtzJobDetails(models.Model):
@@ -750,8 +791,8 @@ class QrtzJobDetails(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_job_details'
-        unique_together = (('sched_name', 'job_name', 'job_group'),)
+        db_table = "qrtz_job_details"
+        unique_together = (("sched_name", "job_name", "job_group"),)
 
 
 class QrtzLocks(models.Model):
@@ -760,8 +801,8 @@ class QrtzLocks(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_locks'
-        unique_together = (('sched_name', 'lock_name'),)
+        db_table = "qrtz_locks"
+        unique_together = (("sched_name", "lock_name"),)
 
 
 class QrtzPausedTriggerGrps(models.Model):
@@ -770,8 +811,8 @@ class QrtzPausedTriggerGrps(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_paused_trigger_grps'
-        unique_together = (('sched_name', 'trigger_group'),)
+        db_table = "qrtz_paused_trigger_grps"
+        unique_together = (("sched_name", "trigger_group"),)
 
 
 class QrtzSchedulerState(models.Model):
@@ -782,12 +823,14 @@ class QrtzSchedulerState(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_scheduler_state'
-        unique_together = (('sched_name', 'instance_name'),)
+        db_table = "qrtz_scheduler_state"
+        unique_together = (("sched_name", "instance_name"),)
 
 
 class QrtzSimpleTriggers(models.Model):
-    sched_name = models.OneToOneField('QrtzTriggers', models.DO_NOTHING, db_column='sched_name', primary_key=True)
+    sched_name = models.OneToOneField(
+        "QrtzTriggers", models.DO_NOTHING, db_column="sched_name", primary_key=True
+    )
     trigger_name = models.CharField(max_length=200)
     trigger_group = models.CharField(max_length=200)
     repeat_count = models.BigIntegerField()
@@ -796,12 +839,14 @@ class QrtzSimpleTriggers(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_simple_triggers'
-        unique_together = (('sched_name', 'trigger_name', 'trigger_group'),)
+        db_table = "qrtz_simple_triggers"
+        unique_together = (("sched_name", "trigger_name", "trigger_group"),)
 
 
 class QrtzSimpropTriggers(models.Model):
-    sched_name = models.OneToOneField('QrtzTriggers', models.DO_NOTHING, db_column='sched_name', primary_key=True)
+    sched_name = models.OneToOneField(
+        "QrtzTriggers", models.DO_NOTHING, db_column="sched_name", primary_key=True
+    )
     trigger_name = models.CharField(max_length=200)
     trigger_group = models.CharField(max_length=200)
     str_prop_1 = models.CharField(max_length=512, blank=True, null=True)
@@ -811,19 +856,25 @@ class QrtzSimpropTriggers(models.Model):
     int_prop_2 = models.IntegerField(blank=True, null=True)
     long_prop_1 = models.BigIntegerField(blank=True, null=True)
     long_prop_2 = models.BigIntegerField(blank=True, null=True)
-    dec_prop_1 = models.DecimalField(max_digits=13, decimal_places=4, blank=True, null=True)
-    dec_prop_2 = models.DecimalField(max_digits=13, decimal_places=4, blank=True, null=True)
+    dec_prop_1 = models.DecimalField(
+        max_digits=13, decimal_places=4, blank=True, null=True
+    )
+    dec_prop_2 = models.DecimalField(
+        max_digits=13, decimal_places=4, blank=True, null=True
+    )
     bool_prop_1 = models.BooleanField(blank=True, null=True)
     bool_prop_2 = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'qrtz_simprop_triggers'
-        unique_together = (('sched_name', 'trigger_name', 'trigger_group'),)
+        db_table = "qrtz_simprop_triggers"
+        unique_together = (("sched_name", "trigger_name", "trigger_group"),)
 
 
 class QrtzTriggers(models.Model):
-    sched_name = models.OneToOneField(QrtzJobDetails, models.DO_NOTHING, db_column='sched_name', primary_key=True)
+    sched_name = models.OneToOneField(
+        QrtzJobDetails, models.DO_NOTHING, db_column="sched_name", primary_key=True
+    )
     trigger_name = models.CharField(max_length=200)
     trigger_group = models.CharField(max_length=200)
     job_name = models.CharField(max_length=200)
@@ -842,8 +893,8 @@ class QrtzTriggers(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qrtz_triggers'
-        unique_together = (('sched_name', 'trigger_name', 'trigger_group'),)
+        db_table = "qrtz_triggers"
+        unique_together = (("sched_name", "trigger_name", "trigger_group"),)
 
 
 class Query(models.Model):
@@ -853,7 +904,7 @@ class Query(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'query'
+        db_table = "query"
 
 
 class QueryAction(models.Model):
@@ -863,7 +914,7 @@ class QueryAction(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'query_action'
+        db_table = "query_action"
 
 
 class QueryCache(models.Model):
@@ -873,7 +924,7 @@ class QueryCache(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'query_cache'
+        db_table = "query_cache"
 
 
 class QueryExecution(models.Model):
@@ -894,7 +945,7 @@ class QueryExecution(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'query_execution'
+        db_table = "query_execution"
 
 
 class ReportCard(models.Model):
@@ -906,14 +957,22 @@ class ReportCard(models.Model):
     display = models.CharField(max_length=254)
     dataset_query = models.TextField()
     visualization_settings = models.TextField()
-    creator = models.ForeignKey(CoreUser, models.DO_NOTHING, related_name="creator_report_cards")
+    creator = models.ForeignKey(
+        CoreUser, models.DO_NOTHING, related_name="creator_report_cards"
+    )
     database = models.ForeignKey(MetabaseDatabase, models.DO_NOTHING)
     table = models.ForeignKey(MetabaseTable, models.DO_NOTHING, blank=True, null=True)
     query_type = models.CharField(max_length=16, blank=True, null=True)
     archived = models.BooleanField()
     collection = models.ForeignKey(Collection, models.DO_NOTHING, blank=True, null=True)
     public_uuid = models.CharField(unique=True, max_length=36, blank=True, null=True)
-    made_public_by = models.ForeignKey(CoreUser, models.DO_NOTHING, blank=True, null=True, related_name="made_public_by_report_cards")
+    made_public_by = models.ForeignKey(
+        CoreUser,
+        models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="made_public_by_report_cards",
+    )
     enable_embedding = models.BooleanField()
     embedding_params = models.TextField(blank=True, null=True)
     cache_ttl = models.IntegerField(blank=True, null=True)
@@ -927,7 +986,7 @@ class ReportCard(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'report_card'
+        db_table = "report_card"
 
 
 class ReportCardfavorite(models.Model):
@@ -939,8 +998,8 @@ class ReportCardfavorite(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'report_cardfavorite'
-        unique_together = (('card', 'owner'),)
+        db_table = "report_cardfavorite"
+        unique_together = (("card", "owner"),)
 
 
 class ReportDashboard(models.Model):
@@ -949,13 +1008,21 @@ class ReportDashboard(models.Model):
     updated_at = models.DateTimeField()
     name = models.CharField(max_length=254)
     description = models.TextField(blank=True, null=True)
-    creator = models.ForeignKey(CoreUser, models.DO_NOTHING, related_name="creator_report_dashboards")
+    creator = models.ForeignKey(
+        CoreUser, models.DO_NOTHING, related_name="creator_report_dashboards"
+    )
     parameters = models.TextField()
     points_of_interest = models.TextField(blank=True, null=True)
     caveats = models.TextField(blank=True, null=True)
     show_in_getting_started = models.BooleanField()
     public_uuid = models.CharField(unique=True, max_length=36, blank=True, null=True)
-    made_public_by = models.ForeignKey(CoreUser, models.DO_NOTHING, related_name="made_public_by_report_dashboards", blank=True, null=True)
+    made_public_by = models.ForeignKey(
+        CoreUser,
+        models.DO_NOTHING,
+        related_name="made_public_by_report_dashboards",
+        blank=True,
+        null=True,
+    )
     enable_embedding = models.BooleanField()
     embedding_params = models.TextField(blank=True, null=True)
     archived = models.BooleanField()
@@ -967,7 +1034,7 @@ class ReportDashboard(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'report_dashboard'
+        db_table = "report_dashboard"
 
 
 class ReportDashboardcard(models.Model):
@@ -987,7 +1054,7 @@ class ReportDashboardcard(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'report_dashboardcard'
+        db_table = "report_dashboardcard"
 
 
 class Revision(models.Model):
@@ -1003,7 +1070,7 @@ class Revision(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'revision'
+        db_table = "revision"
 
 
 class Sandboxes(models.Model):
@@ -1012,12 +1079,14 @@ class Sandboxes(models.Model):
     table = models.ForeignKey(MetabaseTable, models.DO_NOTHING)
     card = models.ForeignKey(ReportCard, models.DO_NOTHING, blank=True, null=True)
     attribute_remappings = models.TextField(blank=True, null=True)
-    permission = models.ForeignKey(Permissions, models.DO_NOTHING, blank=True, null=True)
+    permission = models.ForeignKey(
+        Permissions, models.DO_NOTHING, blank=True, null=True
+    )
 
     class Meta:
         managed = False
-        db_table = 'sandboxes'
-        unique_together = (('table', 'group'),)
+        db_table = "sandboxes"
+        unique_together = (("table", "group"),)
 
 
 class Secret(models.Model):
@@ -1033,8 +1102,8 @@ class Secret(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'secret'
-        unique_together = (('id', 'version'),)
+        db_table = "secret"
+        unique_together = (("id", "version"),)
 
 
 class Segment(models.Model):
@@ -1054,7 +1123,7 @@ class Segment(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'segment'
+        db_table = "segment"
 
 
 class Setting(models.Model):
@@ -1063,7 +1132,7 @@ class Setting(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'setting'
+        db_table = "setting"
 
 
 class TaskHistory(models.Model):
@@ -1077,7 +1146,7 @@ class TaskHistory(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'task_history'
+        db_table = "task_history"
 
 
 class Timeline(models.Model):
@@ -1095,7 +1164,7 @@ class Timeline(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'timeline'
+        db_table = "timeline"
 
 
 class TimelineEvent(models.Model):
@@ -1114,7 +1183,7 @@ class TimelineEvent(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'timeline_event'
+        db_table = "timeline_event"
 
 
 class ViewLog(models.Model):
@@ -1127,4 +1196,4 @@ class ViewLog(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'view_log'
+        db_table = "view_log"

@@ -23,7 +23,7 @@ from api.services.spreadsheet_uploader_prep import (
     typo_checker,
     location_checker,
     email_validator,
-    validate_field_values
+    validate_field_values,
 )
 from api.services.resolvers import get_google_resolver
 from api.constants.misc import GER_VALID_FIELD_VALUES
@@ -411,7 +411,6 @@ class GoElectricRebatesColumnMapping(Enum):
     notes = "Notes"
 
 
-
 FIELD_TYPES = {
     "ARC Project Tracking": {
         "funding_call": str,
@@ -588,7 +587,6 @@ FIELD_TYPES = {
         "rebate_adjustment": str,
         "notes": str,
     },
-
 }
 
 DATASET_CONFIG = {
@@ -655,11 +653,34 @@ DATASET_CONFIG = {
         "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
         "validation_functions": [
-            {"function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
-            {"function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
-            {"function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
-            {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
-            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}}
-        ]
+            {
+                "function": validate_phone_numbers,
+                "columns": ["Phone Number"],
+                "kwargs": {"indices_offset": 2},
+            },
+            {
+                "function": typo_checker,
+                "columns": ["Applicant Name"],
+                "kwargs": {"cutoff": 0.8, "indices_offset": 2},
+            },
+            {
+                "function": location_checker,
+                "columns": ["City"],
+                "kwargs": {"indices_offset": 2},
+            },
+            {
+                "function": email_validator,
+                "columns": ["Email"],
+                "kwargs": {"indices_offset": 2, "get_resolver": get_google_resolver},
+            },
+            {
+                "function": validate_field_values,
+                "columns": [],
+                "kwargs": {
+                    "indices_offset": 2,
+                    "fields_and_values": GER_VALID_FIELD_VALUES,
+                },
+            },
+        ],
     },
 }

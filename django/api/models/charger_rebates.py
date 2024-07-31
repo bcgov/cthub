@@ -3,7 +3,6 @@ from django.db import models
 
 
 class ChargerRebates(Auditable):
-
     organization = models.CharField(blank=True, null=True, max_length=250, unique=False)
 
     region = models.CharField(blank=True, null=True, max_length=200, unique=False)

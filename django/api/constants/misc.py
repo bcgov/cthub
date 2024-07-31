@@ -78,12 +78,17 @@ RELEVANT_FEATURES = [
 ]
 
 GER_VALID_FIELD_VALUES = {
-    'Approvals': ['Approved', 'Approved Fraudulent'],
-    'Category': [
-        'Forklift', 'Low Speed', 'Motorcycle', 'Medium & Heavy Duty', 
-        'Airport & Port Specialty Vehicle', 'Cargo E-Bike', 'Utility Vehicle'
+    "Approvals": ["Approved", "Approved Fraudulent"],
+    "Category": [
+        "Forklift",
+        "Low Speed",
+        "Motorcycle",
+        "Medium & Heavy Duty",
+        "Airport & Port Specialty Vehicle",
+        "Cargo E-Bike",
+        "Utility Vehicle",
     ],
-    'Fleet/Individuals': ['Fleet', 'Individual'],
-    'Rebate adjustment (discount)': ['Yes'],
-    'Class': ['2B', '3', '4', '5', '6', '7', '8']
-    }
+    "Fleet/Individuals": ["Fleet", "Individual"],
+    "Rebate adjustment (discount)": ["Yes"],
+    "Class": ["2B", "3", "4", "5", "6", "7", "8"],
+}

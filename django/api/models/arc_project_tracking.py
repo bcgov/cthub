@@ -3,7 +3,6 @@ from django.db import models
 
 
 class ARCProjectTracking(Auditable):
-
     funding_call = models.CharField(blank=True, null=True, max_length=50, unique=False)
 
     proponent = models.CharField(blank=True, null=True, max_length=500, unique=False)

@@ -5,112 +5,193 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0022_auto_20240503_1823'),
+        ("api", "0022_auto_20240503_1823"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AppToken',
+            name="AppToken",
             fields=[
-                ('key', models.CharField(max_length=40, primary_key=True, serialize=False, verbose_name='Key')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created')),
+                (
+                    "key",
+                    models.CharField(
+                        max_length=40,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="Key",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Created"),
+                ),
             ],
             options={
-                'db_table': 'app_token',
+                "db_table": "app_token",
             },
         ),
         migrations.CreateModel(
-            name='AppUser',
+            name="AppUser",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('is_active', models.BooleanField(default=True)),
-                ('app_name', models.CharField(max_length=100, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("is_active", models.BooleanField(default=True)),
+                ("app_name", models.CharField(max_length=100, unique=True)),
             ],
             options={
-                'db_table': 'app_user',
+                "db_table": "app_user",
             },
         ),
         migrations.CreateModel(
-            name='UploadedVinRecord',
+            name="UploadedVinRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('vin', models.CharField(max_length=17)),
-                ('postal_code', models.CharField(blank=True, max_length=7, null=True)),
-                ('data', models.JSONField()),
-                ('vpic_current_decode_successful', models.BooleanField(default=False)),
-                ('vpic_number_of_current_decode_attempts', models.IntegerField(default=0)),
-                ('vinpower_current_decode_successful', models.BooleanField(default=False)),
-                ('vinpower_number_of_current_decode_attempts', models.IntegerField(default=0)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("vin", models.CharField(max_length=17)),
+                ("postal_code", models.CharField(blank=True, max_length=7, null=True)),
+                ("data", models.JSONField()),
+                ("vpic_current_decode_successful", models.BooleanField(default=False)),
+                (
+                    "vpic_number_of_current_decode_attempts",
+                    models.IntegerField(default=0),
+                ),
+                (
+                    "vinpower_current_decode_successful",
+                    models.BooleanField(default=False),
+                ),
+                (
+                    "vinpower_number_of_current_decode_attempts",
+                    models.IntegerField(default=0),
+                ),
             ],
             options={
-                'db_table': 'uploaded_vin_record',
+                "db_table": "uploaded_vin_record",
             },
         ),
         migrations.CreateModel(
-            name='UploadedVinsFile',
+            name="UploadedVinsFile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('filename', models.CharField(max_length=32, unique=True)),
-                ('chunk_size', models.IntegerField(default=25000)),
-                ('chunks_per_run', models.IntegerField(default=4)),
-                ('start_index', models.IntegerField(default=0)),
-                ('processed', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("filename", models.CharField(max_length=32, unique=True)),
+                ("chunk_size", models.IntegerField(default=25000)),
+                ("chunks_per_run", models.IntegerField(default=4)),
+                ("start_index", models.IntegerField(default=0)),
+                ("processed", models.BooleanField(default=False)),
             ],
             options={
-                'db_table': 'uploaded_vins_file',
+                "db_table": "uploaded_vins_file",
             },
         ),
         migrations.CreateModel(
-            name='VinpowerDecodedVinRecord',
+            name="VinpowerDecodedVinRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('vin', models.CharField(max_length=17, unique=True)),
-                ('data', models.JSONField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("vin", models.CharField(max_length=17, unique=True)),
+                ("data", models.JSONField()),
             ],
             options={
-                'db_table': 'vinpower_decoded_vin_record',
+                "db_table": "vinpower_decoded_vin_record",
             },
         ),
         migrations.CreateModel(
-            name='VpicDecodedVinRecord',
+            name="VpicDecodedVinRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
-                ('create_user', models.CharField(default='SYSTEM', max_length=130)),
-                ('update_timestamp', models.DateTimeField(auto_now=True, null=True)),
-                ('update_user', models.CharField(max_length=130, null=True)),
-                ('vin', models.CharField(max_length=17, unique=True)),
-                ('data', models.JSONField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "create_timestamp",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                ("create_user", models.CharField(default="SYSTEM", max_length=130)),
+                ("update_timestamp", models.DateTimeField(auto_now=True, null=True)),
+                ("update_user", models.CharField(max_length=130, null=True)),
+                ("vin", models.CharField(max_length=17, unique=True)),
+                ("data", models.JSONField()),
             ],
             options={
-                'db_table': 'vpic_decoded_vin_record',
+                "db_table": "vpic_decoded_vin_record",
             },
         ),
         migrations.AddConstraint(
-            model_name='uploadedvinrecord',
-            constraint=models.UniqueConstraint(fields=('vin', 'postal_code'), name='unique_vin_postal_code'),
+            model_name="uploadedvinrecord",
+            constraint=models.UniqueConstraint(
+                fields=("vin", "postal_code"), name="unique_vin_postal_code"
+            ),
         ),
         migrations.AddField(
-            model_name='apptoken',
-            name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='auth_token', to='api.appuser', verbose_name='User'),
+            model_name="apptoken",
+            name="user",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="auth_token",
+                to="api.appuser",
+                verbose_name="User",
+            ),
         ),
     ]

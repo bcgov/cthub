@@ -3,7 +3,6 @@ from django.db import models
 
 
 class HydrogenFleets(Auditable):
-
     application_number = models.IntegerField(blank=True, null=True)
 
     fleet_number = models.IntegerField(blank=True, null=True)

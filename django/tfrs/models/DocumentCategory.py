@@ -5,12 +5,7 @@ from tfrs.models.mixins.DisplayOrder import DisplayOrder
 
 
 class DocumentCategory(Auditable, DisplayOrder):
-    name = models.CharField(
-        max_length=120,
-        blank=True,
-        null=True,
-        unique=True
-    )
+    name = models.CharField(max_length=120, blank=True, null=True, unique=True)
 
     class Meta:
-        db_table = 'document_category'
+        db_table = "document_category"

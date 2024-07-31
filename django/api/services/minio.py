@@ -3,6 +3,7 @@ from minio import Minio
 
 from django.conf import settings
 
+
 def get_minio_client():
     return Minio(
         settings.MINIO_ENDPOINT,

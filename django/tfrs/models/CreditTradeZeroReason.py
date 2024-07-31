@@ -10,4 +10,4 @@ class CreditTradeZeroReason(Auditable, DisplayOrder, EffectiveDates):
     description = models.CharField(max_length=1000)
 
     class Meta:
-        db_table = 'credit_trade_zero_reason'
+        db_table = "credit_trade_zero_reason"

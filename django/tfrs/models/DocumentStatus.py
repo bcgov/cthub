@@ -6,12 +6,7 @@ from tfrs.models.mixins.EffectiveDates import EffectiveDates
 
 
 class DocumentStatus(Auditable, DisplayOrder, EffectiveDates):
-    status = models.CharField(
-        max_length=25,
-        blank=True,
-        null=True,
-        unique=True
-    )
+    status = models.CharField(max_length=25, blank=True, null=True, unique=True)
 
     class Meta:
-        db_table = 'document_status'
+        db_table = "document_status"

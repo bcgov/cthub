@@ -6,15 +6,8 @@ from tfrs.models.mixins.EffectiveDates import EffectiveDates
 
 
 class OrganizationType(Auditable, DisplayOrder, EffectiveDates):
-    type = models.CharField(
-        max_length=25,
-        unique=True
-    )
-    description = models.CharField(
-        max_length=1000,
-        blank=True,
-        null=True
-    )
+    type = models.CharField(max_length=25, unique=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
 
     class Meta:
-        db_table = 'organization_type'
+        db_table = "organization_type"

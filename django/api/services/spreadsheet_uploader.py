@@ -3,6 +3,7 @@ import pandas as pd
 import traceback
 from django.db import transaction
 
+
 def get_field_default(model, field):
     field = model._meta.get_field(field)
 
@@ -49,7 +50,7 @@ def transform_data(
     df = df[[col for col in df.columns if col in required_columns]]
 
     missing_columns = [col for col in required_columns if col not in df.columns]
-    if (missing_columns):
+    if missing_columns:
         raise ValueError(f"Missing columns: {', '.join(missing_columns)}")
 
     for prep_func in preparation_functions:
@@ -75,17 +76,23 @@ def transform_data(
                         errors_and_warnings[column]["Empty Value"] = {
                             "Expected Type": "Expected value where there isn't one.",
                             "Rows": [],
-                            "Severity": "Error"
+                            "Severity": "Error",
                         }
                     errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
 
-            if expected_type in [int, float, Decimal] and value is not None and pd.notna(value):
-                value = str(value).replace(',', '').strip()
+            if (
+                expected_type in [int, float, Decimal]
+                and value is not None
+                and pd.notna(value)
+            ):
+                value = str(value).replace(",", "").strip()
                 try:
                     if expected_type == int:
                         row_dict[column] = int(float(value))
                     elif expected_type == Decimal:
-                        row_dict[column] = Decimal(value).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                        row_dict[column] = Decimal(value).quantize(
+                            Decimal("0.01"), rounding=ROUND_HALF_UP
+                        )
                     else:
                         row_dict[column] = float(value)
                 except ValueError:
@@ -93,21 +100,32 @@ def transform_data(
                         errors_and_warnings[column] = {}
                     if "Incorrect Type" not in errors_and_warnings[column]:
                         errors_and_warnings[column]["Incorrect Type"] = {
-                            "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                            "Expected Type": "The following rows contained incorrect value types for the "
+                            + column
+                            + " column",
                             "Rows": [],
-                            "Severity": "Error"
+                            "Severity": "Error",
                         }
-                    errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
+                    errors_and_warnings[column]["Incorrect Type"]["Rows"].append(
+                        index + 1
+                    )
 
             # Check if expected_type is valid before using isinstance
-            elif expected_type is not None and isinstance(expected_type, type) and not isinstance(row_dict[column], expected_type) and value != "":
+            elif (
+                expected_type is not None
+                and isinstance(expected_type, type)
+                and not isinstance(row_dict[column], expected_type)
+                and value != ""
+            ):
                 if column not in errors_and_warnings:
                     errors_and_warnings[column] = {}
                 if "Incorrect Type" not in errors_and_warnings[column]:
                     errors_and_warnings[column]["Incorrect Type"] = {
-                        "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                        "Expected Type": "The following rows contained incorrect value types for the "
+                        + column
+                        + " column",
                         "Rows": [],
-                        "Severity": "Error"
+                        "Severity": "Error",
                     }
                 errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
 
@@ -126,10 +144,12 @@ def transform_data(
                         errors_and_warnings[column][issue] = {
                             "Expected Type": details.get("Expected Type", "Unknown"),
                             "Rows": details.get("Rows", []),
-                            "Severity": details.get("Severity", "Error")
+                            "Severity": details.get("Severity", "Error"),
                         }
                     else:
-                        errors_and_warnings[column][issue]["Rows"].extend(details.get("Rows", []))
+                        errors_and_warnings[column][issue]["Rows"].extend(
+                            details.get("Rows", [])
+                        )
 
     column_mapping = {col.name: col.value for col in column_mapping_enum}
     inverse_column_mapping = {v: k for k, v in column_mapping.items()}
@@ -144,7 +164,7 @@ def load_data(df, model, replace_data, user):
 
     if replace_data:
         model.objects.all().delete()
-        
+
     for index, row in df.iterrows():
         row_dict = row.to_dict()
         row_dict["update_user"] = user
@@ -196,7 +216,7 @@ def import_from_xls(
                     "errors_and_warnings": errors_and_warnings,
                 }
             else:
-                print('no warnings')
+                print("no warnings")
 
         result = load_data(df, model, replace_data, user, errors_and_warnings)
 
@@ -207,8 +227,8 @@ def import_from_xls(
             "success": True,
             "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
             "rows_processed": result["row_count"],
-            }
-    
+        }
+
     except Exception as error:
         traceback.print_exc()
         error_msg = f"Unexpected error: {str(error)}"

@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0030_goelectricrebates_notes'),
+        ("api", "0030_goelectricrebates_notes"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='goelectricrebates',
-            name='email',
+            model_name="goelectricrebates",
+            name="email",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='goelectricrebates',
-            name='phone',
+            model_name="goelectricrebates",
+            name="phone",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AlterField(
-            model_name='goelectricrebates',
-            name='total_purchase_price',
+            model_name="goelectricrebates",
+            name="total_purchase_price",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

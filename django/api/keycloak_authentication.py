@@ -10,7 +10,7 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
         auth = request.headers.get("Authorization", None)
         if settings.KEYCLOAK_TESTING:
             try:
-                user = User.objects.get(idir=auth['idir'])
+                user = User.objects.get(idir=auth["idir"])
                 return user.idir, None
             except User.DoesNotExist as exc:
                 # print("Testing User does not exist")

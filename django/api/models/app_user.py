@@ -16,7 +16,9 @@ class AppUser(Auditable):
     class Meta:
         db_table = "app_user"
 
-    db_table_comment = "represents an external application that integrates this app via API"
+    db_table_comment = (
+        "represents an external application that integrates this app via API"
+    )
 
 
 class AppToken(Token):
@@ -30,4 +32,6 @@ class AppToken(Token):
     class Meta:
         db_table = "app_token"
 
-    db_table_comment = "the token of an external application that integrates this app via API"
+    db_table_comment = (
+        "the token of an external application that integrates this app via API"
+    )

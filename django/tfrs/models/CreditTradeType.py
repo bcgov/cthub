@@ -20,4 +20,4 @@ class CreditTradeType(Auditable, DisplayOrder, EffectiveDates):
     is_gov_only_type = models.BooleanField()
 
     class Meta:
-        db_table = 'credit_trade_type'
+        db_table = "credit_trade_type"

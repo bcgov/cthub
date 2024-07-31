@@ -3,7 +3,6 @@ from django.db import models
 
 
 class ScrapIt(Auditable):
-
     approval_number = models.IntegerField(blank=True, null=True)
 
     application_received_date = models.CharField(

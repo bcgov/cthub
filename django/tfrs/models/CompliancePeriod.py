@@ -6,11 +6,7 @@ from tfrs.models.mixins.EffectiveDates import EffectiveDates
 
 
 class CompliancePeriod(Auditable, DisplayOrder, EffectiveDates):
-    description = models.CharField(
-        max_length=1000,
-        blank=True,
-        null=True
-    )
+    description = models.CharField(max_length=1000, blank=True, null=True)
 
     class Meta:
-        db_table = 'compliance_period'
+        db_table = "compliance_period"

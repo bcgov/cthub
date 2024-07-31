@@ -9,7 +9,6 @@ from auditable.models import Auditable
 
 
 class PublicCharging(EffectiveDates, Auditable):
-
     class Meta:
         db_table = "public_charging"
 

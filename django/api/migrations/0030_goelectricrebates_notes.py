@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0029_alter_uploadedvinrecord_timestamp'),
+        ("api", "0029_alter_uploadedvinrecord_timestamp"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='goelectricrebates',
-            name='notes',
+            model_name="goelectricrebates",
+            name="notes",
             field=models.CharField(blank=True, max_length=250, null=True),
         ),
     ]

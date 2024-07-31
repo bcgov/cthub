@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "django_q",
 ]
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -229,4 +229,6 @@ LOGGING = {
     },
 }
 
-PLACENAMES_ENDPOINT = PLACENAMES_ENDPOINT =  os.getenv("PLACENAMES_ENDPOINT", "https://apps.gov.bc.ca/pub/bcgnws/names/search")
+PLACENAMES_ENDPOINT = PLACENAMES_ENDPOINT = os.getenv(
+    "PLACENAMES_ENDPOINT", "https://apps.gov.bc.ca/pub/bcgnws/names/search"
+)

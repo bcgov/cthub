@@ -26,7 +26,6 @@ class UploadViewset(GenericViewSet):
 
     @action(detail=False, methods=["get"])
     def datasets_list(self, request):
-
         incomplete_datasets = [
             "LDV Rebates",
             "Public Charging",
@@ -52,20 +51,26 @@ class UploadViewset(GenericViewSet):
         replace_data = request.data.get("replaceData", False)
         filepath = request.data.get("filepath")
         check_for_warnings = request.data.get("checkForWarnings")
-        #boolean, if true show warnings before inserting data
-        #after displaying warnings, code can be rerun with show_warnings = false
-        #if warnings have been ignore
+        # boolean, if true show warnings before inserting data
+        # after displaying warnings, code can be rerun with show_warnings = false
+        # if warnings have been ignore
 
         if dataset_selected == "ICBC Vins":
             file_extension = pathlib.Path(filepath).suffix
-            if file_extension == '.csv':
+            if file_extension == ".csv":
                 try:
                     create_vins_file(filename)
-                    return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
+                    return Response(
+                        {"success": True, "message": "File successfully uploaded!"},
+                        status=status.HTTP_200_OK,
+                    )
                 except Exception as error:
                     return Response({"success": False, "message": str(error)})
             else:
-                return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"success": False, "message": "File must be a csv."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         try:
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
@@ -98,7 +103,7 @@ class UploadViewset(GenericViewSet):
                 field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user=request.user,
-                check_for_warnings=check_for_warnings
+                check_for_warnings=check_for_warnings,
             )
 
             if not result["success"]:
@@ -126,9 +131,9 @@ class UploadViewset(GenericViewSet):
                 excel_file.read(),
                 content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
-            response["Content-Disposition"] = (
-                f'attachment; filename="{dataset_name}.xlsx"'
-            )
+            response[
+                "Content-Disposition"
+            ] = f'attachment; filename="{dataset_name}.xlsx"'
             return response
         except ValueError as e:
             return HttpResponse(str(e), status=400)

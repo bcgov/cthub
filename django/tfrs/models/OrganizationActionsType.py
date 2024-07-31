@@ -17,4 +17,4 @@ class OrganizationActionsType(Auditable, DisplayOrder, EffectiveDates):
     )
 
     class Meta:
-        db_table = 'tfrs_organization_actions_type'
+        db_table = "tfrs_organization_actions_type"

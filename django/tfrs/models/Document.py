@@ -6,10 +6,7 @@ from tfrs.models.mixins.DocumentData import DocumentData
 
 
 class Document(Auditable, DocumentData):
-    credit_trades = ManyToManyField(
-        'CreditTrade',
-        through='DocumentCreditTrade'
-    )
+    credit_trades = ManyToManyField("CreditTrade", through="DocumentCreditTrade")
 
     class Meta:
-        db_table = 'document'
+        db_table = "document"

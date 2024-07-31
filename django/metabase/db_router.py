@@ -1,5 +1,4 @@
 class MetabaseRouter:
-
     app_label = "metabase"
     metabase_db = "metabase"
 

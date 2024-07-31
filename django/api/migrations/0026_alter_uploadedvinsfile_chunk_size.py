@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0025_auto_20240516_2248'),
+        ("api", "0025_auto_20240516_2248"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='uploadedvinsfile',
-            name='chunk_size',
+            model_name="uploadedvinsfile",
+            name="chunk_size",
             field=models.IntegerField(default=5000),
         ),
     ]
