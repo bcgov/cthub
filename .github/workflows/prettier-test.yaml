@@ -22,12 +22,7 @@ jobs:
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
-          prettier_options: --write **/*.{js,md,yaml}
-
-      - name: pwd
-        run: |
-          pwd
-          ls -l
+          prettier_options: --write **/*.{js,md,html}
 
       - name: Run python black code formatter
         uses: DataDog/action-py-black-formatter@v2.5
