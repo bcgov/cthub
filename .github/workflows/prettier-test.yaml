@@ -19,12 +19,14 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Test yarn
-        run: |
-          yarn --version
-          yarn add --exact prettier @prettier/plugin-python
-
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
-          prettier_options: --write **/*.{js,md,py}
+          prettier_options: --write **/*.{js,md}
+
+
+      - name: Run python black code formatter
+        uses: DataDog/action-py-black-formatter@v2.5
+        with:
+          check_mode: "true"
+      
