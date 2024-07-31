@@ -6,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const AlertDialog = (props) => {
   const {
@@ -33,7 +33,7 @@ const AlertDialog = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          <InfoOutlinedIcon className="error" /> {title}
+          <ErrorOutlineIcon className="error" /> {title}
         </DialogTitle>
         <DialogContent>
           <DialogContent id="alert-dialog-description">

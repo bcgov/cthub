@@ -7,7 +7,7 @@ import {
   Accordion,
   Button,
 } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import UploadIssuesDetail from "./UploadIssuesDetail";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -30,7 +30,7 @@ const UploadIssues = ({
     <>
       <Box sx={{ p: 2, mb: 2 }}>
         <h2 style={{ marginBottom: "16px" }}>
-          <InfoOutlinedIcon
+          <ErrorOutlineIcon
             className="error"
             sx={{ marginLeft: 1, marginRight: 1 }}
           />
