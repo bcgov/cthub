@@ -34,3 +34,9 @@ jobs:
         with:
           fail_on_error: "false"
       
+      - name: Commit Python files
+        uses: EndBug/add-and-commit@v9.1.4
+        with:
+          add: 'django'
+          committer_name: 'kuan'
+          message: 'python files changed after formater DataDog/action-py-black-formatter'
