@@ -1,6 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 import pandas as pd
 import traceback
+import numpy as np
 from django.db import transaction
 
 def get_field_default(model, field):
@@ -56,30 +57,37 @@ def transform_data(
         df = prep_func(df)
 
     nullable_fields = get_nullable_fields(model)
+
+    column_mapping = {e.value: e.name for e in column_mapping_enum}
+
     errors_and_warnings = {}
+    df = df.replace({np.nan: None})
 
     for index, row in df.iterrows():
         row_dict = row.to_dict()
 
         for column, value in row_dict.items():
-            expected_type = field_types.get(column)
-            is_nullable = column in nullable_fields
+            db_field_name = column_mapping.get(column)
 
-            if pd.isna(value) or value == "" or value is None:
-                if is_nullable:
-                    row_dict[column] = None
-                else:
-                    if column not in errors_and_warnings:
-                        errors_and_warnings[column] = {}
-                    if "Empty Value" not in errors_and_warnings[column]:
-                        errors_and_warnings[column]["Empty Value"] = {
-                            "Expected Type": "Expected value where there isn't one.",
-                            "Rows": [],
-                            "Severity": "Error"
-                        }
-                    errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+            if db_field_name:
+                is_nullable = db_field_name in nullable_fields
+                expected_type = field_types.get(column)
 
-            if expected_type in [int, float, Decimal] and value is not None and pd.notna(value):
+                if pd.isna(value) or value == "" or value is None:
+                    if is_nullable:
+                        row_dict[column] = None
+                    else:
+                        if column not in errors_and_warnings:
+                            errors_and_warnings[column] = {}
+                        if "Empty Value" not in errors_and_warnings[column]:
+                            errors_and_warnings[column]["Empty Value"] = {
+                                "Expected Type": "Expected value where there isn't one.",
+                                "Rows": [],
+                                "Severity": "Error"
+                            }
+                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+
+            if expected_type in [int, float, Decimal] and value is not None and pd.notna(value) and value != '':
                 value = str(value).replace(',', '').strip()
                 try:
                     if expected_type == int:
@@ -198,7 +206,7 @@ def import_from_xls(
             else:
                 print('no warnings')
 
-        result = load_data(df, model, replace_data, user, errors_and_warnings)
+        result = load_data(df, model, replace_data, user)
 
         total_rows = result["row_count"]
         inserted_rows = result["records_inserted"]
