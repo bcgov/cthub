@@ -1,6 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 import pandas as pd
 import traceback
+import numpy as np
 from django.db import transaction
 
 def get_field_default(model, field):
@@ -12,11 +13,11 @@ def get_field_default(model, field):
 
 
 def get_nullable_fields(model):
-    nullable_fields = {}
+    nullable_fields = []
 
     for field in model._meta.get_fields():
         if hasattr(field, "null") and field.null:
-            nullable_fields[field.name] = True
+            nullable_fields.append(field.name)
     return nullable_fields
 
 
@@ -28,7 +29,6 @@ def trim_all_columns(df):
 def extract_data(excel_file, sheet_name, header_row):
     try:
         df = pd.read_excel(excel_file, sheet_name, header=header_row)
-        df = df.fillna('TEMP_NULL')
         df = trim_all_columns(df)
         return df
     except Exception as e:
@@ -40,6 +40,8 @@ def transform_data(
     df,
     dataset_columns,
     column_mapping_enum,
+    field_types,
+    model,
     preparation_functions=[],
     validation_functions=[],
 ):
@@ -48,51 +50,44 @@ def transform_data(
     df = df[[col for col in df.columns if col in required_columns]]
 
     missing_columns = [col for col in required_columns if col not in df.columns]
-    if missing_columns:
+    if (missing_columns):
         raise ValueError(f"Missing columns: {', '.join(missing_columns)}")
 
     for prep_func in preparation_functions:
         df = prep_func(df)
 
-    validation_errors = {}
-    for x in validation_functions:
-        validate = x["function"]
-        columns = x["columns"]
-        kwargs = x["kwargs"]
-        key = x["error_type"]
-        errors = validate(df, *columns, **kwargs)
-        if errors:
-            validation_errors[key] = errors
-
-    column_mapping = {col.name: col.value for col in column_mapping_enum}
-    # Need to use the inverse (keys) for mapping the columns to what the database expects in order to use enums
-    inverse_column_mapping = {v: k for k, v in column_mapping.items()}
-    df.rename(columns=inverse_column_mapping, inplace=True)
-
-    return df, validation_errors
-
-
-@transaction.atomic
-def load_data(df, model, field_types, replace_data, user, validation_errors):
-    row_count = 0
-    records_inserted = 0
-    errors = []
     nullable_fields = get_nullable_fields(model)
 
-    # validation_error_rows = get_validation_error_rows(errors) This may be used going forward for validation errors that cannot be overwritten.
+    column_mapping = {e.value: e.name for e in column_mapping_enum}
 
-    if replace_data:
-        model.objects.all().delete()
+    errors_and_warnings = {}
+    df = df.replace({np.nan: None})
 
     for index, row in df.iterrows():
         row_dict = row.to_dict()
-        valid_row = True
 
         for column, value in row_dict.items():
-            expected_type = field_types.get(column)
-            is_nullable = column in nullable_fields
+            db_field_name = column_mapping.get(column)
 
-            if expected_type in [int, float, Decimal] and value != 'TEMP_NULL':
+            if db_field_name:
+                is_nullable = db_field_name in nullable_fields
+                expected_type = field_types.get(column)
+
+                if pd.isna(value) or value == "" or value is None:
+                    if is_nullable:
+                        row_dict[column] = None
+                    else:
+                        if column not in errors_and_warnings:
+                            errors_and_warnings[column] = {}
+                        if "Empty Value" not in errors_and_warnings[column]:
+                            errors_and_warnings[column]["Empty Value"] = {
+                                "Expected Type": "Expected value where there isn't one.",
+                                "Rows": [],
+                                "Severity": "Error"
+                            }
+                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+
+            if expected_type in [int, float, Decimal] and value is not None and pd.notna(value) and value != '':
                 value = str(value).replace(',', '').strip()
                 try:
                     if expected_type == int:
@@ -102,45 +97,73 @@ def load_data(df, model, field_types, replace_data, user, validation_errors):
                     else:
                         row_dict[column] = float(value)
                 except ValueError:
-                    errors.append(
-                        f"Row {index + 1}: Unable to convert value to {expected_type.__name__} for '{column}'. Value was '{value}'."
-                    )
-                    valid_row = False
-                    continue
+                    if column not in errors_and_warnings:
+                        errors_and_warnings[column] = {}
+                    if "Incorrect Type" not in errors_and_warnings[column]:
+                        errors_and_warnings[column]["Incorrect Type"] = {
+                            "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                            "Rows": [],
+                            "Severity": "Error"
+                        }
+                    errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
 
-            if pd.isna(value) or value == "" or value == 'TEMP_NULL':
-                if is_nullable:
-                    row_dict[column] = None
-                else:
-                    row_dict[column] = get_field_default(model, column)
+            # Check if expected_type is valid before using isinstance
+            elif expected_type is not None and isinstance(expected_type, type) and not isinstance(row_dict[column], expected_type) and value != "":
+                if column not in errors_and_warnings:
+                    errors_and_warnings[column] = {}
+                if "Incorrect Type" not in errors_and_warnings[column]:
+                    errors_and_warnings[column]["Incorrect Type"] = {
+                        "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                        "Rows": [],
+                        "Severity": "Error"
+                    }
+                errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
 
-            elif not isinstance(row_dict[column], expected_type) and value != "":
-                errors.append(
-                    f"Row {index + 1}: Incorrect type for '{column}'. Expected {expected_type.__name__}, got {type(row_dict[column]).__name__}."
-                )
-                valid_row = False
-                continue
+    for x in validation_functions:
+        validate = x["function"]
+        columns = x["columns"]
+        kwargs = x["kwargs"]
+        warnings = validate(df, *columns, **kwargs)
 
-            # if index + 1 in validation_error_rows:
-            #     valid_row = False
-            #     continue
+        if warnings:
+            for column, issues in warnings.items():
+                if column not in errors_and_warnings:
+                    errors_and_warnings[column] = {}
+                for issue, details in issues.items():
+                    if issue not in errors_and_warnings[column]:
+                        errors_and_warnings[column][issue] = {
+                            "Expected Type": details.get("Expected Type", "Unknown"),
+                            "Rows": details.get("Rows", []),
+                            "Severity": details.get("Severity", "Error")
+                        }
+                    else:
+                        errors_and_warnings[column][issue]["Rows"].extend(details.get("Rows", []))
 
-        if valid_row:
-            try:
-                row_dict["update_user"] = user
-                model_instance = model(**row_dict)
-                model_instance.full_clean()
-                model_instance.save()
-                records_inserted += 1
-            except Exception as e:
-                errors.append(f"Row {index + 1}: {e}")
+    column_mapping = {col.name: col.value for col in column_mapping_enum}
+    inverse_column_mapping = {v: k for k, v in column_mapping.items()}
+    df.rename(columns=inverse_column_mapping, inplace=True)
 
-        row_count += 1
+    return df, errors_and_warnings
+
+
+@transaction.atomic
+def load_data(df, model, replace_data, user):
+    records_inserted = 0
+
+    if replace_data:
+        model.objects.all().delete()
+        
+    for index, row in df.iterrows():
+        row_dict = row.to_dict()
+        row_dict["update_user"] = user
+
+        model_instance = model(**row_dict)
+        model_instance.save()
+        records_inserted += 1
 
     return {
-        "row_count": row_count,
+        "row_count": len(df),
         "records_inserted": records_inserted,
-        "errors": sorted(errors, key=lambda x: int(x.split()[1][:-1])),
     }
 
 
@@ -156,14 +179,16 @@ def import_from_xls(
     user,
     preparation_functions=[],
     validation_functions=[],
-    check_for_warnings=False,
+    check_for_warnings=True,
 ):
     try:
         df = extract_data(excel_file, sheet_name, header_row)
-        df, validation_errors = transform_data(
+        df, errors_and_warnings = transform_data(
             df,
             dataset_columns,
             column_mapping_enum,
+            field_types,
+            model,
             preparation_functions,
             validation_functions,
         )
@@ -171,41 +196,27 @@ def import_from_xls(
         if check_for_warnings:
             ## do the error checking
 
-            if validation_errors:
+            if errors_and_warnings:
                 return {
                     "success": True,
                     "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
                     "warning": True,
-                    "warnings": validation_errors,
+                    "errors_and_warnings": errors_and_warnings,
                 }
             else:
                 print('no warnings')
 
-        result = load_data(df, model, field_types, replace_data, user, validation_errors)
+        result = load_data(df, model, replace_data, user)
 
         total_rows = result["row_count"]
         inserted_rows = result["records_inserted"]
 
-        if result["errors"] and result["records_inserted"] > 0:
-            return {
-                "success": True,
-                "message": f"{inserted_rows} out of {total_rows} rows successfully inserted with some errors encountered.",
-                "errors": result["errors"],
-                "rows_processed": result["row_count"],
+        return {
+            "success": True,
+            "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
+            "rows_processed": result["row_count"],
             }
-        elif len(result["errors"]) > 0:
-            return {
-                "success": False,
-                "message": "Errors encountered with no successful insertions.",
-                "errors": result["errors"],
-                "rows_processed": result["row_count"],
-            }
-        else:
-            return {
-                "success": True,
-                "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
-                "rows_processed": result["row_count"],
-            }
+    
     except Exception as error:
         traceback.print_exc()
         error_msg = f"Unexpected error: {str(error)}"

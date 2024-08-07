@@ -23,47 +23,60 @@ from api.services.spreadsheet_uploader_prep import (
     typo_checker,
     location_checker,
     email_validator,
-    validate_field_values
+    validate_field_values,
+    region_checker
 )
 from api.services.resolvers import get_google_resolver
-from api.constants.misc import GER_VALID_FIELD_VALUES
+from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES
 
+
+from enum import Enum
 
 class ARCProjectTrackingColumns(Enum):
-    FUNDING_CALL = "Funding Call"
+    REFERENCE_NUMBER = "Ref #"
     PROPONENT = "Proponent"
-    REF_NUMBER = "Ref #"
-    PROJECT_TITLE = "Project Title"
-    PRIMARY_LOCATION = "Primary Location"
     STATUS = "Status"
-    ARC_FUNDING = "ARC Funding"
-    FUNDS_ISSUED = "Funds Issued"
+    FUNDING_CALL = "Funding Call"
+    PROJECT_TITLE = "Project Title"
+    VEHICLE_CATEGORY = "Vehicle Category"
+    ZEV_SUB_SECTOR = "ZEV Sub-Section"
+    FUEL_TYPE = "Fuel Type"
+    RETROFIT = "Retrofit"
+    PRIMARY_LOCATION = "Primary Location"
+    ECONOMIC_REGION = "Economic Region"
+    JOBS = "Jobs (FTEs)"
+    FUNDS_COMMITED = "Funds Committed"
+    FUNDS_DISBURSED = "Funds Disbursed"
+    REMAINING_DISBURSED = "Remaining To Disburse"
+    TOTAL_PROJECT_VALUE = "Total Project Value"
     START_DATE = "Start Date"
     COMPLETION_DATE = "Completion Date"
-    TOTAL_PROJECT_VALUE = "Total Project Value"
-    ZEV_SUB_SECTOR = "ZEV Sub-Sector"
-    ON_ROAD_OFF_ROAD = "On-Road/Off-Road"
-    FUEL_TYPE = "Fuel Type"
+    COMPLETE_OR_TERMINATION_DATE = "Complete or Termination date"
     PUBLICLY_ANNOUNCED = "Publicly Announced"
-
+    NOTES = "Notes"
 
 class ArcProjectTrackingColumnMapping(Enum):
-    funding_call = "Funding Call"
-    proponent = "Proponent"
     reference_number = "Ref #"
-    project_title = "Project Title"
-    primary_location = "Primary Location"
+    proponent = "Proponent"
     status = "Status"
-    arc_funding = "ARC Funding"
-    funds_issued = "Funds Issued"
+    funding_call = "Funding Call"
+    project_title = "Project Title"
+    vehicle_category = "Vehicle Category"
+    zev_sub_sector = "ZEV Sub-Section"
+    fuel_type = "Fuel Type"
+    retrofit = "Retrofit"
+    primary_location = "Primary Location"
+    economic_region = "Economic Region"
+    jobs = "Jobs (FTEs)"
+    funds_commited = "Funds Committed"
+    funds_disbursed = "Funds Disbursed"
+    remaining_disbursed = "Remaining To Disburse"
+    total_project_value = "Total Project Value"
     start_date = "Start Date"
     completion_date = "Completion Date"
-    total_project_value = "Total Project Value"
-    zev_sub_sector = "ZEV Sub-Sector"
-    on_road_off_road = "On-Road/Off-Road"
-    fuel_type = "Fuel Type"
+    complete_or_termination_date = "Complete or Termination date"
     publicly_announced = "Publicly Announced"
-
+    notes = "Notes"
 
 class EVChargingRebatesColumns(Enum):
     ORGANIZATION = "Organization"
@@ -414,21 +427,27 @@ class GoElectricRebatesColumnMapping(Enum):
 
 FIELD_TYPES = {
     "ARC Project Tracking": {
-        "funding_call": str,
-        "proponent": str,
         "reference_number": str,
-        "project_title": str,
-        "primary_location": str,
+        "proponent": str,
         "status": str,
-        "arc_funding": int,
-        "funds_issued": int,
-        "start_date": str,
-        "completion_date": str,
-        "total_project_value": int,
+        "funding_call": str,
+        "project_title": str,
+        "vehicle_category": str,
         "zev_sub_sector": str,
-        "on_road_off_road": str,
         "fuel_type": str,
-        "publicly_announced": bool,
+        "retrofit": str,
+        "primary_location": str,
+        "economic_region": str,
+        "jobs": int,
+        "funds_commited": int,
+        "funds_disbursed": int,
+        "remaining_disbursed": int,
+        "total_project_value": int,
+        "start_date": datetime.date,
+        "completion_date": datetime.date,
+        "complete_or_termination_date": datetime.date,
+        "publicly_announced": str,
+        "notes": str,
     },
     "EV Charging Rebates": {
         "organization": str,
@@ -596,8 +615,12 @@ DATASET_CONFIG = {
         "model": ARCProjectTracking,
         "columns": ARCProjectTrackingColumns,
         "column_mapping": ArcProjectTrackingColumnMapping,
-        "sheet_name": "Project_Tracking",
+        "sheet_name": "ARC Data",
         "preparation_functions": [prepare_arc_project_tracking],
+        "validation_functions": [
+            {'function': validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": ARC_VALID_FIELD_VALUES}},
+            {"function": region_checker, "columns": ['Economic Region'], "kwargs": {"indices_offset":2}},
+        ]
     },
     "EV Charging Rebates": {
         "model": ChargerRebates,
@@ -655,11 +678,11 @@ DATASET_CONFIG = {
         "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
         "validation_functions": [
-            {"error_type": "Phone Error", "function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
-            {"error_type": "Potential Typo", "function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
-            {"error_type": "Location Not Found", "function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
-            {"error_type": "Invalid Email", "function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
-            {"error_type": "Invalid Value", "function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}}
+            {"function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
+            {"function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
+            {"function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
+            {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
+            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
         ]
     },
 }

@@ -87,3 +87,16 @@ GER_VALID_FIELD_VALUES = {
     'Rebate adjustment (discount)': ['Yes'],
     'Class': ['2B', '3', '4', '5', '6', '7', '8']
     }
+
+ARC_VALID_FIELD_VALUES = {
+    'Funding Call': ['ARC-2018-1', 'ARC-2020-2'],
+    'Status': ['Approved', 'Completed', 'Terminated'],
+    'Vehicle Category': ['On-Road', 'On/Off Road', 'Marine', 'Aviation', 'Off-Road'],
+    'Zev Sub-Section': [
+        'Testing and certification services', 'Battery components',
+        'Vehicle components', 'Fuelling Infrastructure', 'Vehicles',
+        'Transferable Technologies'
+        ],
+    'Fuel Type': ['H2', 'Electric'],
+    'Retrofit': ['BEV Retrofit', 'Hybrid Retrofit', 'H2 Retrofit', 'N/A']
+}

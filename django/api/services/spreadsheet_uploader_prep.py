@@ -2,6 +2,7 @@ from decimal import Decimal
 import pandas as pd
 import difflib as dl
 from api.services.bcngws import get_placename_matches
+from api.models.regions import Regions
 from email_validator import validate_email, EmailNotValidError
 from api.utilities.series import get_map_of_values_to_indices
 from api.constants.misc import AREA_CODES
@@ -208,7 +209,7 @@ def typo_checker(df, *columns, **kwargs):
             matches = dl.get_close_matches(
                 value,
                 unique_vals.difference(singleton),
-                cutoff = kwargs["cutoff"]
+                cutoff=kwargs["cutoff"]
             )
             if matches:
                 value_indices = map_of_values_to_indices[value]
@@ -219,19 +220,14 @@ def typo_checker(df, *columns, **kwargs):
                     match_indices = map_of_values_to_indices[match]
                     indices.extend(match_indices)
         if indices:
-            result[column] = sorted(list(set(indices)))
+            result[column] = {
+                "Similar Values Detected": {
+                    "Expected Type": "We detected applicant names that sound very similar. If these names refer to the same person/entity, please replace the applicant names in your dataset to the preferred spelling to ensure consistency",
+                    "Rows": sorted(list(set(indices))),
+                    "Severity": "Warning"
+                }
+            }
     return result
-
-
-def get_validation_error_rows(errors):
-    row_numbers = set()
-    for error in errors:
-        try:
-            row_number = int(error.split()[1][:-1])
-            row_numbers.add(row_number)
-        except (IndexError, ValueError):
-            continue
-    return row_numbers
 
 
 def validate_phone_numbers(df, *columns, **kwargs):
@@ -244,7 +240,13 @@ def validate_phone_numbers(df, *columns, **kwargs):
             if formatted_number == '' or len(formatted_number) != 10 or int(formatted_number[:3]) not in AREA_CODES:
                 indices.append(index + kwargs.get("indices_offset", 0))
         if indices:
-            result[column] = indices
+            result[column] = {
+                "Phone Number Appears Incorrect": {
+                    "Expected Type": "Ensure phone numbers match the Canadian format (XXX-XXX-XXXX)",
+                    "Rows": indices,
+                    "Severity": "Warning"
+                }
+            }
     return result
 
 
@@ -271,8 +273,13 @@ def location_checker(df, *columns, batch_size=50, **kwargs):
             indices.extend(indices_to_add)
         if indices:
             indices.sort()
-            result[column] = indices
-            
+            result[column] = {
+                "Unrecognized City Names": {
+                    "Expected Type": "The following city names are not in the list of geographic names. Please double check that these places exist or have correct spelling and adjust your dataset accordingly.",
+                    "Rows": sorted(list(set(indices))),
+                    "Severity": "Warning"
+                }
+            }
     return result
 
 
@@ -291,11 +298,17 @@ def email_validator(df, *columns, **kwargs):
             except EmailNotValidError:
                 indices.append(index + kwargs.get("indices_offset", 0))
         if indices:
-            result[column] = indices
+            result[column] = {
+                "Possible Errors in Email Addresses": {
+                    "Expected Type": "Verify email addresses are valid",
+                    "Rows": indices,
+                    "Severity": "Warning"
+                }
+            }
     return result
 
-def validate_field_values(df, *columns, **kwargs):
 
+def validate_field_values(df, *columns, **kwargs):
     allowed_values = kwargs.get("fields_and_values")
 
     result = {}
@@ -304,9 +317,39 @@ def validate_field_values(df, *columns, **kwargs):
             indices = []
             series = df[column]
             for index, value in series.items():
-                if str(value) not in allowed_values[column]:
+                if str(value) not in allowed_values[column] and value != '' and value is not None and not pd.isna(value):
                     indices.append(index + kwargs.get("indices_offset", 0))
             if indices:
-                result[column] = indices
+                result[column] = {
+                    "Invalid Values": {
+                        "Expected Type": "The following rows only allow specific values",
+                        "Rows": indices,
+                        "Severity": "Error"
+                    }
+                }
     
+    return result
+
+def region_checker(df, *columns, **kwargs):
+    valid_regions = set(Regions.objects.values_list('name', flat=True))
+
+    result = {}
+    indices = []
+    for column in columns:
+        for index, value in df[column].items():
+            values_list = [item.strip() for item in value.split(',')]
+            if all(value in valid_regions for value in values_list):
+                continue
+            else:
+                indices.append(index + kwargs.get('indices_offset', 0))
+
+    if indices:
+        result[column] = {
+                    "Invalid Region": {
+                        "Expected Type": "The following rows have an invalid region",
+                        "Rows": indices,
+                        "Severity": "Error"
+                    }
+                }
+        
     return result

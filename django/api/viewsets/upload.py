@@ -33,7 +33,6 @@ class UploadViewset(GenericViewSet):
             "EV Charging Rebates",
             "Hydrogen Fueling",
             "Hydrogen Fleets",
-            "ARC Project Tracking",
             "Data Fleets",
             "Scrap It",
         ]
