@@ -173,8 +173,10 @@ def make_prepositions_consistent(df):
         regex=True
     )
     ##The first letter should be capitalized
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']
-        ].applymap(lambda x: x[0].upper() + x[1:])
+    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].applymap(
+    lambda x: x[0].upper() + x[1:] if isinstance(x, str) and len(x) > 1 else x.upper() if isinstance(x, str) and len(x) == 1 else x
+)
+
     
 def adjust_ger_manufacturer_names(df):
     """""
