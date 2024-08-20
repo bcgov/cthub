@@ -680,7 +680,7 @@ DATASET_CONFIG = {
         "validation_functions": [
             {"function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
             {"function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
-            {"function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
+            # {"function": location_checker, "columns": ["City"], "kwargs": {"indices_offset":2}},
             {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
         ]
