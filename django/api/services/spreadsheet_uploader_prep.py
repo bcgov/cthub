@@ -252,21 +252,19 @@ def validate_phone_numbers(df, *columns, **kwargs):
     return result
 
 
-def location_checker(df, *columns, batch_size=50, **kwargs):
+def location_checker(df, *columns, columns_to_features_map={}, **kwargs):
     result = {}
     for column in columns:
         indices = []
         series = df[column]
         map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
-        values = series.to_list()
         unique_values = set(series)
-        unique_values_list = list(values)
+        unique_values_list = list(unique_values)
 
         communities = set()
-        for i in range(0, len(unique_values_list), batch_size):
-            batch_values = unique_values_list[i:i + batch_size]
-            # Send request to API with list of names, returns all the communities that somewhat matched
-            get_placename_matches(batch_values, 200, 1, communities)
+        features_map = columns_to_features_map[column]
+        for category_code, feature_types in features_map.items():
+            get_placename_matches(unique_values_list, category_code, feature_types, 200, 1, communities)
 
         # Find names that don't have a match in the locations_set
         names_without_match = unique_values.difference(communities)
