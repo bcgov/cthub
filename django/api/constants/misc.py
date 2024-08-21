@@ -55,27 +55,15 @@ AREA_CODES = [
     867,
 ]
 
-RELEVANT_FEATURES = [
-    "Canadian Forces Base",
-    "Canadian Forces Station",
-    "City",
-    "Community",
-    "District Municipality (1)",
-    "First Nation Village",
-    "Former Locality",
-    "Indian Government District",
-    "Indian Government District : Land Unit",
-    "Indian Reserve-Réserve indienne",
-    "Locality",
-    "Recreation Facility",
-    "Recreational Community",
-    "Region",
-    "Regional District",
-    "Resort Municipality",
-    "Urban Community",
-    "Village (1)",
-    "Town",
-]
+# map of feature category codes to feature types for locality features:
+LOCALITY_FEATURES_MAP = {
+    1: ["City", "District Municipality (1)", "Resort Municipality", "Village (1)", "Town"],
+    2: ["Community", "First Nation Village", "Former Locality", "Locality", "Recreational Community"],
+    3: ["Urban Community"],
+    5: ["Indian Government District", "Indian Government District : Land Unit"],
+    6: ["Indian Reserve-Réserve indienne", "Region", "Regional District"],
+    28: ["Canadian Forces Base", "Canadian Forces Station", "Recreation Facility"],
+}
 
 GER_VALID_FIELD_VALUES = {
     'Approvals': ['Approved', 'Approved Fraudulent'],
