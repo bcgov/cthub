@@ -88,3 +88,28 @@ ARC_VALID_FIELD_VALUES = {
     'Fuel Type': ['H2', 'Electric'],
     'Retrofit': ['BEV Retrofit', 'Hybrid Retrofit', 'H2 Retrofit', 'N/A']
 }
+
+CVP_DATA_VALID_FIELD_VALUES = {
+    'Funding Call': ['1', '2', '3', '4', '5', '6', '7', '8', '10'],
+    'Status': ['Approved', 'Completed', 'Terminated', 'Not Approved', 'Application Withdrawn'],
+    'Vehicles Deployed': ['Yes', 'No'],
+    'Vehicle Category': ['On-Road', 'Off-Road', 'Marine', 'Rail', 'Aviation'],
+    'Portfolio': [
+        'Road - 8', 'Rail', 'Marine', 'Road - 8C', 'School Bus',
+        'Loader', 'Road - 6', 'Fork Lift', 'Recreation'
+    ],
+    'Economic Region': [
+        'Nechako', 'Northeast', 'North Coast', 'Cariboo', 'Vancouver Island/Coast',
+        'Mainland/Southwest', 'Thompson/Okanagan', 'Kootenay', 'Across BC'
+    ],
+    'Drive Type': ['BEV', 'FC', 'PHEV'],
+    'Vehicle Type': [
+        'On-Road', 'Loader', 'Excavator', 'Forklift', 'Outboard Motor',
+        'Tugboat', 'Passenger Ferry', 'Ice Resurfacer', 'Locomotive',
+        'Rail Maintenance', 'Rubber-tired Gantry Crane', 'Terminal/Yard truck',
+        'Aircraft', 'Jet Fuel Pumper', 'Train Mover'
+    ],
+    'Project Type': [
+        'Procurement', 'New Design', 'Hybrid Retrofit', 'BEV Retrofit', 'H2 Retrofit'
+    ]
+}
