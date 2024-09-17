@@ -104,6 +104,12 @@ def prepare_go_electric_rebates(df):
     adjust_ger_manufacturer_names(df)
     return df
 
+def prepare_cvp_data(df):
+    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
+
+    return df
+
 def format_case(s, case = 'skip', ignore_list = []):
     s[s.notna()] = (
         s[s.notna()] # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
@@ -317,7 +323,7 @@ def validate_field_values(df, *columns, **kwargs):
             indices = []
             series = df[column]
             for index, value in series.items():
-                if str(value) not in allowed_values[column] and value != '' and value is not None and not pd.isna(value):
+                if str(value).upper() not in (item.upper() for item in allowed_values[column]) and value != '' and value is not None and not pd.isna(value):
                     indices.append(index + kwargs.get("indices_offset", 0))
             if indices:
                 result[column] = {

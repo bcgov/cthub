@@ -11,6 +11,7 @@ from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
 from api.models.scrap_it import ScrapIt
 from api.models.go_electric_rebates import GoElectricRebates
+from api.models.cvp_data import CVPData
 from api.services.spreadsheet_uploader_prep import (
     prepare_arc_project_tracking,
     prepare_hydrogen_fleets,
@@ -19,6 +20,7 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_public_charging,
     prepare_scrap_it,
     prepare_go_electric_rebates,
+    prepare_cvp_data,
     validate_phone_numbers,
     typo_checker,
     location_checker,
@@ -27,7 +29,7 @@ from api.services.spreadsheet_uploader_prep import (
     region_checker
 )
 from api.services.resolvers import get_google_resolver
-from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES, LOCALITY_FEATURES_MAP
+from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES, LOCALITY_FEATURES_MAP, CVP_DATA_VALID_FIELD_VALUES
 
 
 from enum import Enum
@@ -423,6 +425,99 @@ class GoElectricRebatesColumnMapping(Enum):
     rebate_adjustment = "Rebate adjustment (discount)"
     notes = "Notes"
 
+class CVPDataColumns(Enum):
+    FUNDING_CALL = "FC"
+    PROJECT_IDENTIFIER = "Project Identifier"
+    APPLICANT_NAME = "Name of Applicant"
+    RANK = "Rank"
+    STATUS = "Status"
+    SCORE = "Score"
+    VEHICLE_DEPLOYED = "Vehicle Deployed"
+    VEHICLE_CATEGORY = "Vehicle Category"
+    DRIVE_TYPE = "Drive Type"
+    VEHICLE_TYPE = "Vehicle Type"
+    PORTFOLIO = "Portfolio"
+    MAKE_AND_MODEL = "Vehicle Make and Model"
+    ECONOMIC_REGION = "Economic Region"
+    START_DATE = "Start Date"
+    COMPLETION_DATE = "Completion Date"
+    PROJECT_TYPE = "Project Type"
+    CLASS_3 = "Class 3"
+    CLASS_4 = "Class 4"
+    CLASS_5 = "Class 5"
+    CLASS_6 = "Class 6"
+    CLASS_7 = "Class 7"
+    CLASS_8 = "Class 8"
+    ON_ROAD_TOTAL = "On Road Total"
+    OFF_ROAD = "Off-Road"
+    LEVEL_2_CHARGER = "Level 2 Charger (3.3 kW to 19.2 kW)"
+    LEVEL_3_CHARGER = "Level 3 Charger (20 kW to 49 kW)"
+    HIGH_LEVEL_3_CHARGER = "Level 3 Charger (50 kW to 99kW)"
+    LEVEL_CHARGER = "Level Charger (100 kW and above)"
+    OTHER_CHARGER = "Other Charger"
+    H2_FUELING_STATION = "H2 Fueling Station"
+    CHARGER_BRAND = "Charger Brand"
+    H2_FUELLING_STATION_DESCRIPTION = "H2 Fuelling Station Description"
+    GHG_EMISSION_REDUCTION = "Proponent's GHG Emission Reduction (tCO2e/yr)"
+    ESTIMATED_GHG_EMISSION_REDUCTION = "Le-ef Estimated GHG Reduction (tCO2e/yr)"
+    FUNDING_EFFICIENCY = "Funding Efficiency for Emmision Abatment ($/tCO2e)"
+    MARKET_EMISSION_REDUCTIONS = "Market Emission Reductions (tCO2e by 2030)"
+    CVP_FUNDING_REQUEST = "CVP Program Funding Request (Initial)"
+    CVP_FUNDING_CONTRIBUTION = "CVP Funding (approved - Contribution Agreement)"
+    EXTERNAL_FUNDING = "External Funding"
+    PROPONENT_FUNDING = "Proponent funding"
+    PROJECT_COST_INITIAL = "Total project cost (initial)"
+    PROJECT_COST_REVISED = "Total Project Cost (revised)"
+    FUNDING_SOURCE = "Funding Source"
+    NOTES = "Notes"
+    IMHZEV = "iMHZEV"
+
+class CVPDataColumnMapping(Enum):
+    funding_call = "FC"
+    project_identifier = "Project Identifier"
+    applicant_name = "Name of Applicant"
+    rank = "Rank"
+    status = "Status"
+    score = "Score"
+    vehicle_deployed = "Vehicle Deployed"
+    vehicle_category = "Vehicle Category"
+    drive_type = "Drive Type"
+    vehicle_type = "Vehicle Type"
+    portfolio = "Portfolio"
+    make_and_model = "Vehicle Make and Model"
+    economic_region = "Economic Region"
+    start_date = "Start Date"
+    completion_date = "Completion Date"
+    project_type = "Project Type"
+    class_3 = "Class 3"
+    class_4 = "Class 4"
+    class_5 = "Class 5"
+    class_6 = "Class 6"
+    class_7 = "Class 7"
+    class_8 = "Class 8"
+    on_road_total = "On Road Total"
+    off_road = "Off-Road"
+    level_2_charger = "Level 2 Charger (3.3 kW to 19.2 kW)"
+    level_3_charger = "Level 3 Charger (20 kW to 49 kW)"
+    high_level_3_charger = "Level 3 Charger (50 kW to 99kW)"
+    level_charger = "Level Charger (100 kW and above)"
+    other_charger = "Other Charger"
+    h2_fuelling_station = "H2 Fueling Station"
+    charger_brand = "Charger Brand"
+    h2_fuelling_station_description = "H2 Fuelling Station Description"
+    ghg_emission_reduction = "Proponent's GHG Emission Reduction (tCO2e/yr)"
+    estimated_ghg_emission_reduction = "Le-ef Estimated GHG Reduction (tCO2e/yr)"
+    funding_efficiency = "Funding Efficiency for Emmision Abatment ($/tCO2e)"
+    market_emission_reductions = "Market Emission Reductions (tCO2e by 2030)"
+    cvp_funding_request = "CVP Program Funding Request (Initial)"
+    cvp_funding_contribution = "CVP Funding (approved - Contribution Agreement)"
+    external_funding = "External Funding"
+    proponent_funding = "Proponent funding"
+    project_cost_initial = "Total project cost (initial)"
+    project_cost_revised = "Total Project Cost (revised)"
+    funding_source = "Funding Source"
+    notes = "Notes"
+    imhzev = "iMHZEV"
 
 
 FIELD_TYPES = {
@@ -607,6 +702,54 @@ FIELD_TYPES = {
         "rebate_adjustment": str,
         "notes": str,
     },
+    "CVP Data": {
+        "funding_call": int,
+        "project_identifier": int,
+        "applicant_name": str,
+        "rank": int,
+        "status": str,
+        "score": int,
+        "vehicle_deployed": str,
+        "vehicle_category": str,
+        "drive_type": str,
+        "vehicle_type": str,
+        "portfolio": str,
+        "make_and_model": str,
+        "economic_region": str,
+        "start_date": datetime.date,
+        "completion_date": datetime.date,
+        "project_type": str,
+        "class_3": int,
+        "class_4": int,
+        "class_5": int,
+        "class_6": int,
+        "class_7": int,
+        "class_8": int,
+        "on_road_total": int,
+        "off_road": int,
+        "level_2_charger": int,
+        "level_3_charger": int,
+        "high_level_3_charger": int,
+        "level_charger": int,
+        "other_charger": int,
+        "h2_fuelling_station": int,
+        "charger_brand": str,
+        "h2_fuelling_station_description": str,
+        "ghg_emission_reduction": int,
+        "estimated_ghg_emission_reduction": int,
+        "funding_efficiency": int,
+        "market_emission_reductions": int,
+        "cvp_funding_request": int,
+        "cvp_funding_contribution": int,
+        "external_funding": int,
+        "proponent_funding": int,
+        "project_cost_initial": int,
+        "project_cost_revised": int,
+        "funding_source": str,
+        "notes": str,
+        "imhzev": str,
+    },
+
 
 }
 
@@ -685,4 +828,13 @@ DATASET_CONFIG = {
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
         ]
     },
+    "CVP Data": {
+        "model": CVPData,
+        "columns": CVPDataColumns,
+        "column_mapping": CVPDataColumnMapping,
+        "sheet_name": "Data",
+        "preparation_functions": [prepare_cvp_data],
+        "validation_functions": [{"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": CVP_DATA_VALID_FIELD_VALUES}},]
+    },
+
 }
