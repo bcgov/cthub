@@ -316,7 +316,8 @@ def email_validator(df, *columns, **kwargs):
 
 def validate_field_values(df, *columns, **kwargs):
     allowed_values = kwargs.get("fields_and_values")
-
+    invalid_values = []
+    
     result = {}
     for column in df.columns:
         if column in allowed_values:
@@ -325,10 +326,12 @@ def validate_field_values(df, *columns, **kwargs):
             for index, value in series.items():
                 if str(value).upper() not in (item.upper() for item in allowed_values[column]) and value != '' and value is not None and not pd.isna(value):
                     indices.append(index + kwargs.get("indices_offset", 0))
+                    if str(value) not in invalid_values:
+                        invalid_values.append(str(value))
             if indices:
                 result[column] = {
-                    "Invalid Values": {
-                        "Expected Type": "The following rows only allow specific values",
+                    ', '.join(invalid_values) + " - is not in the list of expected values": {
+                        "Expected Type": ', '.join(allowed_values[column]),
                         "Rows": indices,
                         "Severity": "Error"
                     }

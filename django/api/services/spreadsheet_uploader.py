@@ -81,7 +81,7 @@ def transform_data(
                             errors_and_warnings[column] = {}
                         if "Empty Value" not in errors_and_warnings[column]:
                             errors_and_warnings[column]["Empty Value"] = {
-                                "Expected Type": "Expected value where there isn't one.",
+                                "Expected Type": "Cells in this column cannot be blank.",
                                 "Rows": [],
                                 "Severity": "Error"
                             }
