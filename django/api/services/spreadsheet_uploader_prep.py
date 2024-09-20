@@ -245,7 +245,9 @@ def validate_phone_numbers(df, *columns, **kwargs):
         series = df[column]
         for index, phone_number in series.items():
             formatted_number = str(phone_number).strip().replace('-', '')
-            if formatted_number == '' or len(formatted_number) != 10 or int(formatted_number[:3]) not in AREA_CODES:
+            if len(formatted_number) != 10 or int(formatted_number[:3]) not in AREA_CODES:
+                if pd.notna(formatted_number) and formatted_number != '':
+                    continue
                 indices.append(index + kwargs.get("indices_offset", 0))
         if indices:
             result[column] = {
@@ -302,6 +304,8 @@ def email_validator(df, *columns, **kwargs):
             try:
                 validate_email(value, dns_resolver=resolver)
             except EmailNotValidError:
+                if pd.notna(value) and value != '':
+                    continue
                 indices.append(index + kwargs.get("indices_offset", 0))
         if indices:
             result[column] = {
