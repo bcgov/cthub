@@ -3,6 +3,7 @@ import pandas as pd
 import traceback
 import numpy as np
 from django.db import transaction
+from datetime import datetime
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -64,9 +65,10 @@ def transform_data(
         int: "Integer",
         float: "Float",
         Decimal: "Decimal",
-        str: "String"
+        str: "String",
+        datetime: "Date (YYYY-MM-DD)"
     }
-    
+
     errors_and_warnings = {}
     df = df.replace({np.nan: None})
 
@@ -93,6 +95,20 @@ def transform_data(
                                 "Severity": "Error"
                             }
                         errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+
+            if expected_type == datetime and value is not None and value != '':
+                    try:
+                        datetime.strptime(value, "%Y-%m-%d")
+                    except ValueError:
+                        if column not in errors_and_warnings:
+                            errors_and_warnings[column] = {}
+                        if "Incorrect Date Format" not in errors_and_warnings[column]:
+                            errors_and_warnings[column]["Incorrect Date Format"] = {
+                                "Expected Type": "The following rows contained an incorrect date format. Expected YYYY-MM-DD.",
+                                "Rows": [],
+                                "Severity": "Error"
+                            }
+                        errors_and_warnings[column]["Incorrect Date Format"]["Rows"].append(index + 1)
 
             if expected_type in [int, float, Decimal] and value is not None and pd.notna(value) and value != '':
                 value = str(value).replace(',', '').strip()
