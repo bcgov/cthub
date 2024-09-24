@@ -60,6 +60,13 @@ def transform_data(
 
     column_mapping = {e.value: e.name for e in column_mapping_enum}
 
+    type_to_string = {
+        int: "Integer",
+        float: "Float",
+        Decimal: "Decimal",
+        str: "String"
+    }
+    
     errors_and_warnings = {}
     df = df.replace({np.nan: None})
 
@@ -101,7 +108,7 @@ def transform_data(
                         errors_and_warnings[column] = {}
                     if "Incorrect Type" not in errors_and_warnings[column]:
                         errors_and_warnings[column]["Incorrect Type"] = {
-                            "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                            "Expected Type": f"The following rows contained types for the column {column}. Expected {type_to_string.get(expected_type, str(expected_type))}",
                             "Rows": [],
                             "Severity": "Error"
                         }
@@ -113,7 +120,7 @@ def transform_data(
                     errors_and_warnings[column] = {}
                 if "Incorrect Type" not in errors_and_warnings[column]:
                     errors_and_warnings[column]["Incorrect Type"] = {
-                        "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                        "Expected Type": f"The following rows contained types for the column {column}. Expected {type_to_string.get(expected_type, str(expected_type))}",
                         "Rows": [],
                         "Severity": "Error"
                     }

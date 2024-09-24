@@ -82,10 +82,7 @@ def prepare_go_electric_rebates(df):
 
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
 
-    num_columns = df.select_dtypes(include=["number"]).columns.tolist()
-    df[num_columns] = df[num_columns].fillna(0)
-
-    non_num_columns = df.columns.difference(num_columns)
+    non_num_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
     df[non_num_columns] = df[non_num_columns].fillna("")
     format_dict = {
         'title': ['Approvals', 'Applicant Name', 'Category', 
@@ -110,25 +107,27 @@ def prepare_cvp_data(df):
 
     return df
 
-def format_case(s, case = 'skip', ignore_list = []):
-    s[s.notna()] = (
-        s[s.notna()] # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
-         .astype(str) # Convert to string
-         .str.strip() # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
-        )
+def format_case(s, case='skip', ignore_list=[]):
+    # Apply transformations to non-NaN values only
+    mask = s.notna()
+
+    s.loc[mask] = (
+        s.loc[mask]  # I am applying this function to non-NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
+         .astype(str)  # Convert to string
+         .str.strip()  # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
+    )
+
     if case == 'title':
-        s = s.str.title()
+        s.loc[mask] = s.loc[mask].str.title()
     elif case == 'upper':
-        s = s.str.upper()
+        s.loc[mask] = s.loc[mask].str.upper()
     elif case == 'lower':
-        s = s.str.lower()
+        s.loc[mask] = s.loc[mask].str.lower()
     elif case == 'sentence':
-        ##filter out the temporary null records before changing to sentence case
-        s = s[s != 'TEMP_NULL'].str.capitalize()
-    elif case == 'skip':
-        pass
+        s.loc[mask] = s.loc[mask].str.capitalize()
 
     return s
+
 
 def make_names_consistent(df):
     """
