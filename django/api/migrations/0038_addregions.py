@@ -4,7 +4,6 @@ from datetime import datetime
 def add_region_data(apps, schema_editor):
     Regions = apps.get_model('api', 'Regions')
     
-    # Get the current timestamp
     current_timestamp = datetime.now()
 
     regions_data = [
@@ -34,7 +33,7 @@ def add_region_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0037_auto_20240911_1800'),  # Adjust to your latest migration
+        ('api', '0037_auto_20240911_1800'),
     ]
 
     operations = [
