@@ -3,6 +3,7 @@ import pandas as pd
 import traceback
 import numpy as np
 from django.db import transaction
+from datetime import datetime
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -60,6 +61,14 @@ def transform_data(
 
     column_mapping = {e.value: e.name for e in column_mapping_enum}
 
+    type_to_string = {
+        int: "Integer",
+        float: "Float",
+        Decimal: "Decimal",
+        str: "String",
+        datetime: "Date (YYYY-MM-DD)"
+    }
+
     errors_and_warnings = {}
     df = df.replace({np.nan: None})
 
@@ -81,11 +90,25 @@ def transform_data(
                             errors_and_warnings[column] = {}
                         if "Empty Value" not in errors_and_warnings[column]:
                             errors_and_warnings[column]["Empty Value"] = {
-                                "Expected Type": "Expected value where there isn't one.",
+                                "Expected Type": "Cells in this column cannot be blank.",
                                 "Rows": [],
                                 "Severity": "Error"
                             }
                         errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+
+            if expected_type == datetime and value is not None and value != '':
+                    try:
+                        datetime.strptime(value, "%Y-%m-%d")
+                    except ValueError:
+                        if column not in errors_and_warnings:
+                            errors_and_warnings[column] = {}
+                        if "Incorrect Date Format" not in errors_and_warnings[column]:
+                            errors_and_warnings[column]["Incorrect Date Format"] = {
+                                "Expected Type": "The following rows contained an incorrect date format. Expected YYYY-MM-DD.",
+                                "Rows": [],
+                                "Severity": "Error"
+                            }
+                        errors_and_warnings[column]["Incorrect Date Format"]["Rows"].append(index + 1)
 
             if expected_type in [int, float, Decimal] and value is not None and pd.notna(value) and value != '':
                 value = str(value).replace(',', '').strip()
@@ -101,7 +124,7 @@ def transform_data(
                         errors_and_warnings[column] = {}
                     if "Incorrect Type" not in errors_and_warnings[column]:
                         errors_and_warnings[column]["Incorrect Type"] = {
-                            "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                            "Expected Type": f"The following rows contained types for the column {column}. Expected {type_to_string.get(expected_type, str(expected_type))}",
                             "Rows": [],
                             "Severity": "Error"
                         }
@@ -113,7 +136,7 @@ def transform_data(
                     errors_and_warnings[column] = {}
                 if "Incorrect Type" not in errors_and_warnings[column]:
                     errors_and_warnings[column]["Incorrect Type"] = {
-                        "Expected Type": "The following rows contained incorrect value types for the " + column + " column",
+                        "Expected Type": f"The following rows contained types for the column {column}. Expected {type_to_string.get(expected_type, str(expected_type))}",
                         "Rows": [],
                         "Severity": "Error"
                     }
