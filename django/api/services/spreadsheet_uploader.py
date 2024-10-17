@@ -154,13 +154,20 @@ def transform_data(
                     errors_and_warnings[column] = {}
                 for issue, details in issues.items():
                     if issue not in errors_and_warnings[column]:
-                        errors_and_warnings[column][issue] = {
-                            "Expected Type": details.get("Expected Type", "Unknown"),
-                            "Rows": details.get("Rows", []),
-                            "Severity": details.get("Severity", "Error")
-                        }
+                        if(details.get("Severity", "Error") == 'Warning'):
+                            errors_and_warnings[column][issue] = {
+                                "Expected Type": details.get("Expected Type", "Unknown"),
+                                "Groups": details.get("Groups", []),
+                                "Severity": details.get("Severity", "Error")
+                            }
+                        else:
+                            errors_and_warnings[column][issue] = {
+                                "Expected Type": details.get("Expected Type", "Unknown"),
+                                "Rows": details.get("Rows", []),
+                                "Severity": details.get("Severity", "Error")
+                            }
                     else:
-                        errors_and_warnings[column][issue]["Rows"].extend(details.get("Rows", []))
+                        errors_and_warnings[column][issue]["Groups"].extend(details.get("Groups", []))
 
     column_mapping = {col.name: col.value for col in column_mapping_enum}
     inverse_column_mapping = {v: k for k, v in column_mapping.items()}
