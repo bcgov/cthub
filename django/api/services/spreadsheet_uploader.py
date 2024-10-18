@@ -33,8 +33,7 @@ def extract_data(excel_file, sheet_name, header_row):
         df = trim_all_columns(df)
         return df
     except Exception as e:
-        traceback.print_exc()
-        raise
+        return None
 
 
 def transform_data(
@@ -50,9 +49,17 @@ def transform_data(
 
     df = df[[col for col in df.columns if col in required_columns]]
 
+    errors_and_warnings = {}
+
     missing_columns = [col for col in required_columns if col not in df.columns]
     if (missing_columns):
-        raise ValueError(f"Missing columns: {', '.join(missing_columns)}")
+        errors_and_warnings['Headers'] = {}
+        errors_and_warnings['Headers']['Missing Headers'] = {
+            "Expected Type": "The spreadsheet provided is missing headers",
+            "Rows": missing_columns,
+            "Severity": "Critical"
+        }
+        return df, errors_and_warnings
 
     for prep_func in preparation_functions:
         df = prep_func(df)
@@ -69,7 +76,6 @@ def transform_data(
         datetime: "Date (YYYY-MM-DD)"
     }
 
-    errors_and_warnings = {}
     df = df.replace({np.nan: None})
 
     for index, row in df.iterrows():
@@ -204,17 +210,27 @@ def import_from_xls(
     validation_functions=[],
     check_for_warnings=True,
 ):
+    errors_and_warnings = {}
     try:
         df = extract_data(excel_file, sheet_name, header_row)
-        df, errors_and_warnings = transform_data(
-            df,
-            dataset_columns,
-            column_mapping_enum,
-            field_types,
-            model,
-            preparation_functions,
-            validation_functions,
-        )
+        if df is not None:
+            df, errors_and_warnings = transform_data(
+                df,
+                dataset_columns,
+                column_mapping_enum,
+                field_types,
+                model,
+                preparation_functions,
+                validation_functions,
+            )
+        
+        else:
+            errors_and_warnings['Spreadsheet'] = {}
+            errors_and_warnings['Spreadsheet']['Missing Worksheet'] = {
+                'Expected Type': 'The worksheet is missing or incorrectly named',
+                'Rows': [sheet_name],
+                'Severity': 'Critical'
+            }
 
         if check_for_warnings:
             ## do the error checking

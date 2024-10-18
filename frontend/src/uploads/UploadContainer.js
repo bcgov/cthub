@@ -25,6 +25,7 @@ const UploadContainer = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [adminUser, setAdminUser] = useState(false);
   const [totalIssueCount, setTotalIssueCount] = useState({});
+  const [groupedCriticalErrors, setGroupedCriticalErrors] = useState({});
   const [groupedErrors, setGroupedErrors] = useState({});
   const [groupedWarnings, setGroupedWarnings] = useState({});
   const [alertDialogText, setAlertDialogText] = useState({
@@ -58,9 +59,11 @@ const UploadContainer = () => {
   };
 
   const groupAndCountRows = (issueArray) => {
+    const groupedCriticalErrors = {}
     const groupedErrors = {};
     const groupedWarnings = {};
     const totalIssueCount = {
+      criticalErrors: 0,
       errors: 0,
       warnings: 0,
     };
@@ -75,8 +78,21 @@ const UploadContainer = () => {
           const expectedType = errorDetails[errorType]["Expected Type"];
           const rows = errorDetails[errorType].Rows;
           const rowCount = rows.length;
-  
-          if (severity === "Error") {
+          
+          if (severity === "Critical") {
+            totalIssueCount.criticalErrors += rowCount;
+            if (!groupedCriticalErrors[column]) {
+              groupedCriticalErrors[column] = {};
+            }
+            if (!groupedCriticalErrors[column][errorType]) {
+              groupedCriticalErrors[column][errorType] = {
+                ExpectedType: expectedType,
+                Rows: rows,
+              };
+            } else {
+              groupedCriticalErrors[column][errorType].Rows.push(...rows);
+            }
+          } else if (severity === "Error") {
             totalIssueCount.errors += rowCount;
             if (!groupedErrors[column]) {
               groupedErrors[column] = {};
@@ -107,7 +123,7 @@ const UploadContainer = () => {
       });
     });
   
-    return { groupedErrors, groupedWarnings, totalIssueCount };
+    return { groupedCriticalErrors, groupedErrors, groupedWarnings, totalIssueCount };
   };
   
   
@@ -176,17 +192,27 @@ const UploadContainer = () => {
         });
 
         if (Object.keys(warnings).length > 0 && checkForWarnings) {
-          const { groupedErrors, groupedWarnings, totalIssueCount } =
+          const { groupedCriticalErrors, groupedErrors, groupedWarnings, totalIssueCount } =
             groupAndCountRows(Object.values(warnings));
+
+          setGroupedCriticalErrors(groupedCriticalErrors)
           setGroupedErrors(groupedErrors);
           setGroupedWarnings(groupedWarnings);
           setTotalIssueCount(totalIssueCount);
 
           setAlertDialogText({
             title:
-              "Your file has been processed and contains the following errors and warnings!",
+              totalIssueCount.criticalErrors > 0 ? "Your upload contained critical errors that must be fixed before it can be processed!" : "Your file has been processed and contains the following errors and warnings!",
             content: (
               <>
+                {totalIssueCount.criticalErrors >= 1 && (
+                  <div>
+                    <span className="error">
+                      {totalIssueCount.criticalErrors} Critical Errors
+                    </span>
+                    - Must fix before file can be processed
+                </div>
+                )}
                 {totalIssueCount.errors >= 1 && (
                   <div>
                     <span className="error">
@@ -318,10 +344,11 @@ const UploadContainer = () => {
               handleConfirm={alertDialogText.confirmAction}
             />
             <Stack direction="column" spacing={2}>
-              {(totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
+              {(totalIssueCount.criticalErrors || totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
                 <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
                   <UploadIssues
                     confirmUpload={handleConfirmDataInsert}
+                    groupedCriticalErrors={groupedCriticalErrors}
                     groupedErrors={groupedErrors}
                     groupedWarnings={groupedWarnings}
                     totalIssueCount={totalIssueCount}
