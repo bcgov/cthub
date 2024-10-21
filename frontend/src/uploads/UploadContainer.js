@@ -64,44 +64,51 @@ const UploadContainer = () => {
       errors: 0,
       warnings: 0,
     };
-  
+
     issueArray.forEach((issue) => {
-  
       Object.keys(issue).forEach((column) => {
         const errorDetails = issue[column];
   
         Object.keys(errorDetails).forEach((errorType) => {
           const severity = errorDetails[errorType].Severity;
           const expectedType = errorDetails[errorType]["Expected Type"];
-          const rows = errorDetails[errorType].Rows;
-          const rowCount = rows.length;
+          const groups = errorDetails[errorType].Groups || [];
   
           if (severity === "Error") {
+            const rows = errorDetails[errorType].Rows;
+            const rowCount = rows.length;
             totalIssueCount.errors += rowCount;
+  
             if (!groupedErrors[column]) {
               groupedErrors[column] = {};
             }
             if (!groupedErrors[column][errorType]) {
               groupedErrors[column][errorType] = {
                 ExpectedType: expectedType,
-                Rows: rows,
+                Rows: [...rows],
               };
             } else {
               groupedErrors[column][errorType].Rows.push(...rows);
             }
           } else if (severity === "Warning") {
-            totalIssueCount.warnings += rowCount;
+            let warningRowCount = 0;
+  
             if (!groupedWarnings[column]) {
               groupedWarnings[column] = {};
             }
             if (!groupedWarnings[column][errorType]) {
               groupedWarnings[column][errorType] = {
                 ExpectedType: expectedType,
-                Rows: rows,
+                Groups: [],
               };
-            } else {
-              groupedWarnings[column][errorType].Rows.push(...rows);
             }
+  
+            groups.forEach((group) => {
+              groupedWarnings[column][errorType].Groups.push(group);
+              warningRowCount += group.Rows.length;
+            });
+  
+            totalIssueCount.warnings += warningRowCount;
           }
         });
       });
@@ -109,8 +116,6 @@ const UploadContainer = () => {
   
     return { groupedErrors, groupedWarnings, totalIssueCount };
   };
-  
-  
 
   const showError = (error) => {
     const { response: errorResponse } = error;

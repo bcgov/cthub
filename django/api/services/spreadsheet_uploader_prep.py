@@ -204,117 +204,155 @@ def adjust_ger_manufacturer_names(df):
 
 def typo_checker(df, *columns, **kwargs):
     result = {}
+    
     for column in columns:
-        indices = []
         series = df[column]
         unique_vals = set(series)
-
+        
         map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
+        
+        typo_groups = []
+        processed_values = set()
+        
         for value in unique_vals:
-            singleton = set()
-            singleton.add(value)
-            matches = dl.get_close_matches(
-                value,
-                unique_vals.difference(singleton),
-                cutoff=kwargs["cutoff"]
-            )
+            if value in processed_values:
+                continue
+            
+            matches = dl.get_close_matches(value, unique_vals.difference({value}), cutoff=kwargs.get("cutoff", 0.8))
+            
             if matches:
-                value_indices = map_of_values_to_indices[value]
-                indices.extend(value_indices)
-                # it appears that difflib's "is similar" predicate S is not symmetric (i.e. aSb does not imply bSa)
-                # so we have to do:
+                current_group = {
+                    "Typo Group": [value] + matches,
+                    "Rows": []
+                }
+                
+                current_group["Rows"].extend(map_of_values_to_indices[value])
+                
                 for match in matches:
-                    match_indices = map_of_values_to_indices[match]
-                    indices.extend(match_indices)
-        if indices:
+                    current_group["Rows"].extend(map_of_values_to_indices[match])
+                    
+                processed_values.add(value)
+                processed_values.update(matches)
+                
+                typo_groups.append(current_group)
+        
+        if typo_groups:
             result[column] = {
                 "Similar Values Detected": {
                     "Expected Type": "We detected applicant names that sound very similar. If these names refer to the same person/entity, please replace the applicant names in your dataset to the preferred spelling to ensure consistency",
-                    "Rows": sorted(list(set(indices))),
+                    "Groups": typo_groups,
                     "Severity": "Warning"
                 }
             }
+    
     return result
 
 
 def validate_phone_numbers(df, *columns, **kwargs):
     result = {}
     for column in columns:
-        indices = []
         series = df[column]
-        for index, phone_number in series.items():
+        map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
+        invalid_groups = []
+        
+        for phone_number, indices in map_of_values_to_indices.items():
             formatted_number = str(phone_number).strip().replace('-', '')
             if len(formatted_number) != 10 or int(formatted_number[:3]) not in AREA_CODES:
                 if pd.isna(formatted_number) or formatted_number == '':
                     continue
-                indices.append(index + kwargs.get("indices_offset", 0))
-        if indices:
+                invalid_groups.append({
+                    "Invalid Phone Number": phone_number,
+                    "Rows": indices
+                })
+
+        if invalid_groups:
             result[column] = {
                 "Phone Number Appears Incorrect": {
                     "Expected Type": "Ensure phone numbers match the Canadian format (XXX-XXX-XXXX)",
-                    "Rows": indices,
+                    "Groups": invalid_groups,
                     "Severity": "Warning"
                 }
             }
     return result
+
 
 
 def location_checker(df, *columns, columns_to_features_map={}, **kwargs):
     result = {}
+
     for column in columns:
-        indices = []
         series = df[column]
-        map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
         unique_values = set(series)
-        unique_values_list = list(unique_values)
-
+        map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
+    
         communities = set()
-        features_map = columns_to_features_map[column]
+        features_map = columns_to_features_map.get(column, {})
+        
         for category_code, feature_types in features_map.items():
-            get_placename_matches(unique_values_list, category_code, feature_types, 200, 1, communities)
-
-        # Find names that don't have a match in the locations_set
+            get_placename_matches(
+                list(unique_values), category_code, feature_types, 
+                200, 1, communities
+            )
+        
         names_without_match = unique_values.difference(communities)
+        unrecognized_groups = []
+
         for name in names_without_match:
-            indices_to_add = map_of_values_to_indices[name]
-            indices.extend(indices_to_add)
-        if indices:
-            indices.sort()
+            group = {
+                "Unrecognized Name": name,
+                "Rows": map_of_values_to_indices[name]
+            }
+            unrecognized_groups.append(group)
+
+        if unrecognized_groups:
             result[column] = {
                 "Unrecognized City Names": {
-                    "Expected Type": "The following city names are not in the list of geographic names. Please double check that these places exist or have correct spelling and adjust your dataset accordingly.",
-                    "Rows": sorted(list(set(indices))),
+                    "Expected Type": (
+                        "The following city names are not in the list of geographic names. "
+                        "Please double-check that these places exist or have correct spelling "
+                        "and adjust your dataset accordingly."
+                    ),
+                    "Groups": unrecognized_groups,
                     "Severity": "Warning"
                 }
             }
+
     return result
+
 
 
 def email_validator(df, *columns, **kwargs):
-    resolver = None
-    get_resolver = kwargs.get("get_resolver")
-    if get_resolver is not None:
-        resolver = get_resolver()
+    resolver = kwargs.get("get_resolver", None)
+    if resolver:
+        resolver = resolver()
+    
     result = {}
     for column in columns:
-        indices = []
         series = df[column]
-        for index, value in series.items():
+        map_of_values_to_indices = get_map_of_values_to_indices(series, kwargs.get("indices_offset", 0))
+        invalid_groups = []
+        
+        for email, indices in map_of_values_to_indices.items():
             try:
-                validate_email(value, dns_resolver=resolver)
+                validate_email(email, dns_resolver=resolver)
             except EmailNotValidError:
-                if pd.isna(value) or value == '':
+                if pd.isna(email) or email == '':
                     continue
-                indices.append(index + kwargs.get("indices_offset", 0))
-        if indices:
+                invalid_groups.append({
+                    "Invalid Email": email,
+                    "Rows": indices
+                })
+
+        if invalid_groups:
             result[column] = {
                 "Possible Errors in Email Addresses": {
                     "Expected Type": "Verify email addresses are valid",
-                    "Rows": indices,
+                    "Groups": invalid_groups,
                     "Severity": "Warning"
                 }
             }
     return result
+
 
 
 def validate_field_values(df, *columns, **kwargs):
