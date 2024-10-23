@@ -4,7 +4,7 @@ from django.test import TestCase
 import pandas as pd
 from api.models.scrap_it import ScrapIt
 from api.services.spreadsheet_uploader import import_from_xls
-from api.constants import ScrapItColumnMapping, ScrapItColumns
+from api.constants.constants import ScrapItColumnMapping, ScrapItColumns
 from api.services.spreadsheet_uploader_prep import prepare_scrap_it
 
 class UploadTests(TestCase):

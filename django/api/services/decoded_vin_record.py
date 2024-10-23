@@ -1,5 +1,5 @@
 from api.models.uploaded_vin_record import UploadedVinRecord
-from api.decoder_constants import get_service
+from api.constants.decoder import get_service
 from api.services.uploaded_vin_record import (
     set_decode_successful,
     get_number_of_decode_attempts,
@@ -13,7 +13,7 @@ from django.utils import timezone
 def save_decoded_data(
     uploaded_vin_records,
     vins_to_insert,
-    decoded_records_to_update_map,
+    vins_to_decoded_record_ids_map,
     service_name,
     decoded_data,
 ):
@@ -34,10 +34,12 @@ def save_decoded_data(
                     decoded_records_to_insert.append(
                         decoded_vin_model(vin=vin, data=decoded_datum)
                     )
-                elif vin in decoded_records_to_update_map:
-                    decoded_record_to_update = decoded_records_to_update_map.get(vin)
-                    decoded_record_to_update.update_timestamp = timezone.now()
-                    decoded_record_to_update.data = decoded_datum
+                elif vin in vins_to_decoded_record_ids_map:
+                    decoded_record_to_update = decoded_vin_model(
+                        id=vins_to_decoded_record_ids_map[vin],
+                        update_timestamp=timezone.now(),
+                        data=decoded_datum,
+                    )
                     decoded_records_to_update.append(decoded_record_to_update)
             elif vin in failed_vins:
                 set_decode_successful(service_name, uploaded_record, False)

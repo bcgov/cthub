@@ -5,7 +5,9 @@ from auditable.models import Auditable
 class UploadedVinRecord(Auditable):
     vin = models.CharField(max_length=17)
 
-    postal_code = models.CharField(max_length=7, null=True, blank=True)
+    postal_code = models.CharField(max_length=7)
+
+    timestamp = models.DateTimeField()
 
     data = models.JSONField()
 

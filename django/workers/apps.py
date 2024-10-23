@@ -9,10 +9,12 @@ class Config(AppConfig):
         from workers.scheduled_jobs import (
             schedule_create_minio_bucket,
             schedule_read_uploaded_vins_file,
-            schedule_batch_decode_vins,
+            schedule_batch_decode_vins_vpic,
+            schedule_batch_decode_vins_vinpower,
         )
 
         if "qcluster" in sys.argv:
             schedule_create_minio_bucket()
             schedule_read_uploaded_vins_file()
-            schedule_batch_decode_vins()
+            schedule_batch_decode_vins_vpic()
+            schedule_batch_decode_vins_vinpower()

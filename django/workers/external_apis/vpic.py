@@ -17,7 +17,7 @@ def batch_decode(uploaded_vin_records):
 
     body = {"format": "json", "data": request_data}
     response = requests.post(url, data=body)
-    response.raise_for_status
+    response.raise_for_status()
     data = response.json()["Results"]
     decoded_vins_map = {}
     for record in data:

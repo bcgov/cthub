@@ -18,17 +18,18 @@ class GoElectricRebates(Auditable):
         blank=False,
     )
     total_purchase_price = models.IntegerField(
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
     )
     manufacturer = models.CharField(blank=False, max_length=250, null=False)
     model = models.CharField(blank=False, max_length=250, null=False)
     city = models.CharField(blank=False, max_length=250, null=False)
     postal_code = models.CharField(blank=True, max_length=250, null=True)
-    phone = models.CharField(blank=False, max_length=20, null=False)
-    email = models.CharField(blank=False, max_length=50, null=False)
+    phone = models.CharField(blank=True, max_length=20, null=True)
+    email = models.CharField(blank=True, max_length=50, null=True)
     vin = models.CharField(blank=True, max_length=100, null=True)
     vehicle_class = models.CharField(blank=True, null=True, max_length=50)
-
+    rebate_adjustment = models.CharField(blank=True, null=True, max_length=50)
+    notes = models.CharField(blank=True, null=True, max_length=250)
     class Meta:
         db_table = "go_electric_rebates"

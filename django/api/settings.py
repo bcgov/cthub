@@ -188,7 +188,7 @@ Q_CLUSTER = {
     "name": "CTHUB",
     "workers": 4,
     "timeout": 90,
-    "retry": 120,
+    "retry": 1800,
     "queue_limit": 50,
     "bulk": 10,
     "orm": "default",
@@ -205,6 +205,8 @@ VPIC_ENDPOINT = os.getenv(
 VPIC_VIN_KEY = os.getenv("VPIC_VIN_KEY", "VIN")
 VPIC_ERROR_CODE_NAME = os.getenv("VPIC_ERROR_CODE_NAME", "ErrorCode")
 VPIC_SUCCESS_ERROR_CODE = os.getenv("VPIC_SUCCESS_ERROR_CODE", "0")
+
+VINPOWER_ENDPOINT = os.getenv("VINPOWER_ENDPOINT", "http://spring:8080")
 
 LOGGING = {
     "version": 1,
@@ -226,3 +228,5 @@ LOGGING = {
         },
     },
 }
+
+PLACENAMES_ENDPOINT = PLACENAMES_ENDPOINT =  os.getenv("PLACENAMES_ENDPOINT", "https://apps.gov.bc.ca/pub/bcgnws/names/search")

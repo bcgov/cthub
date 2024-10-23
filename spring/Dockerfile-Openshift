@@ -1,0 +1,29 @@
+FROM --platform=linux/amd64 artifacts.developer.gov.bc.ca/docker-remote/eclipse-temurin:17-jdk-jammy
+
+ARG ARTIFACTORY_URL
+ARG ARTIFACTORY_USER
+ARG ARTIFACTORY_PASSWORD
+
+RUN apt-get update && apt-get install -y curl
+
+RUN mkdir libs
+WORKDIR /app/libs
+
+# Download the JAR file from Artifactory
+RUN curl -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} -O ${ARTIFACTORY_URL}
+
+WORKDIR /app
+
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ls -l ./libs && \
+    mkdir /.m2 && \
+    chgrp -R root /.m2 && \
+    chmod -R g+rw /.m2 && \
+    chgrp -R root /app && \
+    chmod -R g+rw /app
+RUN ./mvnw dependency:resolve
+
+COPY src ./src
+
+CMD ["./mvnw", "-Denvironment=production", "spring-boot:run"]
