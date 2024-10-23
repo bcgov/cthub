@@ -5,10 +5,11 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
-  const [showAllRowsMap, setShowAllRowsMap] = useState({});
-  const classname = type === "error" ? "error" : "warning";
-  const toggleShowAllRows = (column, errorType, groupIndex) => {
-    const key = `${column}_${errorType}_${groupIndex}`;
+  const [showAllRowsMap, setShowAllRowsMap] = useState({}); // State to toggle showing all rows for each issue
+  const errorTypes = ['critical', 'error']
+  const classname = errorTypes.includes(type) ? "error" : "warning";
+  const toggleShowAllRows = (column, errorType) => {
+    const key = `${column}_${errorType}`;
     setShowAllRowsMap((prevState) => ({
       ...prevState,
       [key]: !prevState[key],
@@ -56,7 +57,7 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
     <Box
       p={2}
       sx={{
-        border: type === "error" ? "1px solid #ce3e39" : "1px solid #fcba19",
+        border: errorTypes.includes(type) ? "1px solid #ce3e39" : "1px solid #fcba19",
         mb: "1rem",
       }}
     >
@@ -66,13 +67,51 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
       />
       <span className={classname}>
         <strong>
-          {totalIssueCount} {type === "error" ? "Errors" : "Warnings"}&nbsp;
+          {totalIssueCount} {type === 'critical' ? 'Critical Errors' : type === 'error' ? 'Errors' : 'Warnings'}&nbsp;
         </strong>
       </span>
       ({msg})
       {Object.keys(issues).map((column) => (
         <Box key={column} sx={{ marginTop: 2 }}>
           <strong>Column: {column}</strong>
+          {Object.keys(issues[column]).map((errorType, index) => (
+            <div key={index} style={{ marginTop: "0.5rem" }}>
+              <div>
+                {(Object.keys(issues[column]).length > 1 ? `(${index + 1}) ` : '')}
+                {type.charAt(0).toUpperCase() + type.slice(1)} {type === `critical` ? `Error` : `Name:`} <b>{errorType}</b>
+                </div>
+              <div>
+                Expected value:{" "}
+                <b>
+                {issues[column][errorType].ExpectedType ||
+                  issues[column][errorType].ExpectedFormat}
+                </b>
+              </div>
+              <div>
+              {column === 'Headers' ? `Missing Headers: ` : column === 'Spreadsheet' ? 'Missing Spreadsheet: ' : `Rows with ${type}: `}
+                <b>
+                  {issues[column][errorType]?.Rows?.slice(
+                    0,
+                    showAllRowsMap[`${column}_${errorType}`] ? undefined : 15,
+                  ).join(", ")}
+                  {issues[column][errorType]?.Rows?.length > 15 &&
+                    !showAllRowsMap[`${column}_${errorType}`] &&
+                    "..."}
+                </b>
+              </div>
+              {issues[column][errorType]?.Rows?.length > 15 && (
+                <Button
+                  variant="text"
+                  onClick={() => toggleShowAllRows(column, errorType)}
+                >
+                  {showAllRowsMap[`${column}_${errorType}`]
+                    ? "Show less"
+                    : "Show more"}{" "}
+                  <ExpandMoreIcon />
+                </Button>
+              )}
+            </div>
+          ))}
           {Object.keys(issues[column]).map((errorType, index) => {
             const errorDetails = issues[column][errorType];
 

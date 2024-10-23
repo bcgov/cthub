@@ -13,6 +13,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const UploadIssues = ({
   confirmUpload,
+  groupedCriticalErrors,
   groupedErrors,
   groupedWarnings,
   totalIssueCount,
@@ -23,6 +24,7 @@ const UploadIssues = ({
     setShowAllIssues(!showAllIssues);
   };
 
+  const criticalMsg = "Must fix before file can be processed";
   const errorMsg = "Must fix before uploading";
   const warningMsg = "Can upload without fixing";
 
@@ -37,9 +39,16 @@ const UploadIssues = ({
           Your file upload results
         </h2>
         <Box sx={{ ml: "2rem", mb: "1rem" }}>
-          Your file has been processed and contains the following errors and
-          warnings. Please review them below:
+          {totalIssueCount.criticalErrors > 0 ? 'Your file cannot be processed because it contains critical errors. Please review them below.': 'Your file has been processed and contains the following errors and warnings. Please review them below'}
         </Box>
+        {totalIssueCount.criticalErrors >= 1 && (
+          <Box ml={2} mt={2}>
+            <span className="error">
+              <strong>{totalIssueCount.criticalErrors} Critical Errors &nbsp;</strong>
+            </span>
+            - {criticalMsg}
+          </Box>
+        )}
         {totalIssueCount.errors >= 1 && (
           <Box ml={2} mt={2}>
             <span className="error">
@@ -72,6 +81,14 @@ const UploadIssues = ({
             <ExpandMoreIcon />
           </AccordionSummary>
           <AccordionDetails>
+          {totalIssueCount.criticalErrors >= 1 && (
+              <UploadIssuesDetail
+                type="critical"
+                issues={groupedCriticalErrors}
+                totalIssueCount={totalIssueCount.criticalErrors}
+                msg={criticalMsg}
+              />
+            )}
             {totalIssueCount.errors >= 1 && (
               <UploadIssuesDetail
                 type="error"
