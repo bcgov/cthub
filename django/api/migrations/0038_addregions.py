@@ -20,12 +20,12 @@ def add_region_data(apps, schema_editor):
     
     for region in regions_data:
         Regions.objects.get_or_create(
+            name=region["name"],
             defaults={
                 "create_timestamp": current_timestamp,
                 "create_user": "SYSTEM",
                 "update_timestamp": current_timestamp,
                 "update_user": "SYSTEM",
-                "name": region["name"]
             }
         )
 
