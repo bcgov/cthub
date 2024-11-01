@@ -436,7 +436,8 @@ class CVPDataColumns(Enum):
     VEHICLE_CATEGORY = "Vehicle Category"
     DRIVE_TYPE = "Drive Type"
     VEHICLE_TYPE = "Vehicle Type"
-    PORTFOLIO = "Portfolio"
+    ROAD_CLASS = "Class"
+    USE_CASE = "Use Case"
     MAKE_AND_MODEL = "Vehicle Make and Model"
     ECONOMIC_REGION = "Economic Region"
     START_DATE = "Start Date"
@@ -483,7 +484,8 @@ class CVPDataColumnMapping(Enum):
     vehicle_category = "Vehicle Category"
     drive_type = "Drive Type"
     vehicle_type = "Vehicle Type"
-    portfolio = "Portfolio"
+    road_class = "Class"
+    use_case = "Use Case"
     make_and_model = "Vehicle Make and Model"
     economic_region = "Economic Region"
     start_date = "Start Date"
@@ -713,7 +715,8 @@ FIELD_TYPES = {
         "vehicle_category": str,
         "drive_type": str,
         "vehicle_type": str,
-        "portfolio": str,
+        "road_class": str,
+        "use_case": str,
         "make_and_model": str,
         "economic_region": str,
         "start_date": datetime.date,
