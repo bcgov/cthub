@@ -358,12 +358,14 @@ def validate_field_values(df, *columns, **kwargs):
     invalid_values = []
     
     result = {}
+    delimiter = kwargs.get("delimiter")
     for column in df.columns:
         if column in allowed_values:
             indices = []
             series = df[column]
             for index, value in series.items():
-                items = [item.strip() for item in value.split(",")]
+                if delimiter is not None:
+                    items = [item.strip() for item in value.split(delimiter)]
                 
                 for item in items:
                     if str(item).upper() not in (valid.upper() for valid in allowed_values[column]) and item != '' and item is not None and not pd.isna(item):
