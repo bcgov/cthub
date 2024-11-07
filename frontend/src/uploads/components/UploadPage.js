@@ -13,6 +13,7 @@ import {
 import UploadIcon from "@mui/icons-material/Upload";
 import FileDropArea from "./FileDropArea";
 import Loading from "../../app/components/Loading";
+import FileRequirements from "./FileRequirements";
 
 const UploadPage = (props) => {
   const {
@@ -91,6 +92,11 @@ const UploadPage = (props) => {
             uploadFiles={uploadFiles}
           />
         </div>
+        <Box pt={3} rb={2}>
+          <FileRequirements
+              datasetSelected={datasetSelected}
+          />
+        </Box>
         <Box
           pt={2}
           className="upload-bar"
