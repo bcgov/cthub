@@ -94,9 +94,9 @@ CVP_DATA_VALID_FIELD_VALUES = {
     'Status': ['Approved', 'Completed', 'Terminated', 'Not Approved', 'Application Withdrawn'],
     'Vehicles Deployed': ['Yes', 'No'],
     'Vehicle Category': ['On-Road', 'Off-Road', 'Marine', 'Rail', 'Aviation'],
-    'Portfolio': [
-        'Road - 8', 'Rail', 'Marine', 'Road - 8C', 'School Bus',
-        'Loader', 'Road - 6', 'Fork Lift', 'Recreation'
+    'Class': [
+        'Road - 3', 'Road - 4', 'Road - 5', 'Road - 6', 'Road - 7',
+        'Road - 8', 'Road - 8C'
     ],
     'Economic Region': [
         'Nechako', 'Northeast', 'North Coast', 'Cariboo', 'Vancouver Island/Coast',

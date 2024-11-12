@@ -44,8 +44,12 @@ class CVPData(Auditable):
         blank=False, null=False, max_length=100
     )
 
-    portfolio = models.CharField(
-        blank=False, null=False, max_length=100
+    road_class = models.CharField(
+        blank=True, null=True, max_length=100
+    )
+
+    use_case = models.CharField(
+        blank=True, null=True, max_length=100
     )
 
     make_and_model = models.CharField(
