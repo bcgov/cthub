@@ -764,7 +764,7 @@ DATASET_CONFIG = {
         "sheet_name": "ARC Data",
         "preparation_functions": [prepare_arc_project_tracking],
         "validation_functions": [
-            {'function': validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": ARC_VALID_FIELD_VALUES, "delimiter": ","}},
+            {'function': validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": ARC_VALID_FIELD_VALUES}},
             {"function": region_checker, "columns": ['Economic Region'], "kwargs": {"indices_offset":2}},
         ]
     },
@@ -828,7 +828,7 @@ DATASET_CONFIG = {
             {"function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
             {"function": location_checker, "columns": ["City"], "kwargs": {"columns_to_features_map": {"City": LOCALITY_FEATURES_MAP}, "indices_offset":2}},
             {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
-            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES, "delimiter": ","}},
+            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
         ]
     },
     "CVP Data": {

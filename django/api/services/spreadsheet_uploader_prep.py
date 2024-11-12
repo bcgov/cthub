@@ -364,15 +364,18 @@ def validate_field_values(df, *columns, **kwargs):
             indices = []
             series = df[column]
             for index, value in series.items():
-                if delimiter is not None:
-                    items = [item.strip() for item in value.split(delimiter)]
-                
-                for item in items:
-                    if str(item).upper() not in (valid.upper() for valid in allowed_values[column]) and item != '' and item is not None and not pd.isna(item):
-                        if index + kwargs.get("indices_offset", 0) not in indices:
-                            indices.append(index + kwargs.get("indices_offset", 0))
-                        if str(item) not in invalid_values:
-                            invalid_values.append(str(item))
+                if value is not None and pd.notna(value):
+                    str_value = str(value)
+                    items = [str_value.strip()]
+                    if delimiter is not None:
+                        items = [item.strip() for item in str_value.split(delimiter)]
+                    
+                    for item in items:
+                        if str(item).upper() not in (valid.upper() for valid in allowed_values[column]) and item != '' and item is not None and not pd.isna(item):
+                            if index + kwargs.get("indices_offset", 0) not in indices:
+                                indices.append(index + kwargs.get("indices_offset", 0))
+                            if str(item) not in invalid_values:
+                                invalid_values.append(str(item))
             
             if indices:
                 result[column] = {
