@@ -28,6 +28,7 @@ const UploadPage = (props) => {
     downloadSpreadsheet,
     setAlert,
     loading,
+    totalIssueCount
   } = props;
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
@@ -38,7 +39,7 @@ const UploadPage = (props) => {
     <>
       <Box p={3}>
         <h2>Upload Program Data</h2>
-        {alertElement}
+        {totalIssueCount < 1 && alertElement}
         <div id="dataset-select">
           <span>
             <h3>Select Program &nbsp; &nbsp;</h3>

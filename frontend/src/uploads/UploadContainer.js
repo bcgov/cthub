@@ -328,7 +328,6 @@ const UploadContainer = () => {
   if (refresh) {
     return <Loading />;
   }
-
   const alertElement =
     alert && alertContent && alertSeverity ? (
       <Alert severity={alertSeverity}>
@@ -381,6 +380,7 @@ const UploadContainer = () => {
                   downloadSpreadsheet={downloadSpreadsheet}
                   setAlert={setAlert}
                   loading={loading}
+                  totalIssueCount={totalIssueCount}
                 />
               </Paper>
               {adminUser && (

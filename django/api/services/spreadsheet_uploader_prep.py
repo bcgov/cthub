@@ -396,7 +396,7 @@ def region_checker(df, *columns, **kwargs):
     if indices:
         result[column] = {
                     "Invalid Region": {
-                        "Expected Type": "The following rows have an invalid region",
+                        "Expected Type": ", ".join(valid_regions),
                         "Rows": indices,
                         "Severity": "Error"
                     }

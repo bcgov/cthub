@@ -6,8 +6,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
   const [showAllRowsMap, setShowAllRowsMap] = useState({}); // State to toggle showing all rows for each issue
-  const errorTypes = ['critical', 'error']
+  const errorTypes = ["critical", "error"];
   const classname = errorTypes.includes(type) ? "error" : "warning";
+
   const toggleShowAllRows = (column, errorType) => {
     const key = `${column}_${errorType}`;
     setShowAllRowsMap((prevState) => ({
@@ -17,40 +18,32 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
   };
 
   const renderWarning = (group) => (
-    <>
-      <ul>
-        <li>
-          Rows:{" "}
-          <b>{group.Rows.join(", ")}</b>
-          {Object.keys(group).map((key) => {
-            if (key !== "Rows") {
-              return (
-                <span key={key}>
-                  {"       "} {/* spacer */}
-                  {Array.isArray(group[key])
-                    ? group[key].join(", ")
-                    : group[key]}
-                </span>
-              );
-            }
-            return null;
-          })}
-        </li>
-      </ul>
-    </>
+    <ul>
+      <li>
+        Rows: <b>{group.Rows.join(", ")}</b>
+        {Object.keys(group).map((key) => {
+          if (key !== "Rows") {
+            return (
+              <span key={key}>
+                {"       "} {/* spacer */}
+                {Array.isArray(group[key]) ? group[key].join(", ") : group[key]}
+              </span>
+            );
+          }
+          return null;
+        })}
+      </li>
+    </ul>
   );
-  
+
   const renderError = (errorDetails) => (
-    <>
-      <ul>
-        <li>
-          <div>
-            Rows:{" "}
-            <b>{errorDetails.Rows.join(", ")}</b>
-          </div>
-        </li>
-      </ul>
-    </>
+    <ul>
+      <li>
+        <div>
+          Rows: <b>{errorDetails.Rows.join(", ")}</b>
+        </div>
+      </li>
+    </ul>
   );
 
   return (
@@ -67,75 +60,33 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
       />
       <span className={classname}>
         <strong>
-          {totalIssueCount} {type === 'critical' ? 'Critical Errors' : type === 'error' ? 'Errors' : 'Warnings'}&nbsp;
+          {totalIssueCount}{" "}
+          {type === "critical" ? "Critical Errors" : type === "error" ? "Errors" : "Warnings"}&nbsp;
         </strong>
       </span>
       ({msg})
       {Object.keys(issues).map((column) => (
         <Box key={column} sx={{ marginTop: 2 }}>
           <strong>Column: {column}</strong>
-          {Object.keys(issues[column]).map((errorType, index) => (
-            <div key={index} style={{ marginTop: "0.5rem" }}>
-              <div>
-                {(Object.keys(issues[column]).length > 1 ? `(${index + 1}) ` : '')}
-                {type.charAt(0).toUpperCase() + type.slice(1)} {type === `critical` ? `Error` : `Name:`} <b>{errorType}</b>
-                </div>
-              <div>
-                Expected value:{" "}
-                <b>
-                {issues[column][errorType].ExpectedType ||
-                  issues[column][errorType].ExpectedFormat}
-                </b>
-              </div>
-              <div>
-              {column === 'Headers' ? `Missing Headers: ` : column === 'Spreadsheet' ? 'Missing Spreadsheet: ' : `Rows with ${type}: `}
-                <b>
-                  {issues[column][errorType]?.Rows?.slice(
-                    0,
-                    showAllRowsMap[`${column}_${errorType}`] ? undefined : 15,
-                  ).join(", ")}
-                  {issues[column][errorType]?.Rows?.length > 15 &&
-                    !showAllRowsMap[`${column}_${errorType}`] &&
-                    "..."}
-                </b>
-              </div>
-              {issues[column][errorType]?.Rows?.length > 15 && (
-                <Button
-                  variant="text"
-                  onClick={() => toggleShowAllRows(column, errorType)}
-                >
-                  {showAllRowsMap[`${column}_${errorType}`]
-                    ? "Show less"
-                    : "Show more"}{" "}
-                  <ExpandMoreIcon />
-                </Button>
-              )}
-            </div>
-          ))}
           {Object.keys(issues[column]).map((errorType, index) => {
             const errorDetails = issues[column][errorType];
-
             return (
               <div key={index} style={{ marginTop: "0.5rem" }}>
-                <div>
                 <ul>
                   <li>
                     <div>
-                      {(Object.keys(issues[column]).length > 1
-                        ? `(${index + 1}) `
-                        : "")}
+                      {(Object.keys(issues[column]).length > 1 ? `(${index + 1}) ` : "")}
                       {type.charAt(0).toUpperCase() + type.slice(1)} Name:{" "}
                       <strong>{errorType}</strong>
                     </div>
                   </li>
-                  </ul>
-                  <ul>
-                    <li>
-                      Expected Value:{" "}
-                      <b>{errorDetails.ExpectedType || errorDetails.ExpectedFormat}</b>
-                     </li>
-                  </ul>
-                </div>
+                </ul>
+                <ul>
+                  <li>
+                    Expected Value:{" "}
+                    <b>{errorDetails.ExpectedType || errorDetails.ExpectedFormat}</b>
+                  </li>
+                </ul>
                 {errorDetails.Groups ? (
                   errorDetails.Groups.map((group, groupIndex) => (
                     <div key={groupIndex} style={{ marginTop: "0.5rem" }}>
