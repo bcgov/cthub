@@ -11,6 +11,7 @@ import {
   FormControl,
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
+import DownloadIcon from "@mui/icons-material/Download";
 import FileDropArea from "./FileDropArea";
 import Loading from "../../app/components/Loading";
 
@@ -54,8 +55,15 @@ const UploadPage = (props) => {
             {selectionList}
           </Select>
           {datasetSelected && (
-            <Button className="text-button" onClick={downloadSpreadsheet}>
-              Download Excel File (program data upload template)
+            <Button
+              className="button-dark-blue button-lowercase"
+              type="button"
+              variant="contained"
+              onClick={downloadSpreadsheet}
+              sx={{ ml: 2 }} 
+            >
+              <DownloadIcon />
+              Download Dataset Template
             </Button>
           )}
         </div>
@@ -85,7 +93,7 @@ const UploadPage = (props) => {
         </div>
         <div>
           <FileDropArea
-            disabled={datasetSelected ? false : true}
+            disabled={uploadFiles.length != 0 || !datasetSelected}
             setAlert={setAlert}
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}

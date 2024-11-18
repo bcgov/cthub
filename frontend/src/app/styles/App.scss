@@ -98,6 +98,9 @@ h4 {
   color: #1a5a96 !important;
   text-decoration: underline !important;
   text-transform: none !important;
+  &:disabled {
+    color: $default-disabled-grey !important;
+  }
 }
 
 .button-lowercase {

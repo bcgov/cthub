@@ -22,7 +22,7 @@ const FileDrop = (props) => {
         <br />
         Drag and Drop files here or <br />
         <Box p={2}>
-          <Button className="text-button">
+          <Button disabled={disabled} className={"text-button"}>
             browse to select a file from your machine to upload.
           </Button>
         </Box>

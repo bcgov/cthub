@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Tooltip } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import FileDrop from "./FileDrop";
 import getFileSize from "../../app/utilities/getFileSize";
@@ -44,11 +44,22 @@ const FileDropArea = (props) => {
       <div>
         <div className="content">
           <Box p={2}>
-            <FileDrop
-              disabled={disabled}
-              setAlert={setAlert}
-              setFiles={setUploadFiles}
-            />
+            <Tooltip
+              disableHoverListener={!disabled}
+              title={uploadFiles.length != 0? 
+                "To upload another dataset, please delete the current dataset\
+                 by clicking the delete icon next to the file name and size."
+              : "Select a program to unlock this drag-and-drop area for dataset upload" 
+            }
+            >
+              <span>
+                <FileDrop
+                  disabled={disabled}
+                  setAlert={setAlert}
+                  setFiles={setUploadFiles}
+                />
+              </span>
+            </Tooltip>
           </Box>
         </div>
         {uploadFiles.length > 0 && (
