@@ -18,6 +18,8 @@ from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
 from api.services.spreadsheet_uploader_prep import *
 from api.services.uploaded_vins_file import create_vins_file
+from api.services.file_requirements import get_file_requirements
+from api.serializers.file_requirements import FileRequirementsSerializer
 
 
 class UploadViewset(GenericViewSet):
@@ -131,3 +133,12 @@ class UploadViewset(GenericViewSet):
             return response
         except ValueError as e:
             return HttpResponse(str(e), status=400)
+        
+    @action(detail=False, methods=["get"])
+    def file_requirements(self, request):
+        dataset_name = request.query_params.get("dataset")
+        file_requirements = get_file_requirements(dataset_name)
+        if file_requirements is None:
+            return Response({})
+        serializer = FileRequirementsSerializer(file_requirements)
+        return Response(serializer.data)
