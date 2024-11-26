@@ -36,6 +36,7 @@ const UploadContainer = () => {
     cancelAction: () => {},
     cancelText: "cancel",
   });
+  const [failedFiles, setFailedFiles] = useState([])
 
   const axios = useAxios();
   const axiosDefault = useAxios(true);
@@ -84,6 +85,8 @@ const UploadContainer = () => {
             const rows = errorDetails[errorType].Rows;
             const rowCount = rows.length;
             totalIssueCount.criticalErrors += rowCount;
+            setFailedFiles([...failedFiles, uploadFiles])
+            setUploadFiles([])
             if (!groupedCriticalErrors[column]) {
               groupedCriticalErrors[column] = {};
             }
@@ -138,6 +141,12 @@ const UploadContainer = () => {
   
     return { groupedCriticalErrors, groupedErrors, groupedWarnings, totalIssueCount };
   };
+  const clearErrors = () => {
+    setGroupedCriticalErrors({})
+    setGroupedErrors({})
+    setGroupedWarnings({})
+    setTotalIssueCount({})
+  }
 
   const showError = (error) => {
     const { response: errorResponse } = error;
@@ -183,7 +192,6 @@ const UploadContainer = () => {
         const errorCheck = responses.some(
           (response) => !response.data.success
         );
-
         setAlertSeverity(errorCheck ? "error" : "success");
         const message = responses
           .map(
@@ -193,7 +201,6 @@ const UploadContainer = () => {
           .join("\n");
         setAlert(true);
         setAlertContent(message);
-
         const warnings = {};
         responses.forEach((response, index) => {
           const responseWarnings = response.data.errors_and_warnings;
@@ -210,18 +217,27 @@ const UploadContainer = () => {
           setGroupedErrors(groupedErrors);
           setGroupedWarnings(groupedWarnings);
           setTotalIssueCount(totalIssueCount);
-
           setAlertDialogText({
             title:
-              totalIssueCount.criticalErrors > 0 ? "Your upload contained critical errors that must be fixed before it can be processed!" : "Your file has been processed and contains the following errors and warnings!",
+              totalIssueCount.criticalErrors > 0 ? "File upload failed" : "Your file has been processed and contains the following errors and warnings!",
             content: (
               <>
                 {totalIssueCount.criticalErrors >= 1 && (
                   <div>
-                    <span className="error">
-                      {totalIssueCount.criticalErrors} Critical Errors
-                    </span>
-                    - Must fix before file can be processed
+                    {groupedCriticalErrors && groupedCriticalErrors.Spreadsheet &&
+                    groupedCriticalErrors.Spreadsheet['Missing Worksheet'] &&
+                      <div>
+                        File Upload Failed - The sheet name doesn't match the required
+                        “{groupedCriticalErrors.Spreadsheet['Missing Worksheet'].Rows[0]}”.<br/>
+                        
+                      </div>
+                    }
+                    {groupedCriticalErrors && groupedCriticalErrors.Headers && 
+                    groupedCriticalErrors.Headers['Missing Headers'] &&
+                    <div>
+                      The file is missing one or more required columns.
+                    </div>
+                  }
                 </div>
                 )}
                 {totalIssueCount.errors >= 1 && (
@@ -339,7 +355,6 @@ const UploadContainer = () => {
         ))}
       </Alert>
     ) : null;
-
     return (
       <div className="row">
         <div className="col-12 mr-2">
@@ -381,6 +396,8 @@ const UploadContainer = () => {
                   setAlert={setAlert}
                   loading={loading}
                   totalIssueCount={totalIssueCount}
+                  clearErrors={clearErrors}
+                  failedFiles={failedFiles}
                 />
               </Paper>
               {adminUser && (

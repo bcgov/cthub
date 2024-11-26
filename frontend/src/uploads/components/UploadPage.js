@@ -30,8 +30,11 @@ const UploadPage = (props) => {
     downloadSpreadsheet,
     setAlert,
     loading,
-    totalIssueCount
+    totalIssueCount,
+    clearErrors,
+    failedFiles
   } = props;
+
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
       {obj.name}
@@ -99,6 +102,9 @@ const UploadPage = (props) => {
             setAlert={setAlert}
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}
+            totalIssueCount={totalIssueCount}
+            clearErrors={clearErrors}
+            failedFiles={failedFiles}
           />
         </div>
         <Box pt={3} rb={2}>
