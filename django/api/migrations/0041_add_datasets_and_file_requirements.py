@@ -55,7 +55,7 @@ def add_datasets_and_file_requirements(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0039_filerequirements"),
+        ("api", "0040_filerequirements"),
     ]
 
     operations = [
