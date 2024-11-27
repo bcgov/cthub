@@ -6,7 +6,7 @@ import FileDrop from "./FileDrop";
 import getFileSize from "../../app/utilities/getFileSize";
 
 const FileDropArea = (props) => {
-  const { disabled, setUploadFiles, uploadFiles, setAlert } = props;
+  const { disabled, setUploadFiles, uploadFiles, setAlert, totalIssueCount, clearErrors, failedFiles } = props;
 
   const removeFile = (removedFile) => {
     const found = uploadFiles.findIndex((file) => file === removedFile);
@@ -14,27 +14,34 @@ const FileDropArea = (props) => {
     setUploadFiles([...uploadFiles]);
   };
 
-  function FormRow(file) {
+  function FormRow(file, success) {
     const { name, size } = file;
+    const uploadRowClassname = totalIssueCount.criticalErrors >= 1? 'error': success==false? 'error': 'upload-row'
     return (
       <Grid container alignItems="center" key={name}>
-        <Grid item xs={7} className="upload-row">
+        <Grid item xs={7} className={uploadRowClassname}>
           {name}
         </Grid>
-        <Grid item xs={3} className="upload-row">
+        <Grid item xs={3} className={uploadRowClassname}>
           {getFileSize(size)}
         </Grid>
-        <Grid item xs={2} className="upload-row">
+        <Grid item xs={2} className={uploadRowClassname}>
+          {success == true &&
           <Button
-            className="delete"
-            onClick={() => {
-              removeFile(file);
-            }}
-            type="button"
-            id="trash-button"
+          className="delete"
+          onClick={() => {
+            removeFile(file)
+            clearErrors();
+          }}
+          type="button"
+          id="trash-button"
           >
             <ClearIcon padding={0} sx={{ color: "red" }} />
           </Button>
+          }
+          {success == false &&
+            <>Failed Upload</>
+          }
         </Grid>
       </Grid>
     );
@@ -57,12 +64,13 @@ const FileDropArea = (props) => {
                   disabled={disabled}
                   setAlert={setAlert}
                   setFiles={setUploadFiles}
+                  clearErrors={clearErrors}
                 />
               </span>
             </Tooltip>
           </Box>
         </div>
-        {uploadFiles.length > 0 && (
+        {(uploadFiles.length > 0 || failedFiles.length > 0) && (
           <Box className="upload-list" pt={3} rb={2}>
             <Grid container direction="row">
               <Grid item xs={7}>
@@ -72,7 +80,12 @@ const FileDropArea = (props) => {
                 <h3>Size</h3>
               </Grid>
               <Grid item xs={2} />
-              {uploadFiles.map((file) => FormRow(file))}
+              {failedFiles.map((failed, index) => {
+                return failed.map((file) => {
+                  return FormRow(file, false);
+                });
+              })}
+              {uploadFiles.map((file) =>FormRow(file, true))}
             </Grid>
           </Box>
         )}

@@ -6,8 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 const AlertDialog = (props) => {
   const {
     open,
@@ -33,7 +32,7 @@ const AlertDialog = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          <ErrorOutlineIcon className="error" /> {title}
+          <WarningAmberIcon className="error" /> {title}
         </DialogTitle>
         <DialogContent>
           <DialogContent id="alert-dialog-description">

@@ -55,7 +55,7 @@ def transform_data(
     if (missing_columns):
         errors_and_warnings['Headers'] = {}
         errors_and_warnings['Headers']['Missing Headers'] = {
-            "Expected Type": "The spreadsheet provided is missing headers",
+            "Expected Type": "missing one or more required columns",
             "Rows": missing_columns,
             "Severity": "Critical"
         }
