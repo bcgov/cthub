@@ -411,3 +411,40 @@ def region_checker(df, *columns, **kwargs):
                 }
         
     return result
+
+def format_postal_codes(df, *columns, **kwargs):
+    validate = kwargs.get('validate', False)
+    indices_offset = kwargs.get("indices_offset", 0)
+    
+    result = {}
+    
+    for column in columns:
+        series = df[column]
+        map_of_values_to_indices = get_map_of_values_to_indices(series, indices_offset)
+        invalid_groups = []
+
+        for value, indices in map_of_values_to_indices.items():
+            clean_value = value.replace(" ", "") if isinstance(value, str) else ""
+            
+            if len(clean_value) == 6:
+                formatted_value = clean_value[:3] + " " + clean_value[3:]
+                for index in indices:
+                    df.at[index - indices_offset, column] = formatted_value
+            elif validate:
+                if pd.isna(value) or value == "":
+                    value = "Empty"
+                invalid_groups.append({
+                    "Invalid Postal Code": value,
+                    "Rows": indices
+                })
+        
+        if validate and invalid_groups:
+            result[column] = {
+                "Invalid Postal Codes": {
+                    "Expected Type": "Postal Code should be formatted as (XXX XXX)",
+                    "Groups": invalid_groups,
+                    "Severity": "Warning"
+                }
+            }
+    
+    return result if validate else None
