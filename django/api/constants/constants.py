@@ -26,7 +26,8 @@ from api.services.spreadsheet_uploader_prep import (
     location_checker,
     email_validator,
     validate_field_values,
-    region_checker
+    region_checker,
+    format_postal_codes
 )
 from api.services.resolvers import get_google_resolver
 from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES, LOCALITY_FEATURES_MAP, CVP_DATA_VALID_FIELD_VALUES
@@ -829,6 +830,7 @@ DATASET_CONFIG = {
             {"function": location_checker, "columns": ["City"], "kwargs": {"columns_to_features_map": {"City": LOCALITY_FEATURES_MAP}, "indices_offset":2}},
             {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
+            {"function": format_postal_codes, "columns": ["Postal code"], "kwargs": {"indices_offset":2, "validate": True}}
         ]
     },
     "CVP Data": {
