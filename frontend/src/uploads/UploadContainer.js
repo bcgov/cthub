@@ -258,7 +258,9 @@ const UploadContainer = () => {
                 )}
               </>
             ),
-            cancelAction: () => setOpenDialog(false),
+            cancelAction: () => {setOpenDialog(false)
+                                clearErrors()
+                                setUploadFiles([])},
             confirmText: "View Details",
             confirmAction: () => setOpenDialog(false),
           });
@@ -377,6 +379,8 @@ const UploadContainer = () => {
                     groupedErrors={groupedErrors}
                     groupedWarnings={groupedWarnings}
                     totalIssueCount={totalIssueCount}
+                    clearErrors={clearErrors}
+                    setUploadFiles={setUploadFiles}
                   />
                 </Paper>
               )}

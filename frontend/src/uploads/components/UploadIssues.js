@@ -17,6 +17,8 @@ const UploadIssues = ({
   groupedErrors,
   groupedWarnings,
   totalIssueCount,
+  clearErrors,
+  setUploadFiles
 }) => {
   const [showAllIssues, setShowAllIssues] = useState(false);
 
@@ -152,7 +154,8 @@ const UploadIssues = ({
               <Button
                 className="cancel-button"
                 onClick={() => {
-                  console.log("cancel");
+                  clearErrors()
+                  setUploadFiles([])
                 }}
               >
                 Cancel
