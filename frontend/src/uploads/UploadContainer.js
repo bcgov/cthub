@@ -346,6 +346,7 @@ const UploadContainer = () => {
   if (refresh) {
     return <Loading />;
   }
+
   const alertElement =
     alert && alertContent && alertSeverity ? (
       <Alert severity={alertSeverity}>
@@ -357,7 +358,7 @@ const UploadContainer = () => {
         ))}
       </Alert>
     ) : null;
-    return (
+  return (
       <div className="row">
         <div className="col-12 mr-2">
           <>

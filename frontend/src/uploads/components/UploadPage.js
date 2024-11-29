@@ -40,11 +40,16 @@ const UploadPage = (props) => {
       {obj.name}
     </MenuItem>
   ));
+  
+  const noIssues = (totalIssueCount) => {
+    return Object.keys(totalIssueCount).length === 0 && totalIssueCount.constructor === Object;
+  };
+
   return (
     <>
       <Box p={3}>
         <h2>Upload Program Data</h2>
-        {totalIssueCount < 1 && alertElement}
+        {noIssues && alertElement}
         <div id="dataset-select">
           <span>
             <h3>Select Program &nbsp; &nbsp;</h3>
