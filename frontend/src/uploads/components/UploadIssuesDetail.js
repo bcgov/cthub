@@ -50,7 +50,9 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
     <Box
       p={2}
       sx={{
-        border: errorTypes.includes(type) ? "1px solid #ce3e39" : "1px solid #fcba19",
+        border: errorTypes.includes(type)
+          ? "1px solid #ce3e39"
+          : "1px solid #fcba19",
         mb: "1rem",
       }}
     >
@@ -61,7 +63,12 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
       <span className={classname}>
         <strong>
           {totalIssueCount}{" "}
-          {type === "critical" ? "Critical Errors" : type === "error" ? "Errors" : "Warnings"}&nbsp;
+          {type === "critical"
+            ? "Critical Errors"
+            : type === "error"
+              ? "Errors"
+              : "Warnings"}
+          &nbsp;
         </strong>
       </span>
       ({msg})
@@ -75,7 +82,9 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
                 <ul>
                   <li>
                     <div>
-                      {(Object.keys(issues[column]).length > 1 ? `(${index + 1}) ` : "")}
+                      {Object.keys(issues[column]).length > 1
+                        ? `(${index + 1}) `
+                        : ""}
                       {type.charAt(0).toUpperCase() + type.slice(1)} Name:{" "}
                       <strong>{errorType}</strong>
                     </div>
@@ -84,31 +93,33 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
                 <ul>
                   <li>
                     Expected Value:{" "}
-                    <b>{errorDetails.ExpectedType || errorDetails.ExpectedFormat}</b>
+                    <b>
+                      {errorDetails.ExpectedType || errorDetails.ExpectedFormat}
+                    </b>
                   </li>
                 </ul>
-                {errorDetails.Groups ? (
-                  errorDetails.Groups.map((group, groupIndex) => (
-                    <div key={groupIndex} style={{ marginTop: "0.5rem" }}>
-                      {renderWarning(group)}
-                      {group.Rows.length > 15 && (
-                        <Button
-                          variant="text"
-                          onClick={() =>
-                            toggleShowAllRows(column, errorType, groupIndex)
-                          }
-                        >
-                          {showAllRowsMap[`${column}_${errorType}_${groupIndex}`]
-                            ? "Show less"
-                            : "Show more"}{" "}
-                          <ExpandMoreIcon />
-                        </Button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  renderError(errorDetails)
-                )}
+                {errorDetails.Groups
+                  ? errorDetails.Groups.map((group, groupIndex) => (
+                      <div key={groupIndex} style={{ marginTop: "0.5rem" }}>
+                        {renderWarning(group)}
+                        {group.Rows.length > 15 && (
+                          <Button
+                            variant="text"
+                            onClick={() =>
+                              toggleShowAllRows(column, errorType, groupIndex)
+                            }
+                          >
+                            {showAllRowsMap[
+                              `${column}_${errorType}_${groupIndex}`
+                            ]
+                              ? "Show less"
+                              : "Show more"}{" "}
+                            <ExpandMoreIcon />
+                          </Button>
+                        )}
+                      </div>
+                    ))
+                  : renderError(errorDetails)}
               </div>
             );
           })}

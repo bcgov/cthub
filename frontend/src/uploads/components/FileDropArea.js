@@ -6,7 +6,15 @@ import FileDrop from "./FileDrop";
 import getFileSize from "../../app/utilities/getFileSize";
 
 const FileDropArea = (props) => {
-  const { disabled, setUploadFiles, uploadFiles, setAlert, totalIssueCount, clearErrors, failedFiles } = props;
+  const {
+    disabled,
+    setUploadFiles,
+    uploadFiles,
+    setAlert,
+    totalIssueCount,
+    clearErrors,
+    failedFiles,
+  } = props;
 
   const removeFile = (removedFile) => {
     const found = uploadFiles.findIndex((file) => file === removedFile);
@@ -16,7 +24,12 @@ const FileDropArea = (props) => {
 
   function FormRow(file, success) {
     const { name, size } = file;
-    const uploadRowClassname = totalIssueCount.criticalErrors >= 1? 'error': success==false? 'error': 'upload-row'
+    const uploadRowClassname =
+      totalIssueCount.criticalErrors >= 1
+        ? "error"
+        : success == false
+          ? "error"
+          : "upload-row";
     return (
       <Grid container alignItems="center" key={name}>
         <Grid item xs={7} className={uploadRowClassname}>
@@ -26,22 +39,20 @@ const FileDropArea = (props) => {
           {getFileSize(size)}
         </Grid>
         <Grid item xs={2} className={uploadRowClassname}>
-          {success == true &&
-          <Button
-          className="delete"
-          onClick={() => {
-            removeFile(file)
-            clearErrors();
-          }}
-          type="button"
-          id="trash-button"
-          >
-            <ClearIcon padding={0} sx={{ color: "red" }} />
-          </Button>
-          }
-          {success == false &&
-            <>Failed Upload</>
-          }
+          {success == true && (
+            <Button
+              className="delete"
+              onClick={() => {
+                removeFile(file);
+                clearErrors();
+              }}
+              type="button"
+              id="trash-button"
+            >
+              <ClearIcon padding={0} sx={{ color: "red" }} />
+            </Button>
+          )}
+          {success == false && <>Failed Upload</>}
         </Grid>
       </Grid>
     );
@@ -53,11 +64,12 @@ const FileDropArea = (props) => {
           <Box p={2}>
             <Tooltip
               disableHoverListener={!disabled}
-              title={uploadFiles.length != 0? 
-                "To upload another dataset, please delete the current dataset\
+              title={
+                uploadFiles.length != 0
+                  ? "To upload another dataset, please delete the current dataset\
                  by clicking the delete icon next to the file name and size."
-              : "Select a program to unlock this drag-and-drop area for dataset upload" 
-            }
+                  : "Select a program to unlock this drag-and-drop area for dataset upload"
+              }
             >
               <span>
                 <FileDrop
@@ -85,7 +97,7 @@ const FileDropArea = (props) => {
                   return FormRow(file, false);
                 });
               })}
-              {uploadFiles.map((file) =>FormRow(file, true))}
+              {uploadFiles.map((file) => FormRow(file, true))}
             </Grid>
           </Box>
         )}
