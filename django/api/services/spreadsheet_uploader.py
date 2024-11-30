@@ -100,7 +100,7 @@ def transform_data(
                                 "Rows": [],
                                 "Severity": "Error"
                             }
-                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 2)
 
             if expected_type == datetime and value is not None and value != '':
                     try:
@@ -114,7 +114,7 @@ def transform_data(
                                 "Rows": [],
                                 "Severity": "Error"
                             }
-                        errors_and_warnings[column]["Incorrect Date Format"]["Rows"].append(index + 1)
+                        errors_and_warnings[column]["Incorrect Date Format"]["Rows"].append(index + 2)
 
             if expected_type in [int, float, Decimal] and value is not None and pd.notna(value) and value != '':
                 value = str(value).replace(',', '').strip()
@@ -134,7 +134,7 @@ def transform_data(
                             "Rows": [],
                             "Severity": "Error"
                         }
-                    errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
+                    errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 2)
 
             # Check if expected_type is valid before using isinstance
             elif expected_type is not None and isinstance(expected_type, type) and not isinstance(row_dict[column], expected_type) and value != "":
@@ -146,7 +146,7 @@ def transform_data(
                         "Rows": [],
                         "Severity": "Error"
                     }
-                errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
+                errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 2)
 
     for x in validation_functions:
         validate = x["function"]
