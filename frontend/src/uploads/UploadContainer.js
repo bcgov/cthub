@@ -36,7 +36,7 @@ const UploadContainer = () => {
     cancelAction: () => {},
     cancelText: "cancel",
   });
-  const [failedFiles, setFailedFiles] = useState([])
+  const [failedFiles, setFailedFiles] = useState([]);
 
   const axios = useAxios();
   const axiosDefault = useAxios(true);
@@ -60,7 +60,7 @@ const UploadContainer = () => {
   };
 
   const groupAndCountRows = (issueArray) => {
-    const groupedCriticalErrors = {}
+    const groupedCriticalErrors = {};
     const groupedErrors = {};
     const groupedWarnings = {};
     const totalIssueCount = {
@@ -69,14 +69,11 @@ const UploadContainer = () => {
       warnings: 0,
     };
 
-
     issueArray.forEach((issue) => {
       Object.keys(issue).forEach((column) => {
         const errorDetails = issue[column];
 
-  
         Object.keys(errorDetails).forEach((errorType) => {
-
           const severity = errorDetails[errorType].Severity;
           const expectedType = errorDetails[errorType]["Expected Type"];
           const groups = errorDetails[errorType].Groups || [];
@@ -85,8 +82,8 @@ const UploadContainer = () => {
             const rows = errorDetails[errorType].Rows;
             const rowCount = rows.length;
             totalIssueCount.criticalErrors += rowCount;
-            setFailedFiles([...failedFiles, uploadFiles])
-            setUploadFiles([])
+            setFailedFiles([...failedFiles, uploadFiles]);
+            setUploadFiles([]);
             if (!groupedCriticalErrors[column]) {
               groupedCriticalErrors[column] = {};
             }
@@ -102,7 +99,7 @@ const UploadContainer = () => {
             const rows = errorDetails[errorType].Rows || null;
             const rowCount = rows.length || groups.length;
             totalIssueCount.errors += rowCount;
-  
+
             if (!groupedErrors[column]) {
               groupedErrors[column] = {};
             }
@@ -116,7 +113,7 @@ const UploadContainer = () => {
             }
           } else if (severity === "Warning") {
             let warningRowCount = 0;
-  
+
             if (!groupedWarnings[column]) {
               groupedWarnings[column] = {};
             }
@@ -126,27 +123,31 @@ const UploadContainer = () => {
                 Groups: [],
               };
             }
-  
+
             groups.forEach((group) => {
               groupedWarnings[column][errorType].Groups.push(group);
               warningRowCount += group.Rows.length;
             });
-  
+
             totalIssueCount.warnings += warningRowCount;
           }
         });
       });
     });
 
-  
-    return { groupedCriticalErrors, groupedErrors, groupedWarnings, totalIssueCount };
+    return {
+      groupedCriticalErrors,
+      groupedErrors,
+      groupedWarnings,
+      totalIssueCount,
+    };
   };
   const clearErrors = () => {
-    setGroupedCriticalErrors({})
-    setGroupedErrors({})
-    setGroupedWarnings({})
-    setTotalIssueCount({})
-  }
+    setGroupedCriticalErrors({});
+    setGroupedErrors({});
+    setGroupedWarnings({});
+    setTotalIssueCount({});
+  };
 
   const showError = (error) => {
     const { response: errorResponse } = error;
@@ -189,14 +190,12 @@ const UploadContainer = () => {
 
     Promise.all(uploadPromises)
       .then((responses) => {
-        const errorCheck = responses.some(
-          (response) => !response.data.success
-        );
+        const errorCheck = responses.some((response) => !response.data.success);
         setAlertSeverity(errorCheck ? "error" : "success");
         const message = responses
           .map(
             (response) =>
-              `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`
+              `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
           )
           .join("\n");
         setAlert(true);
@@ -210,35 +209,51 @@ const UploadContainer = () => {
         });
 
         if (Object.keys(warnings).length > 0 && checkForWarnings) {
-          const { groupedCriticalErrors, groupedErrors, groupedWarnings, totalIssueCount } =
-            groupAndCountRows(Object.values(warnings));
+          const {
+            groupedCriticalErrors,
+            groupedErrors,
+            groupedWarnings,
+            totalIssueCount,
+          } = groupAndCountRows(Object.values(warnings));
 
-          setGroupedCriticalErrors(groupedCriticalErrors)
+          setGroupedCriticalErrors(groupedCriticalErrors);
           setGroupedErrors(groupedErrors);
           setGroupedWarnings(groupedWarnings);
           setTotalIssueCount(totalIssueCount);
           setAlertDialogText({
             title:
-              totalIssueCount.criticalErrors > 0 ? "File upload failed" : "Your file has been processed and contains the following errors and warnings!",
+              totalIssueCount.criticalErrors > 0
+                ? "File upload failed"
+                : "Your file has been processed and contains the following errors and warnings!",
             content: (
               <>
                 {totalIssueCount.criticalErrors >= 1 && (
                   <div>
-                    {groupedCriticalErrors && groupedCriticalErrors.Spreadsheet &&
-                    groupedCriticalErrors.Spreadsheet['Missing Worksheet'] &&
-                      <div>
-                        File Upload Failed - The sheet name doesn't match the required
-                        “{groupedCriticalErrors.Spreadsheet['Missing Worksheet'].Rows[0]}”.<br/>
-                        
-                      </div>
-                    }
-                    {groupedCriticalErrors && groupedCriticalErrors.Headers && 
-                    groupedCriticalErrors.Headers['Missing Headers'] &&
-                    <div>
-                      The file is missing one or more required columns.
-                    </div>
-                  }
-                </div>
+                    {groupedCriticalErrors &&
+                      groupedCriticalErrors.Spreadsheet &&
+                      groupedCriticalErrors.Spreadsheet[
+                        "Missing Worksheet"
+                      ] && (
+                        <div>
+                          File Upload Failed - The sheet name doesn't match the
+                          required “
+                          {
+                            groupedCriticalErrors.Spreadsheet[
+                              "Missing Worksheet"
+                            ].Rows[0]
+                          }
+                          ”.
+                          <br />
+                        </div>
+                      )}
+                    {groupedCriticalErrors &&
+                      groupedCriticalErrors.Headers &&
+                      groupedCriticalErrors.Headers["Missing Headers"] && (
+                        <div>
+                          The file is missing one or more required columns.
+                        </div>
+                      )}
+                  </div>
                 )}
                 {totalIssueCount.errors >= 1 && (
                   <div>
@@ -258,12 +273,15 @@ const UploadContainer = () => {
                 )}
               </>
             ),
-            cancelAction: () => setOpenDialog(false),
+            cancelAction: () => {
+              setOpenDialog(false);
+              clearErrors();
+              setUploadFiles([]);
+            },
             confirmText: "View Details",
             confirmAction: () => setOpenDialog(false),
           });
           setOpenDialog(true);
-
         }
       })
       .catch((error) => {
@@ -318,14 +336,14 @@ const UploadContainer = () => {
   };
 
   const handleConfirmDataInsert = () => {
-    setGroupedWarnings({})
-    setGroupedErrors({})
-    setTotalIssueCount({})
+    setGroupedWarnings({});
+    setGroupedErrors({});
+    setTotalIssueCount({});
     setOpenDialog(false);
     setAlert(false);
     setAlertContent("");
     doUpload(false); // Upload with the checkForWarnings flag set to false!
-    setUploadFiles([])
+    setUploadFiles([]);
   };
 
   const handleReplaceDataConfirm = () => {
@@ -344,6 +362,7 @@ const UploadContainer = () => {
   if (refresh) {
     return <Loading />;
   }
+
   const alertElement =
     alert && alertContent && alertSeverity ? (
       <Alert severity={alertSeverity}>
@@ -355,61 +374,65 @@ const UploadContainer = () => {
         ))}
       </Alert>
     ) : null;
-    return (
-      <div className="row">
-        <div className="col-12 mr-2">
-          <>
-            <AlertDialog
-              open={openDialog}
-              title={alertDialogText.title}
-              dialogue={alertDialogText.content} // Corrected prop name
-              cancelText={alertDialogText.cancelText}
-              handleCancel={alertDialogText.cancelAction}
-              confirmText={alertDialogText.confirmText}
-              handleConfirm={alertDialogText.confirmAction}
-            />
-            <Stack direction="column" spacing={2}>
-              {(totalIssueCount.criticalErrors || totalIssueCount.errors > 0 || totalIssueCount.warnings > 0) && (
-                <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
-                  <UploadIssues
-                    confirmUpload={handleConfirmDataInsert}
-                    groupedCriticalErrors={groupedCriticalErrors}
-                    groupedErrors={groupedErrors}
-                    groupedWarnings={groupedWarnings}
-                    totalIssueCount={totalIssueCount}
-                  />
-                </Paper>
-              )}
-              <Paper square variant="outlined">
-                <UploadPage
-                  alertElement={alertElement}
-                  uploadFiles={uploadFiles}
-                  datasetList={datasetList}
-                  doUpload={doUpload}
-                  setDatasetSelected={setDatasetSelected}
-                  datasetSelected={datasetSelected}
-                  setUploadFiles={setUploadFiles}
-                  setReplaceData={setReplaceData}
-                  replaceData={replaceData}
-                  handleRadioChange={handleRadioChange}
-                  downloadSpreadsheet={downloadSpreadsheet}
-                  setAlert={setAlert}
-                  loading={loading}
+  return (
+    <div className="row">
+      <div className="col-12 mr-2">
+        <>
+          <AlertDialog
+            open={openDialog}
+            title={alertDialogText.title}
+            dialogue={alertDialogText.content} // Corrected prop name
+            cancelText={alertDialogText.cancelText}
+            handleCancel={alertDialogText.cancelAction}
+            confirmText={alertDialogText.confirmText}
+            handleConfirm={alertDialogText.confirmAction}
+          />
+          <Stack direction="column" spacing={2}>
+            {(totalIssueCount.criticalErrors ||
+              totalIssueCount.errors > 0 ||
+              totalIssueCount.warnings > 0) && (
+              <Paper variant="outlined" square elevation={0} sx={{ mb: 2 }}>
+                <UploadIssues
+                  confirmUpload={handleConfirmDataInsert}
+                  groupedCriticalErrors={groupedCriticalErrors}
+                  groupedErrors={groupedErrors}
+                  groupedWarnings={groupedWarnings}
                   totalIssueCount={totalIssueCount}
                   clearErrors={clearErrors}
-                  failedFiles={failedFiles}
+                  setUploadFiles={setUploadFiles}
                 />
               </Paper>
-              {adminUser && (
-                <Paper square variant="outlined" sx={{ mt: 2 }}>
-                  <UsersContainer currentUser={currentUser} />
-                </Paper>
-              )}
-            </Stack>
-          </>
-        </div>
+            )}
+            <Paper square variant="outlined">
+              <UploadPage
+                alertElement={alertElement}
+                uploadFiles={uploadFiles}
+                datasetList={datasetList}
+                doUpload={doUpload}
+                setDatasetSelected={setDatasetSelected}
+                datasetSelected={datasetSelected}
+                setUploadFiles={setUploadFiles}
+                setReplaceData={setReplaceData}
+                replaceData={replaceData}
+                handleRadioChange={handleRadioChange}
+                downloadSpreadsheet={downloadSpreadsheet}
+                setAlert={setAlert}
+                loading={loading}
+                totalIssueCount={totalIssueCount}
+                clearErrors={clearErrors}
+                failedFiles={failedFiles}
+              />
+            </Paper>
+            {adminUser && (
+              <Paper square variant="outlined" sx={{ mt: 2 }}>
+                <UsersContainer currentUser={currentUser} />
+              </Paper>
+            )}
+          </Stack>
+        </>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default withRouter(UploadContainer);

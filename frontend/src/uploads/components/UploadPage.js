@@ -32,7 +32,7 @@ const UploadPage = (props) => {
     loading,
     totalIssueCount,
     clearErrors,
-    failedFiles
+    failedFiles,
   } = props;
 
   const selectionList = datasetList.map((obj, index) => (
@@ -40,11 +40,19 @@ const UploadPage = (props) => {
       {obj.name}
     </MenuItem>
   ));
+
+  const noIssues = (totalIssueCount) => {
+    return (
+      Object.keys(totalIssueCount).length === 0 &&
+      totalIssueCount.constructor === Object
+    );
+  };
+
   return (
     <>
       <Box p={3}>
         <h2>Upload Program Data</h2>
-        {totalIssueCount < 1 && alertElement}
+        {noIssues && alertElement}
         <div id="dataset-select">
           <span>
             <h3>Select Program &nbsp; &nbsp;</h3>
@@ -65,7 +73,7 @@ const UploadPage = (props) => {
               type="button"
               variant="contained"
               onClick={downloadSpreadsheet}
-              sx={{ ml: 2 }} 
+              sx={{ ml: 2 }}
             >
               <DownloadIcon />
               Download Dataset Template
@@ -108,9 +116,7 @@ const UploadPage = (props) => {
           />
         </div>
         <Box pt={3} rb={2}>
-          <FileRequirements
-              datasetSelected={datasetSelected}
-          />
+          <FileRequirements datasetSelected={datasetSelected} />
         </Box>
         <Box
           pt={2}
