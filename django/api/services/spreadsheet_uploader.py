@@ -3,6 +3,7 @@ import pandas as pd
 import traceback
 import numpy as np
 from django.db import transaction
+from datetime import date as real_datetime
 from datetime import datetime
 
 def get_field_default(model, field):
@@ -52,10 +53,10 @@ def transform_data(
     errors_and_warnings = {}
 
     missing_columns = [col for col in required_columns if col not in df.columns]
-    if (missing_columns):
+    if missing_columns:
         errors_and_warnings['Headers'] = {}
         errors_and_warnings['Headers']['Missing Headers'] = {
-            "Expected Type": "missing one or more required columns",
+            "Expected Type": "Missing one or more required columns",
             "Rows": missing_columns,
             "Severity": "Critical"
         }
@@ -73,7 +74,7 @@ def transform_data(
         float: "Float",
         Decimal: "Decimal",
         str: "String",
-        datetime: "Date (YYYY-MM-DD)"
+        datetime.date: "Date (YYYY-MM-DD)"
     }
 
     df = df.replace({np.nan: None})
@@ -86,7 +87,7 @@ def transform_data(
 
             if db_field_name:
                 is_nullable = db_field_name in nullable_fields
-                expected_type = field_types.get(column)
+                expected_type = field_types.get(db_field_name)
 
                 if pd.isna(value) or value == "" or value is None:
                     if is_nullable:
@@ -101,52 +102,45 @@ def transform_data(
                                 "Severity": "Error"
                             }
                         errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
-
-            if expected_type == datetime and value is not None and value != '':
-                    try:
-                        datetime.strptime(value, "%Y-%m-%d")
-                    except ValueError:
-                        if column not in errors_and_warnings:
-                            errors_and_warnings[column] = {}
-                        if "Incorrect Date Format" not in errors_and_warnings[column]:
-                            errors_and_warnings[column]["Incorrect Date Format"] = {
-                                "Expected Type": "The following rows contained an incorrect date format. Expected YYYY-MM-DD.",
-                                "Rows": [],
-                                "Severity": "Error"
-                            }
-                        errors_and_warnings[column]["Incorrect Date Format"]["Rows"].append(index + 1)
-
-            if expected_type in [int, float, Decimal] and value is not None and pd.notna(value) and value != '':
-                value = str(value).replace(',', '').strip()
-                try:
-                    if expected_type == int:
-                        row_dict[column] = int(float(value))
-                    elif expected_type == Decimal:
-                        row_dict[column] = Decimal(value).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-                    else:
-                        row_dict[column] = float(value)
-                except ValueError:
-                    if column not in errors_and_warnings:
-                        errors_and_warnings[column] = {}
-                    if "Incorrect Type" not in errors_and_warnings[column]:
-                        errors_and_warnings[column]["Incorrect Type"] = {
-                            "Expected Type": f"The following rows contained types for the column {column}. Expected {type_to_string.get(expected_type, str(expected_type))}",
-                            "Rows": [],
-                            "Severity": "Error"
-                        }
-                    errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
-
-            # Check if expected_type is valid before using isinstance
-            elif expected_type is not None and isinstance(expected_type, type) and not isinstance(row_dict[column], expected_type) and value != "":
-                if column not in errors_and_warnings:
-                    errors_and_warnings[column] = {}
-                if "Incorrect Type" not in errors_and_warnings[column]:
-                    errors_and_warnings[column]["Incorrect Type"] = {
-                        "Expected Type": f"The following rows contained types for the column {column}. Expected {type_to_string.get(expected_type, str(expected_type))}",
-                        "Rows": [],
-                        "Severity": "Error"
-                    }
-                errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
+                else:
+                    if expected_type:
+                        try:
+                            if expected_type == int:
+                                row_dict[column] = int(float(value))
+                            elif expected_type == float:
+                                row_dict[column] = float(value)
+                            elif expected_type == Decimal:
+                                row_dict[column] = Decimal(value).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                                )
+                            elif expected_type is real_datetime:
+                                try:
+                                    if isinstance(value, datetime):
+                                        parsed_date = value.date()
+                                    else:
+                                        parsed_date = datetime.strptime(value, "%Y-%m-%d").date()
+                                    row_dict[column] = parsed_date
+                                except (ValueError, TypeError):
+                                    raise ValueError("Incorrect Date Format")
+                            elif expected_type == str and type(value) == bool:
+                                row_dict[column] = str(value)
+                        except (ValueError, TypeError):
+                            if column not in errors_and_warnings:
+                                errors_and_warnings[column] = {}
+                            if "Incorrect Type" not in errors_and_warnings[column]:
+                                if expected_type is real_datetime:
+                                    errors_and_warnings[column]["Incorrect Type"] = {
+                                        "Expected Type": "Date in the format YYYY-MM-DD",
+                                        "Rows": [],
+                                        "Severity": "Error"
+                                    }
+                                else:
+                                    errors_and_warnings[column]["Incorrect Type"] = {
+                                        "Expected Type": f"Expected {type_to_string.get(expected_type, str(expected_type))}",
+                                        "Rows": [],
+                                        "Severity": "Error"
+                                    }
+                            errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
 
     for x in validation_functions:
         validate = x["function"]
@@ -160,7 +154,7 @@ def transform_data(
                     errors_and_warnings[column] = {}
                 for issue, details in issues.items():
                     if issue not in errors_and_warnings[column]:
-                        if(details.get("Severity", "Error") == 'Warning'):
+                        if details.get("Severity", "Error") == 'Warning':
                             errors_and_warnings[column][issue] = {
                                 "Expected Type": details.get("Expected Type", "Unknown"),
                                 "Groups": details.get("Groups", []),
@@ -170,7 +164,7 @@ def transform_data(
                             errors_and_warnings[column][issue] = {
                                 "Expected Type": details.get("Expected Type", "Unknown"),
                                 "Rows": details.get("Rows", []),
-                                "Severity": details.get("Severity", "Error")
+                                "Severity": "Error"
                             }
                     else:
                         errors_and_warnings[column][issue]["Groups"].extend(details.get("Groups", []))
