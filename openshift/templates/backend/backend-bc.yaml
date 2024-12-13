@@ -90,5 +90,9 @@ objects:
           forcePull: true
           noCache: true            
         type: Source
+      triggers:
+      - imageChange: {}
+        type: ImageChange
+      - type: ConfigChange
     status:
       lastVersion: 0

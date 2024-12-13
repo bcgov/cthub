@@ -72,4 +72,7 @@ objects:
           noCache: true
           forcePull: true
         type: Docker
-
+      triggers: 
+        - imageChange: {}
+          type: ImageChange
+        - type: ConfigChange   
