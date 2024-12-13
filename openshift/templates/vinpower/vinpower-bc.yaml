@@ -67,12 +67,23 @@ objects:
       strategy:
         dockerStrategy:
           dockerfilePath: ./Dockerfile-Openshift
-          pullSecret:
-            name: artifacts-pull-default-idxprm
-          noCache: true
-          forcePull: true
+          env:
+            - name: ARTIFACTORY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: artifacts-default-idxprm
+                  key: username
+            - name: ARTIFACTORY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artifacts-default-idxprm
+                  key: password
+            - name: ARTIFACTORY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cthub-artifactory
+                  key: ARTIFACTORY_URL
         type: Docker
-      triggers: 
-        - imageChange: {}
-          type: ImageChange
-        - type: ConfigChange   
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
