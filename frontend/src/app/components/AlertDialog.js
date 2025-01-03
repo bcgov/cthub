@@ -16,6 +16,7 @@ const AlertDialog = (props) => {
     handleCancel,
     confirmText,
     handleConfirm,
+    confirmButtonStyle
   } = props;
 
   if (!open) {
@@ -53,6 +54,7 @@ const AlertDialog = (props) => {
                 handleConfirm();
               }}
               autoFocus
+              sx={confirmButtonStyle}
             >
               {confirmText}
             </Button>
