@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Box, Button, Grid, Tooltip } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import FileDrop from "./FileDrop";
 import getFileSize from "../../app/utilities/getFileSize";
+import AlertDialog from "../../app/components/AlertDialog"
 
 const FileDropArea = (props) => {
   const {
@@ -22,6 +23,29 @@ const FileDropArea = (props) => {
     setUploadFiles([...uploadFiles]);
   };
 
+  const [fileToDelete, setFileToDelete] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDeleteConfirm = () => {
+
+    removeFile(fileToDelete)
+
+    clearErrors();
+    setFileToDelete(null);
+
+    setOpenDialog(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setFileToDelete(null);
+    setOpenDialog(false);
+  };
+
+  const handleDeleteClick = (file) => {
+    setFileToDelete(file);
+    setOpenDialog(true);
+  };
+
   function FormRow(file, success) {
     const { name, size } = file;
     const uploadRowClassname =
@@ -31,30 +55,47 @@ const FileDropArea = (props) => {
           ? "error"
           : "upload-row";
     return (
-      <Grid container alignItems="center" key={name}>
-        <Grid item xs={7} className={uploadRowClassname}>
-          {name}
+      <>
+        <AlertDialog
+          open={openDialog}
+          title={"Delete Your Dataset"}
+          dialogue={"Are you sure you want to delete the dataset you just processed? Don't worry, you'll be able to upload a new one right after."} // Corrected prop name
+          cancelText={"Cancel"}
+          handleCancel={handleDeleteCancel}
+          confirmText={"Delete"}
+          handleConfirm={handleDeleteConfirm}
+          confirmButtonStyle={{
+            color: "red",
+            border: "1px solid red",
+            "&:hover": {
+              backgroundColor: "#ffe6e6",
+            },
+          }}
+        />
+        <Grid container alignItems="center" key={name}>
+          <Grid item xs={7} className={uploadRowClassname}>
+            {name}
+          </Grid>
+          <Grid item xs={3} className={uploadRowClassname}>
+            {getFileSize(size)}
+          </Grid>
+          <Grid item xs={2} className={uploadRowClassname}>
+            {success == true && (
+              <Button
+                className="delete"
+                onClick={() => {
+                  handleDeleteClick()
+                }}
+                type="button"
+                id="trash-button"
+              >
+                <ClearIcon padding={0} sx={{ color: "red" }} />
+              </Button>
+            )}
+            {success == false && <>Failed Upload</>}
+          </Grid>
         </Grid>
-        <Grid item xs={3} className={uploadRowClassname}>
-          {getFileSize(size)}
-        </Grid>
-        <Grid item xs={2} className={uploadRowClassname}>
-          {success == true && (
-            <Button
-              className="delete"
-              onClick={() => {
-                removeFile(file);
-                clearErrors();
-              }}
-              type="button"
-              id="trash-button"
-            >
-              <ClearIcon padding={0} sx={{ color: "red" }} />
-            </Button>
-          )}
-          {success == false && <>Failed Upload</>}
-        </Grid>
-      </Grid>
+      </>
     );
   }
   return (
