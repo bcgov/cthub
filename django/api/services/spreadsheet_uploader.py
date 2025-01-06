@@ -3,8 +3,7 @@ import pandas as pd
 import traceback
 import numpy as np
 from django.db import transaction
-from datetime import date as real_datetime
-from datetime import datetime
+from datetime import datetime, date
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -113,22 +112,19 @@ def transform_data(
                                 row_dict[column] = Decimal(value).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP
                                 )
-                            elif expected_type is real_datetime:
-                                try:
-                                    if isinstance(value, datetime):
-                                        parsed_date = value.date()
-                                    else:
-                                        parsed_date = datetime.strptime(value, "%Y-%m-%d").date()
-                                    row_dict[column] = parsed_date
-                                except (ValueError, TypeError):
-                                    raise ValueError("Incorrect Date Format")
+                            elif expected_type == date:
+                                if isinstance(value, datetime):
+                                    parsed_date = value.date()
+                                else:
+                                    parsed_date = datetime.strptime(value, "%Y-%m-%d").date()
+                                row_dict[column] = parsed_date
                             elif expected_type == str and type(value) == bool:
                                 row_dict[column] = str(value)
                         except (ValueError, TypeError):
                             if column not in errors_and_warnings:
                                 errors_and_warnings[column] = {}
                             if "Incorrect Type" not in errors_and_warnings[column]:
-                                if expected_type is real_datetime:
+                                if expected_type == date:
                                     errors_and_warnings[column]["Incorrect Type"] = {
                                         "Expected Type": "Date in the format YYYY-MM-DD",
                                         "Rows": [],
