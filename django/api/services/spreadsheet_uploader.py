@@ -100,7 +100,7 @@ def transform_data(
                                 "Rows": [],
                                 "Severity": "Error"
                             }
-                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 1)
+                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 2)
                 else:
                     if expected_type:
                         try:
@@ -136,7 +136,7 @@ def transform_data(
                                         "Rows": [],
                                         "Severity": "Error"
                                     }
-                            errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 1)
+                            errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 2)
 
     for x in validation_functions:
         validate = x["function"]
