@@ -10,6 +10,9 @@ import {
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import UploadIssuesDetail from "./UploadIssuesDetail";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DownloadIcon from "@mui/icons-material/Download";
+import getSpreadsheetRows from "../utilities/downloadIssues";
+import { writeFile, utils } from "xlsx";
 
 const UploadIssues = ({
   confirmUpload,
@@ -24,6 +27,17 @@ const UploadIssues = ({
 
   const toggleShowAllIssues = () => {
     setShowAllIssues(!showAllIssues);
+  };
+
+  const handleDownloadIssues = () => {
+    const errors = getSpreadsheetRows(groupedErrors);
+    const warnings = getSpreadsheetRows(groupedWarnings);
+    const workbook = utils.book_new();
+    const errorsSheet = utils.json_to_sheet(errors);
+    const warningsSheet = utils.json_to_sheet(warnings);
+    utils.book_append_sheet(workbook, errorsSheet, "Errors");
+    utils.book_append_sheet(workbook, warningsSheet, "Warnings");
+    writeFile(workbook, "errors_and_warnings.xlsx");
   };
 
   const criticalMsg = "Must fix before file can be processed";
@@ -84,7 +98,7 @@ const UploadIssues = ({
             : "Your file upload results"}
         </h2>
         {totalIssueCount.criticalErrors >= 1 && renderUploadFailed()}
-        {totalIssueCount.criticalErrors == 0 && (
+        {totalIssueCount.criticalErrors === 0 && (
           <Box sx={{ ml: "2rem", mb: "1rem" }}>
             Your file has been processed and contains the following errors and
             warnings. Please review them below
@@ -106,7 +120,19 @@ const UploadIssues = ({
             - {warningMsg}
           </Box>
         )}
-        {totalIssueCount.criticalErrors == 0 && (
+        {(totalIssueCount.errors >= 1 || totalIssueCount.warnings >= 1) && (
+          <Box ml={2} mt={2}>
+            <Button
+              className="button-dark-blue button-lowercase"
+              variant="contained"
+              onClick={handleDownloadIssues}
+            >
+              <DownloadIcon />
+              Download error and warning results
+            </Button>
+          </Box>
+        )}
+        {totalIssueCount.criticalErrors === 0 && (
           <>
             <Accordion elevation={0} sx={{ "&:before": { height: "0px" } }}>
               <AccordionSummary
