@@ -30,13 +30,17 @@ const UploadIssues = ({
   };
 
   const handleDownloadIssues = () => {
+    const workbook = utils.book_new();
     const errors = getSpreadsheetRows(groupedErrors);
     const warnings = getSpreadsheetRows(groupedWarnings);
-    const workbook = utils.book_new();
-    const errorsSheet = utils.json_to_sheet(errors);
-    const warningsSheet = utils.json_to_sheet(warnings);
-    utils.book_append_sheet(workbook, errorsSheet, "Errors");
-    utils.book_append_sheet(workbook, warningsSheet, "Warnings");
+    if (errors.length > 0) {
+      const errorsSheet = utils.json_to_sheet(errors);
+      utils.book_append_sheet(workbook, errorsSheet, "Errors");
+    }
+    if (warnings.length > 0) {
+      const warningsSheet = utils.json_to_sheet(warnings);
+      utils.book_append_sheet(workbook, warningsSheet, "Warnings");
+    }
     writeFile(workbook, "errors_and_warnings.xlsx");
   };
 
