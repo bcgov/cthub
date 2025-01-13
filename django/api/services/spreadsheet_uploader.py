@@ -130,6 +130,12 @@ def transform_data(
                                         "Rows": [],
                                         "Severity": "Error"
                                     }
+                                elif expected_type == int:
+                                    errors_and_warnings[column]["Incorrect Type"] = {
+                                        "Expected Type": "Expected numeric",
+                                        "Rows": [],
+                                        "Severity": "Error"
+                                    }
                                 else:
                                     errors_and_warnings[column]["Incorrect Type"] = {
                                         "Expected Type": f"Expected {type_to_string.get(expected_type, str(expected_type))}",
