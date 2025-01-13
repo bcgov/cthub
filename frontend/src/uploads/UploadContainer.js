@@ -198,8 +198,11 @@ const UploadContainer = () => {
               `${response.data.message}${response.data.errors ? "\nErrors: " + response.data.errors.join("\n") : ""}`,
           )
           .join("\n");
-        setAlert(true);
-        setAlertContent(message);
+        
+        if(!errorCheck && responses.some((response) => !response.data.warning)){
+          setAlert(true);
+          setAlertContent(message);
+        }
         const warnings = {};
         responses.forEach((response, index) => {
           const responseWarnings = response.data.errors_and_warnings;
