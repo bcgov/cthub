@@ -5,7 +5,8 @@ const UPLOAD = {
   UPLOAD: `${API_BASE_PATH}/import_data`,
   LIST: `${API_BASE_PATH}/datasets_list`, // backend route for retrieving list of datasets (eg ldv_rebates)
   DOWNLOAD_SPREADSHEET: `${API_BASE_PATH}/download_dataset`,
-  FILE_REQUIREMENTS: `${API_BASE_PATH}/file_requirements?dataset=:dataset`
+  FILE_REQUIREMENTS: `${API_BASE_PATH}/file_requirements?dataset=:dataset`,
+  DOWNLOAD_CLEAN_DATA: `${API_BASE_PATH}/download_clean_dataset`
 };
 
 export default UPLOAD;

@@ -21,6 +21,7 @@ from api.services.uploaded_vins_file import create_vins_file
 from api.services.file_requirements import get_file_requirements
 from api.serializers.file_requirements import FileRequirementsSerializer
 
+TEMP_CLEANED_DATASET = {}
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -99,7 +100,8 @@ class UploadViewset(GenericViewSet):
                 field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user=request.user,
-                check_for_warnings=check_for_warnings
+                check_for_warnings=check_for_warnings,
+                temp_cleaned_dataset=TEMP_CLEANED_DATASET
             )
 
             if not result["success"]:
@@ -142,3 +144,20 @@ class UploadViewset(GenericViewSet):
             return Response({})
         serializer = FileRequirementsSerializer(file_requirements)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def download_clean_dataset(self, request):
+        cleaned_dataset_key = request.query_params.get("key")
+        print(f"Received download request for key: {cleaned_dataset_key}")
+        if not cleaned_dataset_key or cleaned_dataset_key not in TEMP_CLEANED_DATASET:
+            return HttpResponse("Cleaned dataset not found or expired.", status=404)
+
+        cleaned_file = TEMP_CLEANED_DATASET.pop(cleaned_dataset_key)
+
+        response = HttpResponse(
+            cleaned_file,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        response["Content-Disposition"] = 'attachment; filename="cleaned_dataset.xlsx"'
+        return response
+

@@ -37,6 +37,8 @@ const UploadContainer = () => {
     cancelText: "cancel",
   });
   const [failedFiles, setFailedFiles] = useState([]);
+  const [fileAdjusted, setFileAdjusted] = useState(false);
+  const [cleanDatasetKey, setCleanDatasetKey] = useState("")
 
   const axios = useAxios();
   const axiosDefault = useAxios(true);
@@ -203,6 +205,16 @@ const UploadContainer = () => {
           setAlert(true);
           setAlertContent(message);
         }
+
+        const fileAdjustedResponse = responses.some((response) => response.data.file_adjusted);
+        setFileAdjusted(fileAdjustedResponse);
+
+        const cleanDatasetKeyResponse = responses.find(
+          (response) => response.data.cleaned_dataset_key
+        )?.data.cleaned_dataset_key;
+        
+        setCleanDatasetKey(cleanDatasetKeyResponse || "")
+
         const warnings = {};
         responses.forEach((response, index) => {
           const responseWarnings = response.data.errorsAndWarnings;
@@ -424,6 +436,8 @@ const UploadContainer = () => {
                 totalIssueCount={totalIssueCount}
                 clearErrors={clearErrors}
                 failedFiles={failedFiles}
+                fileAdjusted={fileAdjusted}
+                cleanDatasetKey={cleanDatasetKey}
               />
             </Paper>
             {adminUser && (

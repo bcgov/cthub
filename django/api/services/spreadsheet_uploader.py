@@ -1,4 +1,6 @@
 from decimal import Decimal, ROUND_HALF_UP
+import io
+import uuid
 import pandas as pd
 import traceback
 import numpy as np
@@ -43,13 +45,14 @@ def transform_data(
     field_types,
     model,
     preparation_functions=[],
-    validation_functions=[],
+    validation_functions=[]
 ):
     required_columns = [col.value for col in dataset_columns]
 
     df = df[[col for col in df.columns if col in required_columns]]
 
     errors_and_warnings = {}
+    file_adjusted = False
 
     missing_columns = [col for col in required_columns if col not in df.columns]
     if missing_columns:
@@ -59,7 +62,7 @@ def transform_data(
             "Rows": missing_columns,
             "Severity": "Critical"
         }
-        return df, errors_and_warnings
+        return df, errors_and_warnings, file_adjusted
 
     for prep_func in preparation_functions:
         df = prep_func(df)
@@ -104,22 +107,27 @@ def transform_data(
                 else:
                     if expected_type:
                         try:
+                            converted_value = value
                             if expected_type == int:
-                                row_dict[column] = int(float(value))
+                                converted_value = int(float(value))
                             elif expected_type == float:
-                                row_dict[column] = float(value)
+                                converted_value = float(value)
                             elif expected_type == Decimal:
-                                row_dict[column] = Decimal(value).quantize(
+                                converted_value = Decimal(value).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP
                                 )
                             elif expected_type == date:
                                 if isinstance(value, datetime):
-                                    parsed_date = value.date()
+                                    converted_date = value.date()
                                 else:
-                                    parsed_date = datetime.strptime(value, "%Y-%m-%d").date()
-                                row_dict[column] = parsed_date
+                                    converted_date = datetime.strptime(value, "%Y-%m-%d").date()
+                                converted_value = converted_date
                             elif expected_type == str and type(value) == bool:
-                                row_dict[column] = str(value)
+                                converted_value = str(value)
+
+                            if value != converted_value:
+                                file_adjusted = True
+                                row_dict[column] = converted_value
                         except (ValueError, TypeError):
                             if column not in errors_and_warnings:
                                 errors_and_warnings[column] = {}
@@ -175,7 +183,7 @@ def transform_data(
     inverse_column_mapping = {v: k for k, v in column_mapping.items()}
     df.rename(columns=inverse_column_mapping, inplace=True)
 
-    return df, errors_and_warnings
+    return df, errors_and_warnings, file_adjusted
 
 
 @transaction.atomic
@@ -199,6 +207,8 @@ def load_data(df, model, replace_data, user):
     }
 
 
+TEMP_CLEANED_DATASET = {}
+
 def import_from_xls(
     excel_file,
     sheet_name,
@@ -209,15 +219,17 @@ def import_from_xls(
     field_types,
     replace_data,
     user,
+    temp_cleaned_dataset,
     preparation_functions=[],
     validation_functions=[],
     check_for_warnings=True,
 ):
     errors_and_warnings = {}
+    file_adjusted = False
     try:
         df = extract_data(excel_file, sheet_name, header_row)
         if df is not None:
-            df, errors_and_warnings = transform_data(
+            df, errors_and_warnings, file_adjusted = transform_data(
                 df,
                 dataset_columns,
                 column_mapping_enum,
@@ -244,9 +256,35 @@ def import_from_xls(
                     "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
                     "warning": True,
                     "errors_and_warnings": errors_and_warnings,
+                    "file_adjusted": file_adjusted,
                 }
             else:
                 print('no warnings')
+
+        cleaned_dataset_key = None
+        if file_adjusted:
+            cleaned_dataset_key = str(uuid.uuid4())
+
+            inverse_column_mapping = {col.name: col.value for col in column_mapping_enum} 
+            df_readable = df.rename(columns=inverse_column_mapping)
+
+            for column in df_readable.columns:
+                unique_values = set(df_readable[column].dropna().unique())
+                if unique_values.issubset({True, False, "Yes", "No"}):
+                    df_readable[column] = df_readable[column].map({True: "Yes", False: "No", "Yes": "Yes", "No": "No"})
+
+            for column in df_readable.columns:
+                if set(df_readable[column].dropna().unique()).issubset({"Yes", "No"}):
+                    print(f"{column}: {df_readable[column].head()}")
+
+            output = io.BytesIO()
+            try:
+                with pd.ExcelWriter(output, engine="openpyxl") as writer:
+                    df_readable.to_excel(writer, index=False, sheet_name=sheet_name)
+                temp_cleaned_dataset[cleaned_dataset_key] = output.getvalue()
+            except Exception as excel_error:
+                print(f"Error during Excel export: {excel_error}")
+                raise
 
         result = load_data(df, model, replace_data, user)
 
@@ -257,9 +295,11 @@ def import_from_xls(
             "success": True,
             "message": f"All {inserted_rows} records successfully inserted out of {total_rows}.",
             "rows_processed": result["row_count"],
+            "file_adjusted": file_adjusted,
+            "cleaned_dataset_key": cleaned_dataset_key
             }
     
     except Exception as error:
         traceback.print_exc()
         error_msg = f"Unexpected error: {str(error)}"
-        return {"success": False, "errors": [str(error)], "rows_processed": 0}
+        return {"success": False, "errors": [str(error)], "rows_processed": 0, "file_adjusted": file_adjusted}
