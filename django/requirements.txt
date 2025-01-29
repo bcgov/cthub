@@ -26,3 +26,4 @@ xlsxwriter==3.2.0
 xmltodict==0.13.0
 dnspython==2.6.1
 email-validator==2.2.0
+djangorestframework-camel-case==1.4.2

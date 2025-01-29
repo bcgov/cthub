@@ -49,10 +49,10 @@ class UploadViewset(GenericViewSet):
     @method_decorator(check_upload_permission())
     def import_data(self, request):
         filename = request.data.get("filename")
-        dataset_selected = request.data.get("datasetSelected")
-        replace_data = request.data.get("replaceData", False)
+        dataset_selected = request.data.get("dataset_selected")
+        replace_data = request.data.get("replace_data", False)
         filepath = request.data.get("filepath")
-        check_for_warnings = request.data.get("checkForWarnings")
+        check_for_warnings = request.data.get("check_for_warnings")
         #boolean, if true show warnings before inserting data
         #after displaying warnings, code can be rerun with show_warnings = false
         #if warnings have been ignore
@@ -117,7 +117,7 @@ class UploadViewset(GenericViewSet):
 
     @action(detail=False, methods=["get"])
     def download_dataset(self, request):
-        dataset_name = request.GET.get("datasetSelected")
+        dataset_name = request.GET.get("dataset_selected")
         if not dataset_name:
             return HttpResponse("Dataset name is required.", status=400)
 

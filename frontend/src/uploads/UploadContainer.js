@@ -175,7 +175,7 @@ const UploadContainer = () => {
     const uploadPromises = uploadFiles.map((file) => {
       let filepath = file.path;
       return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
-        const { url: uploadUrl, minio_object_name: filename } = response.data;
+        const { url: uploadUrl, minioObjectName: filename } = response.data;
         return axiosDefault.put(uploadUrl, file).then(() => {
           return axios.post(ROUTES_UPLOAD.UPLOAD, {
             filename,
@@ -205,7 +205,7 @@ const UploadContainer = () => {
         }
         const warnings = {};
         responses.forEach((response, index) => {
-          const responseWarnings = response.data.errors_and_warnings;
+          const responseWarnings = response.data.errorsAndWarnings;
           if (responseWarnings) {
             warnings[uploadFiles[index].name] = responseWarnings;
           }
