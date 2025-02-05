@@ -49,8 +49,6 @@ def minio_remove_object(object_name):
         bucket_name=settings.MINIO_BUCKET_NAME,
         object_name=get_refined_object_name(object_name),
     )
-<<<<<<< HEAD
-=======
 
 def generate_presigned_url(object_name):
     client = get_minio_client()
@@ -59,4 +57,3 @@ def generate_presigned_url(object_name):
         object_name=f"cleaned_datasets/{object_name}.xlsx",
         expires=timedelta(minutes=15)
     )
->>>>>>> 386055a (Adding generate presigned url function for clean datasets to be downloaded from minio)

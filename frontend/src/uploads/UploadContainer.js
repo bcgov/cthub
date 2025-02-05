@@ -37,6 +37,8 @@ const UploadContainer = () => {
     cancelText: "cancel",
   });
   const [failedFiles, setFailedFiles] = useState([]);
+  const [fileAdjusted, setFileAdjusted] = useState(false);
+  const [cleanDatasetKey, setCleanDatasetKey] = useState("")
 
   const axios = useAxios();
   const axiosDefault = useAxios(true);
@@ -49,8 +51,8 @@ const UploadContainer = () => {
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
         if (
           currentUserResp.data &&
-          currentUserResp.data.userPermissions &&
-          currentUserResp.data.userPermissions.admin === true
+          currentUserResp.data.user_permissions &&
+          currentUserResp.data.user_permissions.admin === true
         ) {
           setAdminUser(true);
           setCurrentUser(currentUserResp.data.idir);
@@ -175,7 +177,7 @@ const UploadContainer = () => {
     const uploadPromises = uploadFiles.map((file) => {
       let filepath = file.path;
       return axios.get(ROUTES_UPLOAD.MINIO_URL).then((response) => {
-        const { url: uploadUrl, minioObjectName: filename } = response.data;
+        const { url: uploadUrl, minio_object_name: filename } = response.data;
         return axiosDefault.put(uploadUrl, file).then(() => {
           return axios.post(ROUTES_UPLOAD.UPLOAD, {
             filename,
@@ -203,9 +205,19 @@ const UploadContainer = () => {
           setAlert(true);
           setAlertContent(message);
         }
+
+        const fileAdjustedResponse = responses.some((response) => response.data.file_adjusted);
+        setFileAdjusted(fileAdjustedResponse);
+
+        const cleanDatasetKeyResponse = responses.find(
+          (response) => response.data.cleaned_dataset_key
+        )?.data.cleaned_dataset_key;
+        
+        setCleanDatasetKey(cleanDatasetKeyResponse || "")
+
         const warnings = {};
         responses.forEach((response, index) => {
-          const responseWarnings = response.data.errorsAndWarnings;
+          const responseWarnings = response.data.errors_and_warnings;
           if (responseWarnings) {
             warnings[uploadFiles[index].name] = responseWarnings;
           }
@@ -424,6 +436,8 @@ const UploadContainer = () => {
                 totalIssueCount={totalIssueCount}
                 clearErrors={clearErrors}
                 failedFiles={failedFiles}
+                fileAdjusted={fileAdjusted}
+                cleanDatasetKey={cleanDatasetKey}
               />
             </Paper>
             {adminUser && (

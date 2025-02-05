@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from django.http import JsonResponse, FileResponse
 import pathlib
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
@@ -12,11 +13,7 @@ from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-<<<<<<< HEAD
-from api.services.minio import minio_get_object, minio_remove_object
-=======
 from api.services.minio import generate_presigned_url, minio_get_object, minio_remove_object
->>>>>>> 386055a (Adding generate presigned url function for clean datasets to be downloaded from minio)
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -25,6 +22,7 @@ from api.services.uploaded_vins_file import create_vins_file
 from api.services.file_requirements import get_file_requirements
 from api.serializers.file_requirements import FileRequirementsSerializer
 
+TEMP_CLEANED_DATASET = {}
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -53,10 +51,10 @@ class UploadViewset(GenericViewSet):
     @method_decorator(check_upload_permission())
     def import_data(self, request):
         filename = request.data.get("filename")
-        dataset_selected = request.data.get("dataset_selected")
-        replace_data = request.data.get("replace_data", False)
+        dataset_selected = request.data.get("datasetSelected")
+        replace_data = request.data.get("replaceData", False)
         filepath = request.data.get("filepath")
-        check_for_warnings = request.data.get("check_for_warnings")
+        check_for_warnings = request.data.get("checkForWarnings")
         #boolean, if true show warnings before inserting data
         #after displaying warnings, code can be rerun with show_warnings = false
         #if warnings have been ignore
@@ -103,7 +101,8 @@ class UploadViewset(GenericViewSet):
                 field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user=request.user,
-                check_for_warnings=check_for_warnings
+                check_for_warnings=check_for_warnings,
+                temp_cleaned_dataset=TEMP_CLEANED_DATASET
             )
 
             if not result["success"]:
@@ -121,7 +120,7 @@ class UploadViewset(GenericViewSet):
 
     @action(detail=False, methods=["get"])
     def download_dataset(self, request):
-        dataset_name = request.GET.get("dataset_selected")
+        dataset_name = request.GET.get("datasetSelected")
         if not dataset_name:
             return HttpResponse("Dataset name is required.", status=400)
 
@@ -146,8 +145,6 @@ class UploadViewset(GenericViewSet):
             return Response({})
         serializer = FileRequirementsSerializer(file_requirements)
         return Response(serializer.data)
-<<<<<<< HEAD
-=======
     
     @action(detail=False, methods=["get"])
     def download_clean_dataset(self, request):
@@ -167,4 +164,3 @@ class UploadViewset(GenericViewSet):
 
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=500)
->>>>>>> 386055a (Adding generate presigned url function for clean datasets to be downloaded from minio)
