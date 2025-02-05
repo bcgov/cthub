@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.minio import get_minio_object, minio_download_presigned_url, minio_get_object, minio_remove_object
+from api.services.minio import get_minio_object, minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
