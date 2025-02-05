@@ -6,6 +6,8 @@ import traceback
 import numpy as np
 from django.db import transaction
 from datetime import datetime, date
+from api.services.minio import get_minio_client
+from django.conf import settings
 
 def get_field_default(model, field):
     field = model._meta.get_field(field)
@@ -206,7 +208,6 @@ def load_data(df, model, replace_data, user):
         "records_inserted": records_inserted,
     }
 
-
 TEMP_CLEANED_DATASET = {}
 
 def import_from_xls(
@@ -278,13 +279,25 @@ def import_from_xls(
                     print(f"{column}: {df_readable[column].head()}")
 
             output = io.BytesIO()
+            with pd.ExcelWriter(output, engine="openpyxl") as writer:
+                df.to_excel(writer, index=False, sheet_name=sheet_name)
+            output.seek(0)
+
+            client = get_minio_client()
+            bucket_name = settings.MINIO_BUCKET_NAME
+            object_name = f"cleaned_datasets/{cleaned_dataset_key}.xlsx"
+
             try:
-                with pd.ExcelWriter(output, engine="openpyxl") as writer:
-                    df_readable.to_excel(writer, index=False, sheet_name=sheet_name)
-                temp_cleaned_dataset[cleaned_dataset_key] = output.getvalue()
-            except Exception as excel_error:
-                print(f"Error during Excel export: {excel_error}")
-                raise
+                client.put_object(
+                    bucket_name=bucket_name,
+                    object_name=object_name,
+                    data=output,
+                    length=output.getbuffer().nbytes,
+                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                print(f"File successfully uploaded to MinIO: {object_name}")
+            except Exception as e:
+                print(f"Error uploading to MinIO: {e}")
 
         result = load_data(df, model, replace_data, user)
 

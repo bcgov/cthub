@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from django.http import JsonResponse, FileResponse
 import pathlib
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
@@ -12,7 +13,7 @@ from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.minio import minio_get_object, minio_remove_object
+from api.services.minio import get_minio_object, minio_download_presigned_url, minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -147,17 +148,26 @@ class UploadViewset(GenericViewSet):
     
     @action(detail=False, methods=["get"])
     def download_clean_dataset(self, request):
-        cleaned_dataset_key = request.query_params.get("key")
-        print(f"Received download request for key: {cleaned_dataset_key}")
-        if not cleaned_dataset_key or cleaned_dataset_key not in TEMP_CLEANED_DATASET:
-            return HttpResponse("Cleaned dataset not found or expired.", status=404)
+        """Retrieve and return the cleaned dataset from MinIO as an Excel file."""
+        try:
+            dataset_key = request.GET.get("key")
+            if not dataset_key:
+                return JsonResponse({"success": False, "error": "Missing dataset key"}, status=400)
 
-        cleaned_file = TEMP_CLEANED_DATASET.pop(cleaned_dataset_key)
+            object_name = f"cleaned_datasets/{dataset_key}.xlsx"
+            
+            minio_object = get_minio_object(object_name)
+            
+            if not minio_object:
+                return JsonResponse({"success": False, "error": "File not found"}, status=404)
 
-        response = HttpResponse(
-            cleaned_file,
-            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-        response["Content-Disposition"] = 'attachment; filename="cleaned_dataset.xlsx"'
-        return response
+            response = FileResponse(
+                minio_object, 
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+            response["Content-Disposition"] = f'attachment; filename="{dataset_key}.xlsx"'
+            return response
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
 
