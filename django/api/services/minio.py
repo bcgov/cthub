@@ -49,10 +49,3 @@ def minio_remove_object(object_name):
         bucket_name=settings.MINIO_BUCKET_NAME,
         object_name=get_refined_object_name(object_name),
     )
-
-def minio_download_presigned_url(object_name):
-    return get_minio_client().presigned_get_object(
-        bucket_name=settings.MINIO_BUCKET_NAME,
-        object_name=get_refined_object_name(object_name),
-        expires=timedelta(minutes=15),
-    )
