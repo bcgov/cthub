@@ -15,9 +15,11 @@ from api.serializers.datasets import DatasetsSerializer
 from api.services.minio import minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
-import api.constants as constants
+import api.constants.constants as constants
 from api.services.spreadsheet_uploader_prep import *
 from api.services.uploaded_vins_file import create_vins_file
+from api.services.file_requirements import get_file_requirements
+from api.serializers.file_requirements import FileRequirementsSerializer
 
 
 class UploadViewset(GenericViewSet):
@@ -33,7 +35,6 @@ class UploadViewset(GenericViewSet):
             "EV Charging Rebates",
             "Hydrogen Fueling",
             "Hydrogen Fleets",
-            "ARC Project Tracking",
             "Data Fleets",
             "Scrap It",
         ]
@@ -47,11 +48,14 @@ class UploadViewset(GenericViewSet):
     @action(detail=False, methods=["post"])
     @method_decorator(check_upload_permission())
     def import_data(self, request):
-
         filename = request.data.get("filename")
-        dataset_selected = request.data.get("datasetSelected")
-        replace_data = request.data.get("replace", False)
+        dataset_selected = request.data.get("dataset_selected")
+        replace_data = request.data.get("replace_data", False)
         filepath = request.data.get("filepath")
+        check_for_warnings = request.data.get("check_for_warnings")
+        #boolean, if true show warnings before inserting data
+        #after displaying warnings, code can be rerun with show_warnings = false
+        #if warnings have been ignore
 
         if dataset_selected == "ICBC Vins":
             file_extension = pathlib.Path(filepath).suffix
@@ -95,6 +99,7 @@ class UploadViewset(GenericViewSet):
                 field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user=request.user,
+                check_for_warnings=check_for_warnings
             )
 
             if not result["success"]:
@@ -112,7 +117,7 @@ class UploadViewset(GenericViewSet):
 
     @action(detail=False, methods=["get"])
     def download_dataset(self, request):
-        dataset_name = request.GET.get("datasetSelected")
+        dataset_name = request.GET.get("dataset_selected")
         if not dataset_name:
             return HttpResponse("Dataset name is required.", status=400)
 
@@ -128,3 +133,12 @@ class UploadViewset(GenericViewSet):
             return response
         except ValueError as e:
             return HttpResponse(str(e), status=400)
+        
+    @action(detail=False, methods=["get"])
+    def file_requirements(self, request):
+        dataset_name = request.query_params.get("dataset")
+        file_requirements = get_file_requirements(dataset_name)
+        if file_requirements is None:
+            return Response({})
+        serializer = FileRequirementsSerializer(file_requirements)
+        return Response(serializer.data)

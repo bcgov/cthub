@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.6.0",
@@ -28,7 +28,8 @@
     "regenerator-runtime": "^0.13.9",
     "web-vitals": "^2.1.4",
     "stream-browserify": "^3.0.0",
-    "util": "^0.12.4"
+    "util": "^0.12.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "css-loader": "^5.2.7",

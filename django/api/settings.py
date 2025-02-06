@@ -67,6 +67,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'djangorestframework_camel_case.middleware.CamelCaseMiddleWare',
 ]
 
 ROOT_URLCONF = "api.urls"
@@ -158,6 +159,13 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "api.keycloak_authentication.KeycloakAuthentication",
     ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
+    ],
+    'DEFAULT_PARSER_CLASSES': (
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+        'rest_framework.parsers.JSONParser',
+    ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "COERCE_DECIMAL_TO_STRING": False,
     "DEFAULT_PAGINATION_CLASS": "api.pagination.StandardResultsSetPagination",
@@ -188,7 +196,7 @@ Q_CLUSTER = {
     "name": "CTHUB",
     "workers": 4,
     "timeout": 90,
-    "retry": 120,
+    "retry": 1800,
     "queue_limit": 50,
     "bulk": 10,
     "orm": "default",
@@ -205,6 +213,8 @@ VPIC_ENDPOINT = os.getenv(
 VPIC_VIN_KEY = os.getenv("VPIC_VIN_KEY", "VIN")
 VPIC_ERROR_CODE_NAME = os.getenv("VPIC_ERROR_CODE_NAME", "ErrorCode")
 VPIC_SUCCESS_ERROR_CODE = os.getenv("VPIC_SUCCESS_ERROR_CODE", "0")
+
+VINPOWER_ENDPOINT = os.getenv("VINPOWER_ENDPOINT", "http://spring:8080")
 
 LOGGING = {
     "version": 1,
@@ -226,3 +236,5 @@ LOGGING = {
         },
     },
 }
+
+PLACENAMES_ENDPOINT = PLACENAMES_ENDPOINT =  os.getenv("PLACENAMES_ENDPOINT", "https://apps.gov.bc.ca/pub/bcgnws/names/search")

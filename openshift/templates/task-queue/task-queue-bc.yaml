@@ -69,17 +69,8 @@ objects:
     strategy:
       dockerStrategy:
         dockerfilePath: ./Dockerfile.taskq.Openshift
-        env:
-          - name: ARTIFACTORY_USER
-            valueFrom:
-              secretKeyRef:
-                name: artifacts-default-idxprm
-                key: username
-          - name: ARTIFACTORY_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: artifacts-default-idxprm
-                key: password
+        pullSecret:
+          name: artifacts-pull-default-idxprm
         noCache: true
         forcePull: true
       type: Docker
@@ -87,6 +78,6 @@ objects:
     triggers: 
       - imageChange: {}
         type: ImageChange
-      - type: ConfigChange    
+      - type: ConfigChange   
   status:
     lastVersion: 0

@@ -20,23 +20,38 @@ def schedule_read_uploaded_vins_file():
             "workers.tasks.read_uploaded_vins_file",
             name="read_uploaded_vins_file",
             schedule_type="C",
-            cron="*/15 * * * *",
-            q_options={"timeout": 660, "ack_failure": True},
+            cron="*/3 * * * *",
+            q_options={"timeout": 165, "ack_failure": True},
         )
     except IntegrityError:
         pass
 
 
-def schedule_batch_decode_vins():
+def schedule_batch_decode_vins_vpic():
     try:
         schedule(
             "workers.tasks.batch_decode_vins",
             "vpic",
             50,
-            name="batch_decode_vins",
+            name="vpic_batch_decode_vins",
             schedule_type="C",
-            cron="* * * * *",
-            q_options={"timeout": 60, "ack_failure": True},
+            cron="*/2 * * * *",
+            q_options={"timeout": 105, "ack_failure": True},
+        )
+    except IntegrityError:
+        pass
+
+
+def schedule_batch_decode_vins_vinpower():
+    try:
+        schedule(
+            "workers.tasks.batch_decode_vins",
+            "vinpower",
+            500,
+            name="vinpower_batch_decode_vins",
+            schedule_type="C",
+            cron="*/2 * * * *",
+            q_options={"timeout": 105, "ack_failure": True},
         )
     except IntegrityError:
         pass

@@ -7,8 +7,6 @@ class UploadedVinsFile(Auditable):
 
     chunk_size = models.IntegerField(default=5000)
 
-    chunks_per_run = models.IntegerField(default=4)
-
     start_index = models.IntegerField(default=0)
 
     processed = models.BooleanField(default=False)

@@ -11,8 +11,10 @@ import {
   FormControl,
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
+import DownloadIcon from "@mui/icons-material/Download";
 import FileDropArea from "./FileDropArea";
 import Loading from "../../app/components/Loading";
+import FileRequirements from "./FileRequirements";
 
 const UploadPage = (props) => {
   const {
@@ -28,17 +30,29 @@ const UploadPage = (props) => {
     downloadSpreadsheet,
     setAlert,
     loading,
+    totalIssueCount,
+    clearErrors,
+    failedFiles,
   } = props;
+
   const selectionList = datasetList.map((obj, index) => (
     <MenuItem key={index} value={obj.name}>
       {obj.name}
     </MenuItem>
   ));
+
+  const noIssues = (totalIssueCount) => {
+    return (
+      Object.keys(totalIssueCount).length === 0 &&
+      totalIssueCount.constructor === Object
+    );
+  };
+
   return (
     <>
       <Box p={3}>
         <h2>Upload Program Data</h2>
-        {alertElement}
+        {noIssues && alertElement}
         <div id="dataset-select">
           <span>
             <h3>Select Program &nbsp; &nbsp;</h3>
@@ -54,8 +68,15 @@ const UploadPage = (props) => {
             {selectionList}
           </Select>
           {datasetSelected && (
-            <Button className="text-button" onClick={downloadSpreadsheet}>
-              Download Excel File (program data upload template)
+            <Button
+              className="button-dark-blue button-lowercase"
+              type="button"
+              variant="contained"
+              onClick={downloadSpreadsheet}
+              sx={{ ml: 2 }}
+            >
+              <DownloadIcon />
+              Download Dataset Template
             </Button>
           )}
         </div>
@@ -85,12 +106,18 @@ const UploadPage = (props) => {
         </div>
         <div>
           <FileDropArea
-            disabled={datasetSelected ? false : true}
+            disabled={uploadFiles.length != 0 || !datasetSelected}
             setAlert={setAlert}
             setUploadFiles={setUploadFiles}
             uploadFiles={uploadFiles}
+            totalIssueCount={totalIssueCount}
+            clearErrors={clearErrors}
+            failedFiles={failedFiles}
           />
         </div>
+        <Box pt={3} rb={2}>
+          <FileRequirements datasetSelected={datasetSelected} />
+        </Box>
         <Box
           pt={2}
           className="upload-bar"
@@ -105,7 +132,7 @@ const UploadPage = (props) => {
             <Button
               disabled={uploadFiles.length === 0 || !datasetSelected}
               className="button-dark-blue button-lowercase"
-              onClick={() => doUpload()}
+              onClick={() => doUpload(true)}
               type="button"
               variant="contained"
             >

@@ -1,11 +1,11 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: CTHUB 0.2.0 Test CI
+name: CTHUB 0.3.0 Test CI
 on:
   workflow_dispatch:
 
 env:
-  VERSION: 0.2.0
+  VERSION: 0.3.0
   GIT_URL: https://github.com/bcgov/cthub.git 
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
@@ -16,15 +16,46 @@ concurrency:
   cancel-in-progress: true  
 
 jobs:
+  install-oc:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Set up cache for OpenShift CLI
+        id: cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc  # Path where the `oc` binary will be installed
+          key: oc-cli-${{ runner.os }}
+
+      - name: Install OpenShift CLI (if not cached)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
+          tar -xvf openshift-client-linux.tar.gz
+          sudo mv oc /usr/local/bin/
+          oc version --client
+
+      - name: Confirm OpenShift CLI is Available
+        run: oc version --client
 
   set-pre-release:
     name: Find Dev deployment pre-release number
     runs-on: ubuntu-latest
+    needs: [install-oc]
   
     outputs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
 
     steps:
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
 
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
@@ -56,6 +87,12 @@ jobs:
           approvers: emi-hi,kuanfandevops,tim738745,JulianForeman
           minimum-approvals: 1
           issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"      
+          
+      - name: Restore oc command from Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: /usr/local/bin/oc
+          key: oc-cli-${{ runner.os }}
 
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.3
@@ -70,6 +107,7 @@ jobs:
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-backend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
+          oc tag ${{ env.DEV_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
   
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
@@ -81,17 +119,11 @@ jobs:
       - name: Update frontend tag
         uses: mikefarah/yq@v4.40.5
         with:
-            cmd: yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-
-      - name: Update backend tag
-        uses: mikefarah/yq@v4.40.5
-        with:
-            cmd: yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-
-      - name: Update task-queue tag
-        uses: mikefarah/yq@v4.40.5
-        with:
-            cmd: yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+            cmd: |
+              yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+              yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+              yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
 
       - name: GitHub Commit & Push
         run: |

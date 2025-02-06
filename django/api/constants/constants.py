@@ -2,8 +2,6 @@ import datetime
 from decimal import Decimal
 from enum import Enum
 
-import pandas as pd
-
 from api.models.arc_project_tracking import ARCProjectTracking
 from api.models.charger_rebates import ChargerRebates
 from api.models.data_fleets import DataFleets
@@ -13,6 +11,7 @@ from api.models.ldv_rebates import LdvRebates
 from api.models.public_charging import PublicCharging
 from api.models.scrap_it import ScrapIt
 from api.models.go_electric_rebates import GoElectricRebates
+from api.models.cvp_data import CVPData
 from api.services.spreadsheet_uploader_prep import (
     prepare_arc_project_tracking,
     prepare_hydrogen_fleets,
@@ -21,44 +20,66 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_public_charging,
     prepare_scrap_it,
     prepare_go_electric_rebates,
+    prepare_cvp_data,
+    validate_phone_numbers,
+    typo_checker,
+    location_checker,
+    email_validator,
+    validate_field_values,
+    region_checker,
+    format_postal_codes
 )
+from api.services.resolvers import get_google_resolver
+from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES, LOCALITY_FEATURES_MAP, CVP_DATA_VALID_FIELD_VALUES
 
+
+from enum import Enum
 
 class ARCProjectTrackingColumns(Enum):
-    FUNDING_CALL = "Funding Call"
+    REFERENCE_NUMBER = "Ref #"
     PROPONENT = "Proponent"
-    REF_NUMBER = "Ref #"
-    PROJECT_TITLE = "Project Title"
-    PRIMARY_LOCATION = "Primary Location"
     STATUS = "Status"
-    ARC_FUNDING = "ARC Funding"
-    FUNDS_ISSUED = "Funds Issued"
+    FUNDING_CALL = "Funding Call"
+    PROJECT_TITLE = "Project Title"
+    VEHICLE_CATEGORY = "Vehicle Category"
+    ZEV_SUB_SECTOR = "ZEV Sub-Section"
+    FUEL_TYPE = "Fuel Type"
+    RETROFIT = "Retrofit"
+    PRIMARY_LOCATION = "Primary Location"
+    ECONOMIC_REGION = "Economic Region"
+    JOBS = "Jobs (FTEs)"
+    FUNDS_COMMITED = "Funds Committed"
+    FUNDS_DISBURSED = "Funds Disbursed"
+    REMAINING_DISBURSED = "Remaining To Disburse"
+    TOTAL_PROJECT_VALUE = "Total Project Value"
     START_DATE = "Start Date"
     COMPLETION_DATE = "Completion Date"
-    TOTAL_PROJECT_VALUE = "Total Project Value"
-    ZEV_SUB_SECTOR = "ZEV Sub-Sector"
-    ON_ROAD_OFF_ROAD = "On-Road/Off-Road"
-    FUEL_TYPE = "Fuel Type"
+    COMPLETE_OR_TERMINATION_DATE = "Complete or Termination date"
     PUBLICLY_ANNOUNCED = "Publicly Announced"
-
+    NOTES = "Notes"
 
 class ArcProjectTrackingColumnMapping(Enum):
-    funding_call = "Funding Call"
-    proponent = "Proponent"
     reference_number = "Ref #"
-    project_title = "Project Title"
-    primary_location = "Primary Location"
+    proponent = "Proponent"
     status = "Status"
-    arc_funding = "ARC Funding"
-    funds_issued = "Funds Issued"
+    funding_call = "Funding Call"
+    project_title = "Project Title"
+    vehicle_category = "Vehicle Category"
+    zev_sub_sector = "ZEV Sub-Section"
+    fuel_type = "Fuel Type"
+    retrofit = "Retrofit"
+    primary_location = "Primary Location"
+    economic_region = "Economic Region"
+    jobs = "Jobs (FTEs)"
+    funds_commited = "Funds Committed"
+    funds_disbursed = "Funds Disbursed"
+    remaining_disbursed = "Remaining To Disburse"
+    total_project_value = "Total Project Value"
     start_date = "Start Date"
     completion_date = "Completion Date"
-    total_project_value = "Total Project Value"
-    zev_sub_sector = "ZEV Sub-Sector"
-    on_road_off_road = "On-Road/Off-Road"
-    fuel_type = "Fuel Type"
+    complete_or_termination_date = "Complete or Termination date"
     publicly_announced = "Publicly Announced"
-
+    notes = "Notes"
 
 class EVChargingRebatesColumns(Enum):
     ORGANIZATION = "Organization"
@@ -376,11 +397,13 @@ class GoElectricRebatesColumns(Enum):
     MANUFACTURER = "Manufacturer"
     MODEL = "Model"
     CITY = "City"
-    POSTAL_CODE = "Postal Code"
-    PHONE = "Phone"
+    POSTAL_CODE = "Postal code"
+    PHONE = "Phone Number"
     EMAIL = "Email"
-    VIN = "VIN"
+    VIN = "VIN Number"
     VEHICLE_CLASS = "Class"
+    REBATE_ADJUSTMENT = "Rebate adjustment (discount)"
+    NOTES = "Notes"
 
 
 class GoElectricRebatesColumnMapping(Enum):
@@ -395,31 +418,134 @@ class GoElectricRebatesColumnMapping(Enum):
     manufacturer = "Manufacturer"
     model = "Model"
     city = "City"
-    postal_code = "Postal Code"
-    phone = "Phone"
+    postal_code = "Postal code"
+    phone = "Phone Number"
     email = "Email"
-    vin = "VIN"
+    vin = "VIN Number"
     vehicle_class = "Class"
+    rebate_adjustment = "Rebate adjustment (discount)"
+    notes = "Notes"
 
+class CVPDataColumns(Enum):
+    FUNDING_CALL = "FC"
+    PROJECT_IDENTIFIER = "Project Identifier"
+    APPLICANT_NAME = "Name of Applicant"
+    RANK = "Rank"
+    STATUS = "Status"
+    SCORE = "Score"
+    VEHICLE_DEPLOYED = "Vehicle Deployed"
+    VEHICLE_CATEGORY = "Vehicle Category"
+    DRIVE_TYPE = "Drive Type"
+    VEHICLE_TYPE = "Vehicle Type"
+    ROAD_CLASS = "Class"
+    USE_CASE = "Use Case"
+    MAKE_AND_MODEL = "Vehicle Make and Model"
+    ECONOMIC_REGION = "Economic Region"
+    START_DATE = "Start Date"
+    COMPLETION_DATE = "Completion Date"
+    PROJECT_TYPE = "Project Type"
+    CLASS_3 = "Class 3"
+    CLASS_4 = "Class 4"
+    CLASS_5 = "Class 5"
+    CLASS_6 = "Class 6"
+    CLASS_7 = "Class 7"
+    CLASS_8 = "Class 8"
+    ON_ROAD_TOTAL = "On Road Total"
+    OFF_ROAD = "Off-Road"
+    LEVEL_2_CHARGER = "Level 2 Charger (3.3 kW to 19.2 kW)"
+    LEVEL_3_CHARGER = "Level 3 Charger (20 kW to 49 kW)"
+    HIGH_LEVEL_3_CHARGER = "Level 3 Charger (50 kW to 99kW)"
+    LEVEL_CHARGER = "Level Charger (100 kW and above)"
+    OTHER_CHARGER = "Other Charger"
+    H2_FUELING_STATION = "H2 Fueling Station"
+    CHARGER_BRAND = "Charger Brand"
+    H2_FUELLING_STATION_DESCRIPTION = "H2 Fuelling Station Description"
+    GHG_EMISSION_REDUCTION = "Proponent's GHG Emission Reduction (tCO2e/yr)"
+    ESTIMATED_GHG_EMISSION_REDUCTION = "Le-ef Estimated GHG Reduction (tCO2e/yr)"
+    FUNDING_EFFICIENCY = "Funding Efficiency for Emmision Abatment ($/tCO2e)"
+    MARKET_EMISSION_REDUCTIONS = "Market Emission Reductions (tCO2e by 2030)"
+    CVP_FUNDING_REQUEST = "CVP Program Funding Request (Initial)"
+    CVP_FUNDING_CONTRIBUTION = "CVP Funding (approved - Contribution Agreement)"
+    EXTERNAL_FUNDING = "External Funding"
+    PROPONENT_FUNDING = "Proponent funding"
+    PROJECT_COST_INITIAL = "Total project cost (initial)"
+    PROJECT_COST_REVISED = "Total Project Cost (revised)"
+    FUNDING_SOURCE = "Funding Source"
+    NOTES = "Notes"
+    IMHZEV = "iMHZEV"
+
+class CVPDataColumnMapping(Enum):
+    funding_call = "FC"
+    project_identifier = "Project Identifier"
+    applicant_name = "Name of Applicant"
+    rank = "Rank"
+    status = "Status"
+    score = "Score"
+    vehicle_deployed = "Vehicle Deployed"
+    vehicle_category = "Vehicle Category"
+    drive_type = "Drive Type"
+    vehicle_type = "Vehicle Type"
+    road_class = "Class"
+    use_case = "Use Case"
+    make_and_model = "Vehicle Make and Model"
+    economic_region = "Economic Region"
+    start_date = "Start Date"
+    completion_date = "Completion Date"
+    project_type = "Project Type"
+    class_3 = "Class 3"
+    class_4 = "Class 4"
+    class_5 = "Class 5"
+    class_6 = "Class 6"
+    class_7 = "Class 7"
+    class_8 = "Class 8"
+    on_road_total = "On Road Total"
+    off_road = "Off-Road"
+    level_2_charger = "Level 2 Charger (3.3 kW to 19.2 kW)"
+    level_3_charger = "Level 3 Charger (20 kW to 49 kW)"
+    high_level_3_charger = "Level 3 Charger (50 kW to 99kW)"
+    level_charger = "Level Charger (100 kW and above)"
+    other_charger = "Other Charger"
+    h2_fuelling_station = "H2 Fueling Station"
+    charger_brand = "Charger Brand"
+    h2_fuelling_station_description = "H2 Fuelling Station Description"
+    ghg_emission_reduction = "Proponent's GHG Emission Reduction (tCO2e/yr)"
+    estimated_ghg_emission_reduction = "Le-ef Estimated GHG Reduction (tCO2e/yr)"
+    funding_efficiency = "Funding Efficiency for Emmision Abatment ($/tCO2e)"
+    market_emission_reductions = "Market Emission Reductions (tCO2e by 2030)"
+    cvp_funding_request = "CVP Program Funding Request (Initial)"
+    cvp_funding_contribution = "CVP Funding (approved - Contribution Agreement)"
+    external_funding = "External Funding"
+    proponent_funding = "Proponent funding"
+    project_cost_initial = "Total project cost (initial)"
+    project_cost_revised = "Total Project Cost (revised)"
+    funding_source = "Funding Source"
+    notes = "Notes"
+    imhzev = "iMHZEV"
 
 
 FIELD_TYPES = {
     "ARC Project Tracking": {
-        "funding_call": str,
-        "proponent": str,
         "reference_number": str,
-        "project_title": str,
-        "primary_location": str,
+        "proponent": str,
         "status": str,
-        "arc_funding": int,
-        "funds_issued": int,
-        "start_date": str,
-        "completion_date": str,
-        "total_project_value": int,
+        "funding_call": str,
+        "project_title": str,
+        "vehicle_category": str,
         "zev_sub_sector": str,
-        "on_road_off_road": str,
         "fuel_type": str,
-        "publicly_announced": bool,
+        "retrofit": str,
+        "primary_location": str,
+        "economic_region": str,
+        "jobs": int,
+        "funds_commited": int,
+        "funds_disbursed": int,
+        "remaining_disbursed": int,
+        "total_project_value": int,
+        "start_date": datetime.date,
+        "completion_date": datetime.date,
+        "complete_or_termination_date": datetime.date,
+        "publicly_announced": str,
+        "notes": str,
     },
     "EV Charging Rebates": {
         "organization": str,
@@ -576,7 +702,58 @@ FIELD_TYPES = {
         "email": str,
         "vin": str,
         "vehicle_class": str,
+        "rebate_adjustment": str,
+        "notes": str,
     },
+    "CVP Data": {
+        "funding_call": int,
+        "project_identifier": int,
+        "applicant_name": str,
+        "rank": int,
+        "status": str,
+        "score": int,
+        "vehicle_deployed": str,
+        "vehicle_category": str,
+        "drive_type": str,
+        "vehicle_type": str,
+        "road_class": str,
+        "use_case": str,
+        "make_and_model": str,
+        "economic_region": str,
+        "start_date": datetime.date,
+        "completion_date": datetime.date,
+        "project_type": str,
+        "class_3": int,
+        "class_4": int,
+        "class_5": int,
+        "class_6": int,
+        "class_7": int,
+        "class_8": int,
+        "on_road_total": int,
+        "off_road": int,
+        "level_2_charger": int,
+        "level_3_charger": int,
+        "high_level_3_charger": int,
+        "level_charger": int,
+        "other_charger": int,
+        "h2_fuelling_station": int,
+        "charger_brand": str,
+        "h2_fuelling_station_description": str,
+        "ghg_emission_reduction": int,
+        "estimated_ghg_emission_reduction": int,
+        "funding_efficiency": int,
+        "market_emission_reductions": int,
+        "cvp_funding_request": int,
+        "cvp_funding_contribution": int,
+        "external_funding": int,
+        "proponent_funding": int,
+        "project_cost_initial": int,
+        "project_cost_revised": int,
+        "funding_source": str,
+        "notes": str,
+        "imhzev": str,
+    },
+
 
 }
 
@@ -585,8 +762,12 @@ DATASET_CONFIG = {
         "model": ARCProjectTracking,
         "columns": ARCProjectTrackingColumns,
         "column_mapping": ArcProjectTrackingColumnMapping,
-        "sheet_name": "Project_Tracking",
+        "sheet_name": "ARC Data",
         "preparation_functions": [prepare_arc_project_tracking],
+        "validation_functions": [
+            {'function': validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": ARC_VALID_FIELD_VALUES}},
+            {"function": region_checker, "columns": ['Economic Region'], "kwargs": {"indices_offset":2}},
+        ]
     },
     "EV Charging Rebates": {
         "model": ChargerRebates,
@@ -641,7 +822,24 @@ DATASET_CONFIG = {
         "model": GoElectricRebates,
         "columns": GoElectricRebatesColumns,
         "column_mapping": GoElectricRebatesColumnMapping,
-        "sheet_name": "Main list",
+        "sheet_name": "Distribution List - Master",
         "preparation_functions": [prepare_go_electric_rebates],
+        "validation_functions": [
+            {"function": validate_phone_numbers, "columns": ["Phone Number"], "kwargs": {"indices_offset": 2}},
+            {"function": typo_checker, "columns": ["Applicant Name"], "kwargs": {"cutoff": 0.8, "indices_offset": 2}},
+            {"function": location_checker, "columns": ["City"], "kwargs": {"columns_to_features_map": {"City": LOCALITY_FEATURES_MAP}, "indices_offset":2}},
+            {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
+            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
+            {"function": format_postal_codes, "columns": ["Postal code"], "kwargs": {"indices_offset":2, "validate": True}}
+        ]
     },
+    "CVP Data": {
+        "model": CVPData,
+        "columns": CVPDataColumns,
+        "column_mapping": CVPDataColumnMapping,
+        "sheet_name": "Data",
+        "preparation_functions": [prepare_cvp_data],
+        "validation_functions": [{"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": CVP_DATA_VALID_FIELD_VALUES, "delimiter": ","}},]
+    },
+
 }
