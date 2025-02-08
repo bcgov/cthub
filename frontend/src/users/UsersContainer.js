@@ -31,7 +31,7 @@ const UsersContainer = (props) => {
         setMessage(`${userAdded} was added to the user list`);
         const userObject = {
           idir: userAdded,
-          user_permissions: { admin: false, uploader: false },
+          userPermissions: { admin: false, uploader: false },
         };
         setUsers(
           produce((draft) => {
@@ -54,7 +54,7 @@ const UsersContainer = (props) => {
     setUsers(
       produce((draft) => {
         const userToChange = draft.find((user) => user.idir === idir);
-        userToChange.user_permissions[permissionType] = checked;
+        userToChange.userPermissions[permissionType] = checked;
       }),
     );
     setSaveButtonEnabled(true)
