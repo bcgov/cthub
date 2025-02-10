@@ -12,7 +12,11 @@ from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
+<<<<<<< HEAD
 from api.services.minio import minio_get_object, minio_remove_object
+=======
+from api.services.minio import generate_presigned_url, minio_get_object, minio_remove_object
+>>>>>>> 386055a (Adding generate presigned url function for clean datasets to be downloaded from minio)
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -142,3 +146,25 @@ class UploadViewset(GenericViewSet):
             return Response({})
         serializer = FileRequirementsSerializer(file_requirements)
         return Response(serializer.data)
+<<<<<<< HEAD
+=======
+    
+    @action(detail=False, methods=["get"])
+    def download_clean_dataset(self, request):
+        """Generate and return a presigned URL for downloading the cleaned dataset from MinIO."""
+        try:
+            dataset_key = request.GET.get("key")
+            if not dataset_key:
+                return JsonResponse({"success": False, "error": "Missing dataset key"}, status=400)
+
+            presigned_url = generate_presigned_url(dataset_key)
+
+            return JsonResponse({
+                "success": True,
+                "presigned_url": presigned_url,
+                "filename": f"{dataset_key}.xlsx"
+            })
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+>>>>>>> 386055a (Adding generate presigned url function for clean datasets to be downloaded from minio)
