@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.minio import get_minio_object, minio_get_object, minio_remove_object
+from api.services.minio import generate_presigned_url, minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -148,26 +148,19 @@ class UploadViewset(GenericViewSet):
     
     @action(detail=False, methods=["get"])
     def download_clean_dataset(self, request):
-        """Retrieve and return the cleaned dataset from MinIO as an Excel file."""
+        """Generate and return a presigned URL for downloading the cleaned dataset from MinIO."""
         try:
             dataset_key = request.GET.get("key")
             if not dataset_key:
                 return JsonResponse({"success": False, "error": "Missing dataset key"}, status=400)
 
-            object_name = f"cleaned_datasets/{dataset_key}.xlsx"
-            
-            minio_object = get_minio_object(object_name)
-            
-            if not minio_object:
-                return JsonResponse({"success": False, "error": "File not found"}, status=404)
+            presigned_url = generate_presigned_url(dataset_key)
 
-            response = FileResponse(
-                minio_object, 
-                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-            response["Content-Disposition"] = f'attachment; filename="{dataset_key}.xlsx"'
-            return response
+            return JsonResponse({
+                "success": True,
+                "presigned_url": presigned_url,
+                "filename": f"{dataset_key}.xlsx"
+            })
 
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=500)
-
