@@ -206,12 +206,12 @@ const UploadContainer = () => {
           setAlertContent(message);
         }
 
-        const fileAdjustedResponse = responses.some((response) => response.data.file_adjusted);
+        const fileAdjustedResponse = responses.some((response) => response.data.fileAdjusted);
         setFileAdjusted(fileAdjustedResponse);
 
         const cleanDatasetKeyResponse = responses.find(
-          (response) => response.data.cleaned_dataset_key
-        )?.data.cleaned_dataset_key;
+          (response) => response.data.cleanedDatasetKey
+        )?.data.cleanedDatasetKey;
         
         setCleanDatasetKey(cleanDatasetKeyResponse || "")
 
