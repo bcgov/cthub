@@ -248,20 +248,6 @@ def import_from_xls(
                 'Severity': 'Critical'
             }
 
-        if check_for_warnings:
-            ## do the error checking
-
-            if errors_and_warnings:
-                return {
-                    "success": True,
-                    "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
-                    "warning": True,
-                    "errors_and_warnings": errors_and_warnings,
-                    "file_adjusted": file_adjusted,
-                }
-            else:
-                print('no warnings')
-
         cleaned_dataset_key = None
         if file_adjusted:
             cleaned_dataset_key = str(uuid.uuid4())
@@ -298,6 +284,21 @@ def import_from_xls(
                 print(f"File successfully uploaded to MinIO: {object_name}")
             except Exception as e:
                 print(f"Error uploading to MinIO: {e}")
+
+        if check_for_warnings:
+            ## do the error checking
+
+            if errors_and_warnings:
+                return {
+                    "success": True,
+                    "message": "We encountered some potential errors in your data. Please choose whether to ignore them and continue inserting data or cancel upload and make edits to the data before reuploading",
+                    "warning": True,
+                    "errors_and_warnings": errors_and_warnings,
+                    "file_adjusted": file_adjusted,
+                    "cleaned_dataset_key": cleaned_dataset_key
+                }
+            else:
+                print('no warnings')
 
         result = load_data(df, model, replace_data, user)
 
