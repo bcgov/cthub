@@ -51,8 +51,8 @@ const UploadContainer = () => {
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
         if (
           currentUserResp.data &&
-          currentUserResp.data.user_permissions &&
-          currentUserResp.data.user_permissions.admin === true
+          currentUserResp.data.userPermissions &&
+          currentUserResp.data.userPermissions.admin === true
         ) {
           setAdminUser(true);
           setCurrentUser(currentUserResp.data.idir);
@@ -206,18 +206,18 @@ const UploadContainer = () => {
           setAlertContent(message);
         }
 
-        const fileAdjustedResponse = responses.some((response) => response.data.file_adjusted);
+        const fileAdjustedResponse = responses.some((response) => response.data.fileAdjusted);
         setFileAdjusted(fileAdjustedResponse);
 
         const cleanDatasetKeyResponse = responses.find(
-          (response) => response.data.cleaned_dataset_key
-        )?.data.cleaned_dataset_key;
+          (response) => response.data.cleanedDatasetKey
+        )?.data.cleanedDatasetKey;
         
         setCleanDatasetKey(cleanDatasetKeyResponse || "")
 
         const warnings = {};
         responses.forEach((response, index) => {
-          const responseWarnings = response.data.errors_and_warnings;
+          const responseWarnings = response.data.errorsAndWarnings;
           if (responseWarnings) {
             warnings[uploadFiles[index].name] = responseWarnings;
           }
