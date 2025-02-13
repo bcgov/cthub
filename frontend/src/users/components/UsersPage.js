@@ -36,7 +36,7 @@ const UsersPage = (props) => {
             name={user.idir}
             id="uploader"
             color="default"
-            checked={user.user_permissions.uploader || false}
+            checked={user.userPermissions.uploader || false}
             onChange={(event) => {
               handleCheckboxChange(event);
             }}
@@ -52,7 +52,7 @@ const UsersPage = (props) => {
                 id="admin"
                 color="default"
                 disabled={disableAdmin}
-                checked={user.user_permissions.admin || false}
+                checked={user.userPermissions.admin || false}
                 onChange={(event) => {
                   handleCheckboxChange(event);
                 }}

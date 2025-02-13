@@ -1,17 +1,17 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: CTHUB 0.3.0 Dev CI
+name: CTHUB 0.4.0 Dev CI
 
 on:
   push:
-    branches: [ release-0.3.0 ]
+    branches: [ release-0.4.0 ]
     # paths:
     #   - frontend/**
     #   - backend/**
   workflow_dispatch:
 
 env:
-  VERSION: 0.3.0
+  VERSION: 0.4.0
   GIT_URL: https://github.com/bcgov/cthub.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev

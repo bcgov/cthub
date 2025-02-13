@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from django.http import JsonResponse, FileResponse
 import pathlib
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
@@ -12,7 +13,7 @@ from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.minio import minio_get_object, minio_remove_object
+from api.services.minio import generate_presigned_url, minio_get_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -21,6 +22,7 @@ from api.services.uploaded_vins_file import create_vins_file
 from api.services.file_requirements import get_file_requirements
 from api.serializers.file_requirements import FileRequirementsSerializer
 
+TEMP_CLEANED_DATASET = {}
 
 class UploadViewset(GenericViewSet):
     permission_classes = (AllowAny,)
@@ -99,7 +101,8 @@ class UploadViewset(GenericViewSet):
                 field_types=constants.FIELD_TYPES.get(dataset_selected),
                 replace_data=replace_data,
                 user=request.user,
-                check_for_warnings=check_for_warnings
+                check_for_warnings=check_for_warnings,
+                temp_cleaned_dataset=TEMP_CLEANED_DATASET
             )
 
             if not result["success"]:
@@ -142,3 +145,22 @@ class UploadViewset(GenericViewSet):
             return Response({})
         serializer = FileRequirementsSerializer(file_requirements)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def download_clean_dataset(self, request):
+        """Generate and return a presigned URL for downloading the cleaned dataset from MinIO."""
+        try:
+            dataset_key = request.GET.get("key")
+            if not dataset_key:
+                return JsonResponse({"success": False, "error": "Missing dataset key"}, status=400)
+
+            presigned_url = generate_presigned_url(dataset_key)
+
+            return JsonResponse({
+                "success": True,
+                "presigned_url": presigned_url,
+                "filename": f"{dataset_key}.xlsx"
+            })
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
