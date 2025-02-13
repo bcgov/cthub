@@ -15,6 +15,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import FileDropArea from "./FileDropArea";
 import Loading from "../../app/components/Loading";
 import FileRequirements from "./FileRequirements";
+import CleanDatasetDownload from "./CleanDatasetDownload";
 
 const UploadPage = (props) => {
   const {
@@ -33,6 +34,8 @@ const UploadPage = (props) => {
     totalIssueCount,
     clearErrors,
     failedFiles,
+    fileAdjusted,
+    cleanDatasetKey
   } = props;
 
   const selectionList = datasetList.map((obj, index) => (
@@ -117,6 +120,9 @@ const UploadPage = (props) => {
         </div>
         <Box pt={3} rb={2}>
           <FileRequirements datasetSelected={datasetSelected} />
+          {fileAdjusted && !totalIssueCount.errors >= 1 && (
+            <CleanDatasetDownload cleanDatasetKey={cleanDatasetKey}/>
+          )}
         </Box>
         <Box
           pt={2}
