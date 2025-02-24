@@ -77,7 +77,7 @@ const UploadContainer = () => {
 
         Object.keys(errorDetails).forEach((errorType) => {
           const severity = errorDetails[errorType].Severity;
-          const expectedType = errorDetails[errorType]["Expected Type"];
+          const expectedType = errorDetails[errorType]["expectedType"];
           const groups = errorDetails[errorType].Groups || [];
 
           if (severity === "Critical") {
