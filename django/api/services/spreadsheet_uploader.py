@@ -60,7 +60,7 @@ def transform_data(
     if missing_columns:
         errors_and_warnings['Headers'] = {}
         errors_and_warnings['Headers']['Missing Headers'] = {
-            "Expected Type": "Missing one or more required columns",
+            "expected_type": "Missing one or more required columns",
             "Rows": missing_columns,
             "Severity": "Critical"
         }
@@ -99,13 +99,13 @@ def transform_data(
                     else:
                         if column not in errors_and_warnings:
                             errors_and_warnings[column] = {}
-                        if "Empty Value" not in errors_and_warnings[column]:
-                            errors_and_warnings[column]["Empty Value"] = {
-                                "Expected Type": "Cells in this column cannot be blank.",
+                        if "empty_value" not in errors_and_warnings[column]:
+                            errors_and_warnings[column]["empty_value"] = {
+                                "expected_type": "Cells in this column cannot be blank.",
                                 "Rows": [],
                                 "Severity": "Error"
                             }
-                        errors_and_warnings[column]["Empty Value"]["Rows"].append(index + 2)
+                        errors_and_warnings[column]["empty_value"]["Rows"].append(index + 2)
                 else:
                     if expected_type:
                         try:
@@ -133,26 +133,26 @@ def transform_data(
                         except (ValueError, TypeError):
                             if column not in errors_and_warnings:
                                 errors_and_warnings[column] = {}
-                            if "Incorrect Type" not in errors_and_warnings[column]:
+                            if "incorrect_type" not in errors_and_warnings[column]:
                                 if expected_type == date:
-                                    errors_and_warnings[column]["Incorrect Type"] = {
-                                        "Expected Type": "Date in the format YYYY-MM-DD",
+                                    errors_and_warnings[column]["incorrect_type"] = {
+                                        "expected_type": "Date in the format YYYY-MM-DD",
                                         "Rows": [],
                                         "Severity": "Error"
                                     }
                                 elif expected_type == int:
-                                    errors_and_warnings[column]["Incorrect Type"] = {
-                                        "Expected Type": "Expected numeric",
+                                    errors_and_warnings[column]["incorrect_type"] = {
+                                        "expected_type": "Expected numeric",
                                         "Rows": [],
                                         "Severity": "Error"
                                     }
                                 else:
-                                    errors_and_warnings[column]["Incorrect Type"] = {
-                                        "Expected Type": f"Expected {type_to_string.get(expected_type, str(expected_type))}",
+                                    errors_and_warnings[column]["incorrect_type"] = {
+                                        "expected_type": f"Expected {type_to_string.get(expected_type, str(expected_type))}",
                                         "Rows": [],
                                         "Severity": "Error"
                                     }
-                            errors_and_warnings[column]["Incorrect Type"]["Rows"].append(index + 2)
+                            errors_and_warnings[column]["incorrect_type"]["Rows"].append(index + 2)
 
     for x in validation_functions:
         validate = x["function"]
@@ -168,13 +168,13 @@ def transform_data(
                     if issue not in errors_and_warnings[column]:
                         if details.get("Severity", "Error") == 'Warning':
                             errors_and_warnings[column][issue] = {
-                                "Expected Type": details.get("Expected Type", "Unknown"),
+                                "expected_type": details.get("expected_type", "Unknown"),
                                 "Groups": details.get("Groups", []),
                                 "Severity": details.get("Severity", "Error")
                             }
                         else:
                             errors_and_warnings[column][issue] = {
-                                "Expected Type": details.get("Expected Type", "Unknown"),
+                                "expected_type": details.get("expected_type", "Unknown"),
                                 "Rows": details.get("Rows", []),
                                 "Severity": "Error"
                             }
@@ -243,7 +243,7 @@ def import_from_xls(
         else:
             errors_and_warnings['Spreadsheet'] = {}
             errors_and_warnings['Spreadsheet']['Missing Worksheet'] = {
-                'Expected Type': 'The worksheet is missing or incorrectly named',
+                'expected_type': 'The worksheet is missing or incorrectly named',
                 'Rows': [sheet_name],
                 'Severity': 'Critical'
             }
