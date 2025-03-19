@@ -101,6 +101,14 @@ def prepare_go_electric_rebates(df):
     adjust_ger_manufacturer_names(df)
     return df
 
+def prepare_ldv_data(df):
+
+    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    make_names_consistent(df)
+    make_prepositions_consistent(df)
+
+    return df
+
 def prepare_cvp_data(df):
     df = df.applymap(lambda s: s.upper() if type(s) == str else s)
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
@@ -158,29 +166,36 @@ def make_names_consistent(df):
     {', Inc.': ' Inc.',
     '(?i)\\bdba\\b': 'DBA'} # Matches word "dba" regardless of case
 )
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].replace(
-        consistent_name_dict,
-        regex=True)
+    existing_columns = {col.lower(): col for col in df.columns}
+    columns_to_process = [existing_columns[key] for key in ['applicant name', 'manufacturer'] if key in existing_columns]
+
+    if columns_to_process:
+        df[columns_to_process] = df[columns_to_process].replace(consistent_name_dict, regex=True)
 
 def make_prepositions_consistent(df):
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].replace(
-    dict.fromkeys(
-    ['(?i)\\bbc(?=\\W)', # Matches word "bc" regardless of case
-     '(?i)\\bb\\.c\\.(?=\\W)'], 'BC'), # Matches word "b.c." regardless of case
-    regex=True
-    ).replace(
-        {'BC Ltd.': 'B.C. Ltd.',
-         '\\bOf(?=\\W)': 'of',
-         '\\bAnd(?=\\W)': 'and', # Matches word "And"
-         '\\bThe(?=\\W)': 'the',
-         '\\bA(?=\\W)': 'a',
-         '\\bAn(?=\\W)': 'an'},
-        regex=True
-    )
-    ##The first letter should be capitalized
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].applymap(
-    lambda x: x[0].upper() + x[1:] if isinstance(x, str) and len(x) > 1 else x.upper() if isinstance(x, str) and len(x) == 1 else x
-)
+    existing_columns = {col.lower(): col for col in df.columns}
+    columns_to_process = [existing_columns[key] for key in ['applicant name', 'manufacturer'] if key in existing_columns]
+
+    if columns_to_process:
+        df[columns_to_process] = df[columns_to_process].replace(
+            dict.fromkeys(
+                ['(?i)\\bbc(?=\\W)',  # Matches word "bc" regardless of case
+                 '(?i)\\bb\\.c\\.(?=\\W)'], 'BC'  # Matches word "b.c." regardless of case
+            ),
+            regex=True
+        ).replace(
+            {'BC Ltd.': 'B.C. Ltd.',
+             '\\bOf(?=\\W)': 'of',
+             '\\bAnd(?=\\W)': 'and',
+             '\\bThe(?=\\W)': 'the',
+             '\\bA(?=\\W)': 'a',
+             '\\bAn(?=\\W)': 'an'},
+            regex=True
+        )
+
+        df[columns_to_process] = df[columns_to_process].applymap(
+            lambda x: x[0].upper() + x[1:] if isinstance(x, str) and len(x) > 1 else x.upper() if isinstance(x, str) and len(x) == 1 else x
+        )
 
     
 def adjust_ger_manufacturer_names(df):
