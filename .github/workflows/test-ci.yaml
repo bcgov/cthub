@@ -1,19 +1,18 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: CTHUB 0.4.0 Test CI
+name: CTHUB 0.5.0 Test CI
 on:
   workflow_dispatch:
 
 env:
-  VERSION: 0.4.0
-  GIT_URL: https://github.com/bcgov/cthub.git 
+  VERSION: 0.5.0
+  GIT_URL: https://github.com/bcgov/cthub.git
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true  
+  cancel-in-progress: true
 
 jobs:
   install-oc:
@@ -28,7 +27,7 @@ jobs:
         id: cache
         uses: actions/cache@v4.2.0
         with:
-          path: /usr/local/bin/oc  # Path where the `oc` binary will be installed
+          path: /usr/local/bin/oc # Path where the `oc` binary will be installed
           key: oc-cli-${{ runner.os }}
 
       - name: Install OpenShift CLI (if not cached)
@@ -46,7 +45,7 @@ jobs:
     name: Find Dev deployment pre-release number
     runs-on: ubuntu-latest
     needs: [install-oc]
-  
+
     outputs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
 
@@ -70,7 +69,6 @@ jobs:
           echo "PRE_RELEASE=$(oc -n ${{ env.DEV_NAMESPACE }} describe deployment/cthub-dev-frontend | grep Image | awk -F '-' '{print $NF}')" >> $GITHUB_OUTPUT
 
   deploy:
-
     name: Deploy CTHUB on Test
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -86,8 +84,8 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: emi-hi,kuanfandevops,tim738745,JulianForeman
           minimum-approvals: 1
-          issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"      
-          
+          issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} Test Deployment"
+
       - name: Restore oc command from Cache
         uses: actions/cache@v4.2.0
         with:
@@ -100,7 +98,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.DEV_NAMESPACE }}          
+          namespace: ${{ env.DEV_NAMESPACE }}
 
       - name: Tag CTHUB images to Test
         run: |
@@ -108,22 +106,22 @@ jobs:
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.DEV_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.TEST_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-  
+
       - name: Checkout Manifest repository
         uses: actions/checkout@v4.1.1
         with:
           repository: bcgov-c/tenant-gitops-30b186
           ref: main
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-      
+
       - name: Update frontend tag
         uses: mikefarah/yq@v4.40.5
         with:
-            cmd: |
-              yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-              yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
-              yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+          cmd: |
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+            yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
+            yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-test.yaml
 
       - name: GitHub Commit & Push
         run: |
@@ -132,4 +130,3 @@ jobs:
           git add cthub/values-test.yaml
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on Test"
           git push
-      
