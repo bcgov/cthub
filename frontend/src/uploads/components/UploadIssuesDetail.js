@@ -9,6 +9,12 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
   const errorTypes = ["critical", "error"];
   const classname = errorTypes.includes(type) ? "error" : "warning";
 
+  function makeReadableKey(key) {
+    // Insert a space before uppercase letters, then trim and capitalize the first letter.
+    const spaced = key.replace(/([A-Z])/g, ' $1').trim();
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  }
+
   const toggleShowAllRows = (column, errorType) => {
     const key = `${column}_${errorType}`;
     setShowAllRowsMap((prevState) => ({
@@ -86,7 +92,7 @@ const UploadIssuesDetail = ({ type, issues, totalIssueCount, msg }) => {
                         ? `(${index + 1}) `
                         : ""}
                       {type.charAt(0).toUpperCase() + type.slice(1)} Name:{" "}
-                      <strong>{errorType}</strong>
+                      <strong>{makeReadableKey(errorType)}</strong>
                     </div>
                   </li>
                 </ul>

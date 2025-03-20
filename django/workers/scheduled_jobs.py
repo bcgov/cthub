@@ -55,3 +55,16 @@ def schedule_batch_decode_vins_vinpower():
         )
     except IntegrityError:
         pass
+
+
+def schedule_remove_cleaned_datasets():
+    try:
+        schedule(
+            "workers.tasks.remove_cleaned_datasets",
+            name="remove_cleaned_datasets",
+            schedule_type="C",
+            cron="0 6 * * *",   # 6:00 AM UTC = 10:00 PM PST = 11:00 PM PDT
+            q_options={"timeout": 105, "ack_failure": True},
+        )
+    except IntegrityError:
+        pass

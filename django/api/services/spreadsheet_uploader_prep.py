@@ -238,8 +238,8 @@ def typo_checker(df, *columns, **kwargs):
         
         if typo_groups:
             result[column] = {
-                "Similar Values Detected": {
-                    "Expected Type": "We detected applicant names that sound very similar. If these names refer to the same person/entity, please replace the applicant names in your dataset to the preferred spelling to ensure consistency",
+                "similar_values_detected": {
+                    "expected_type": "We detected applicant names that sound very similar. If these names refer to the same person/entity, please replace the applicant names in your dataset to the preferred spelling to ensure consistency",
                     "Groups": typo_groups,
                     "Severity": "Warning"
                 }
@@ -261,14 +261,14 @@ def validate_phone_numbers(df, *columns, **kwargs):
                 if pd.isna(formatted_number) or formatted_number == '':
                     continue
                 invalid_groups.append({
-                    "Invalid Phone Number": phone_number,
+                    "invalid_phone_number": phone_number,
                     "Rows": indices
                 })
 
         if invalid_groups:
             result[column] = {
-                "Phone Number Appears Incorrect": {
-                    "Expected Type": "Ensure phone numbers match the Canadian format (XXX-XXX-XXXX)",
+                "phone_number_appears_incorrect": {
+                    "expected_type": "Ensure phone numbers match the Canadian format (XXX-XXX-XXXX)",
                     "Groups": invalid_groups,
                     "Severity": "Warning"
                 }
@@ -299,15 +299,15 @@ def location_checker(df, *columns, columns_to_features_map={}, **kwargs):
 
         for name in names_without_match:
             group = {
-                "Unrecognized Name": name,
+                "unrecognized_name": name,
                 "Rows": map_of_values_to_indices[name]
             }
             unrecognized_groups.append(group)
 
         if unrecognized_groups:
             result[column] = {
-                "Unrecognized City Names": {
-                    "Expected Type": (
+                "unrecognized_city_names": {
+                    "expected_type": (
                         "The following city names are not in the list of geographic names. "
                         "Please double-check that these places exist or have correct spelling "
                         "and adjust your dataset accordingly."
@@ -339,14 +339,14 @@ def email_validator(df, *columns, **kwargs):
                 if pd.isna(email) or email == '':
                     continue
                 invalid_groups.append({
-                    "Invalid Email": email,
+                    "invalid_email": email,
                     "Rows": indices
                 })
 
         if invalid_groups:
             result[column] = {
-                "Possible Errors in Email Addresses": {
-                    "Expected Type": "Verify email addresses are valid",
+                "possible_errors_in_email_addresses": {
+                    "expected_type": "Verify email addresses are valid",
                     "Groups": invalid_groups,
                     "Severity": "Warning"
                 }
@@ -380,7 +380,7 @@ def validate_field_values(df, *columns, **kwargs):
             if indices:
                 result[column] = {
                     ', '.join(invalid_values) + " - is not in the list of expected values": {
-                        "Expected Type": ', '.join(allowed_values[column]),
+                        "expected_type": ', '.join(allowed_values[column]),
                         "Rows": indices,
                         "Severity": "Error"
                     }
@@ -403,8 +403,8 @@ def region_checker(df, *columns, **kwargs):
 
     if indices:
         result[column] = {
-                    "Invalid Region": {
-                        "Expected Type": ", ".join(valid_regions),
+                    "invalid_region": {
+                        "expected_type": ", ".join(valid_regions),
                         "Rows": indices,
                         "Severity": "Error"
                     }
@@ -434,14 +434,14 @@ def format_postal_codes(df, *columns, **kwargs):
                 if pd.isna(value) or value == "":
                     value = "Empty"
                 invalid_groups.append({
-                    "Invalid Postal Code": value,
+                    "invalid_postal_code": value,
                     "Rows": indices
                 })
         
         if validate and invalid_groups:
             result[column] = {
-                "Invalid Postal Codes": {
-                    "Expected Type": "Postal Code should be formatted as (XXX XXX)",
+                "invalid_postal_codes": {
+                    "expected_type": "Postal Code should be formatted as (XXX XXX)",
                     "Groups": invalid_groups,
                     "Severity": "Warning"
                 }

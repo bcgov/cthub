@@ -37,6 +37,8 @@ const UploadContainer = () => {
     cancelText: "cancel",
   });
   const [failedFiles, setFailedFiles] = useState([]);
+  const [fileAdjusted, setFileAdjusted] = useState(false);
+  const [cleanDatasetKey, setCleanDatasetKey] = useState("")
 
   const axios = useAxios();
   const axiosDefault = useAxios(true);
@@ -49,8 +51,8 @@ const UploadContainer = () => {
       axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
         if (
           currentUserResp.data &&
-          currentUserResp.data.user_permissions &&
-          currentUserResp.data.user_permissions.admin === true
+          currentUserResp.data.userPermissions &&
+          currentUserResp.data.userPermissions.admin === true
         ) {
           setAdminUser(true);
           setCurrentUser(currentUserResp.data.idir);
@@ -75,7 +77,7 @@ const UploadContainer = () => {
 
         Object.keys(errorDetails).forEach((errorType) => {
           const severity = errorDetails[errorType].Severity;
-          const expectedType = errorDetails[errorType]["Expected Type"];
+          const expectedType = errorDetails[errorType]["expectedType"];
           const groups = errorDetails[errorType].Groups || [];
 
           if (severity === "Critical") {
@@ -203,6 +205,16 @@ const UploadContainer = () => {
           setAlert(true);
           setAlertContent(message);
         }
+
+        const fileAdjustedResponse = responses.some((response) => response.data.fileAdjusted);
+        setFileAdjusted(fileAdjustedResponse);
+
+        const cleanDatasetKeyResponse = responses.find(
+          (response) => response.data.cleanedDatasetKey
+        )?.data.cleanedDatasetKey;
+        
+        setCleanDatasetKey(cleanDatasetKeyResponse || "")
+
         const warnings = {};
         responses.forEach((response, index) => {
           const responseWarnings = response.data.errorsAndWarnings;
@@ -424,6 +436,8 @@ const UploadContainer = () => {
                 totalIssueCount={totalIssueCount}
                 clearErrors={clearErrors}
                 failedFiles={failedFiles}
+                fileAdjusted={fileAdjusted}
+                cleanDatasetKey={cleanDatasetKey}
               />
             </Paper>
             {adminUser && (

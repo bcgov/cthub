@@ -11,6 +11,7 @@ class Config(AppConfig):
             schedule_read_uploaded_vins_file,
             schedule_batch_decode_vins_vpic,
             schedule_batch_decode_vins_vinpower,
+            schedule_remove_cleaned_datasets,
         )
 
         if "qcluster" in sys.argv:
@@ -18,3 +19,4 @@ class Config(AppConfig):
             schedule_read_uploaded_vins_file()
             schedule_batch_decode_vins_vpic()
             schedule_batch_decode_vins_vinpower()
+            schedule_remove_cleaned_datasets()

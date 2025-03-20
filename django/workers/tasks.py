@@ -82,3 +82,12 @@ def batch_decode_vins(service_name, batch_size=50):
             service_name,
             decoded_data,
         )
+
+def remove_cleaned_datasets():
+    try:
+        client = get_minio_client()
+        objects = client.list_objects(settings.MINIO_BUCKET_NAME, prefix="cleaned_datasets/")
+        for obj in objects:
+            client.remove_object(settings.MINIO_BUCKET_NAME, obj.object_name)
+    except Exception:
+        print("Error occurred when removing cleaned-datasets.")
