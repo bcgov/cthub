@@ -2,26 +2,38 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: postgrest-bc
+  name: cthub-backend-bc
 parameters:
+  - name: NAME
+    displayName:
+    description: the module name entered when run yo bcdk:pipeline, which is cthub
+    required: true
+  - name: SUFFIX
+    displayName:
+    description: sample is -pr-0
+    required: true
+  - name: VERSION
+    displayName:
+    description:  image tag name for output
+    required: true
   - name: GIT_URL
     displayName:
     description: cthub repo
-    required: false
+    required: true
   - name: GIT_REF
     displayName:
     description: cthub branch name of the pr
-    required: false
+    required: true
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
       annotations:
-        description: postgrest image
+        description: Keeps track of changes in the backend image
       labels:
         shared: "true"
       creationTimestamp: null
-      name: cthub-postgrest
+      name: ${NAME}-backend
     spec:
       lookupPolicy:
         local: false
@@ -30,39 +42,38 @@ objects:
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
+      annotations:
+        description: Defines how to build the application
       creationTimestamp: null
-      name: cthub-postgrest
+      name: ${NAME}-backend${SUFFIX}
     spec:
-      failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: cthub-postgrest:11.2.2
+          name: ${NAME}-backend:${VERSION}
       postCommit: {}
       resources:
         limits:
           cpu: 2000m
-          memory: 4Gi
+          memory: 2G
         requests:
           cpu: 500m
-          memory: 2Gi
-      runPolicy: Serial
+          memory: 200M
+      runPolicy: SerialLatestOnly
       source:
+        contextDir: django
         git:
-          ref: main
-          uri: https://github.com/bcgov/cthub.git
+          ref: ${GIT_REF}
+          uri: ${GIT_URL}
         type: Git
-        contextDir: openshift/templates/postgrest
       strategy:
         dockerStrategy:
-          noCache: true
+          dockerfilePath: ./Dockerfile-Openshift
+          pullSecret:
+            name: artifacts-default-idxprm
           forcePull: true
+          noCache: true        
         type: Docker
-      successfulBuildsHistoryLimit: 5
-      triggers:
-        - imageChange: {}
-          type: ImageChange
-        - type: ConfigChange
     status:
       lastVersion: 0
