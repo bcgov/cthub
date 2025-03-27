@@ -107,3 +107,12 @@ CVP_DATA_VALID_FIELD_VALUES = {
         'Procurement', 'New Design', 'Hybrid Retrofit', 'BEV Retrofit', 'H2 Retrofit'
     ]
 }
+
+LDV_DATA_VALID_FIELD_VALUES = {
+    'ApplicantType': ['Individual', 'Business / Corporation', 'Municipality / School District', 'Car Share Fleet', 'Non Profit Organization'],
+    'EligibleRebateAmt': ['1000', '2000', '1500', '500', '666', '1334', '4000', '3000', '334', '2668', '667', '5000', '2500', '1668', '6000', '833', '1665', '3335', '1001', '2001', '1667'],
+    'SaleType': ['Purchase', 'Lease', 'lease_agreement', 'oem_order_form'],
+    'VehicleType': ['BEV', 'ER-EV', 'FCEV', 'PHEV'],
+    'Class': ['0', 'Car', 'Larger Vehicle'],
+    'LeaseTerm': ['12 Mos', '24', '24 Mos', '36+ Mos']
+}
