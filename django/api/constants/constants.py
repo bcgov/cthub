@@ -936,7 +936,7 @@ DATASET_CONFIG = {
         "model": LdvData,
         "columns": LDVDataColumns,
         "column_mapping": LDVDataColumnMapping,
-        "sheet_name": "SP-Complete",
+        "sheet_name": "SP-Complete sheet",
         "preparation_functions": [prepare_ldv_data],
         "validation_functions": [
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": LDV_DATA_VALID_FIELD_VALUES, "delimiter": ","}},
