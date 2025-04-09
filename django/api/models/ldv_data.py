@@ -24,11 +24,11 @@ class LdvData(Auditable):
     )
 
     bc_drivers_license_no = models.CharField(
-        max_length=100, blank=False, null=False
+        max_length=100, blank=True, null=True
     )
 
     bc_inc_no = models.CharField(
-        max_length=100, blank=False, null=False
+        max_length=100, blank=True, null=True
     )
 
     eligible_rebate_amt = models.IntegerField(
