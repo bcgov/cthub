@@ -1,0 +1,45 @@
+---
+data_management_roles:
+  data_custodian: James Donald
+  product_owner: Daniel Clancy
+product_external_dependencies:
+  identity_authorization:
+    - IDIR
+  notification_standard: []
+product_information:
+  api_specifications: []
+  ministry:
+    - Energy, Mines and Low Carbon Innovation
+  product_acronym: CTHUB
+  product_description: >-
+    It provides an evidence base for the Clean Transportation Branch through
+    data storage, analysis and visualization, that improves decision making to
+    increase energy efficiency and de-carbonise the transportation system.
+  product_name: Clean Transportation Data Hub
+  product_urls: []
+  program_area: Clean Transporation Branch
+product_technology_information:
+  backend_frameworks:
+    - name: Django
+      version: 3.2.25
+    - name: Spring Boot
+      version: 3.2.1
+  backend_languages_version:
+    - name: Python
+      version: 3.9.1
+  ci_cd_tools:
+    - GitHub-Actions
+  data_storage_platforms:
+    - Postgresql
+  frontend_frameworks:
+    - name: React
+      version: 18.2.0
+    - name: Node.js
+      version: 16.13
+  frontend_languages:
+    - name: JavaScript
+      version: current
+  hosting_platforms:
+    - Private-Cloud-Openshift
+  other_tools: MinIO (current)
+version: 1
