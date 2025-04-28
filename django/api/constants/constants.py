@@ -940,7 +940,7 @@ DATASET_CONFIG = {
         "preparation_functions": [prepare_ldv_data],
         "validation_functions": [
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": LDV_DATA_VALID_FIELD_VALUES, "delimiter": ","}},
-            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}}
+            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True, "allow_empty": True}}
         ]
     },
 
