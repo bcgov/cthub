@@ -52,9 +52,6 @@ objects:
           kind: ImageStreamTag
           name: ${NAME}-vinpower:${VERSION}
       resources:
-        limits:
-          cpu: 1500m
-          memory: 1300Mi
         requests:
           cpu: 750m
           memory: 650Mi
