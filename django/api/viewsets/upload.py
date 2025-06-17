@@ -115,7 +115,6 @@ class UploadViewset(GenericViewSet):
             )
 
         finally:
-            os.remove(filename)
             minio_remove_object(filename)
 
     @action(detail=False, methods=["get"])
