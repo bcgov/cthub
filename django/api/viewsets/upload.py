@@ -1,19 +1,16 @@
-import urllib.request
-import os
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse
 import pathlib
 from django.http import HttpResponse
-from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.minio import generate_presigned_url, minio_get_object, minio_remove_object
+from api.services.minio import generate_presigned_url, get_minio_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -70,9 +67,7 @@ class UploadViewset(GenericViewSet):
             else:
                 return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            url = minio_get_object(filename)
-            urllib.request.urlretrieve(url, filename)
-
+            file_data = get_minio_object(filename).data
             config = constants.DATASET_CONFIG.get(dataset_selected)
             if not config:
                 return Response(
@@ -90,7 +85,7 @@ class UploadViewset(GenericViewSet):
             header_row = config.get("header_row", 0)
 
             result = import_from_xls(
-                excel_file=filename,
+                excel_file=file_data,
                 sheet_name=sheet_name,
                 model=model,
                 header_row=header_row,
