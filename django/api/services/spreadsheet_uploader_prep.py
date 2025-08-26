@@ -370,13 +370,13 @@ def email_validator(df, *columns, **kwargs):
 
 def validate_field_values(df, *columns, **kwargs):
     allowed_values = kwargs.get("fields_and_values")
-    invalid_values = []
     
     result = {}
     delimiter = kwargs.get("delimiter")
     for column in df.columns:
         if column in allowed_values:
             indices = []
+            invalid_values = []
             series = df[column]
             for index, value in series.items():
                 if value is not None and pd.notna(value):
