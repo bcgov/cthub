@@ -7,7 +7,6 @@ from api.utilities.generic import get_unified_map
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
 from django.db import transaction
-from workers.decorators.tasks import timeout
 
 
 def create_minio_bucket():
@@ -19,7 +18,6 @@ def create_minio_bucket():
 
 
 @transaction.atomic
-@timeout(150)
 def read_uploaded_vins_file():
     vins_file = (
         UploadedVinsFile.objects.filter(processed=False)
@@ -37,7 +35,6 @@ def read_uploaded_vins_file():
                 pass
 
 
-@timeout(90)
 def batch_decode_vins(service_name, batch_size=50):
     max_decode_attempts = settings.MAX_DECODE_ATTEMPTS
     service = get_service(service_name)

@@ -1,4 +1,3 @@
-from datetime import datetime
 import pandas as pd
 from django.utils import timezone
 from api.models.uploaded_vin_record import UploadedVinRecord
@@ -6,14 +5,14 @@ from api.constants.decoder import get_service
 
 
 def parse_and_save(uploaded_vins_file, file_response):
-    processed = True
+    chunks = pd.read_csv(file_response, sep="|", chunksize=uploaded_vins_file.chunksize)
     start_index = uploaded_vins_file.start_index
-    chunks = pd.read_csv(
-        file_response, sep="|", chunksize=uploaded_vins_file.chunk_size
-    )
-
+    end_index = start_index + uploaded_vins_file.chunks_per_iteration
+    processed = True
     for idx, df in enumerate(chunks):
-        if idx == start_index:
+        if idx < start_index:
+            continue
+        elif idx >= start_index and idx < end_index:
             df.fillna("", inplace=True)
             vins = []
             for _, row in df.iterrows():
@@ -29,89 +28,74 @@ def parse_and_save(uploaded_vins_file, file_response):
                 df_records_map, existing_records_map
             )
             UploadedVinRecord.objects.bulk_update(
-                records_to_update, ["data", "timestamp", "update_timestamp"]
+                records_to_update, ["data", "change", "update_timestamp"]
             )
-        elif idx > start_index:
+        else:
             processed = False
             break
-
+    if processed:
+        UploadedVinRecord.objects.exclude(
+            update_timestamp__gte=uploaded_vins_file.create_timestamp
+        ).update(
+            change=UploadedVinRecord.Change.REMOVED, update_timestamp=timezone.now()
+        )
     uploaded_vins_file.processed = processed
-    uploaded_vins_file.start_index = start_index + 1
+    uploaded_vins_file.start_index = end_index
     uploaded_vins_file.save()
 
 
-# returns a dict of (vin, postal_code) -> {timestamp, data}
+# returns a dict of vin -> data
 def get_df_records_map(df):
     result = {}
     for _, row in df.iterrows():
         vin = row["vin"]
-        postal_code = row["postal_code"]
-        df_timestamp = row["snapshot_date"]
-        if vin and postal_code and df_timestamp:
-            key = (vin, postal_code)
-            timestamp = timezone.make_aware(
-                datetime.strptime(df_timestamp, "%Y-%m-%d %H:%M:%S.%f")
-            )
-            df_data = row.to_dict()
-            data = df_data if df_data else {}
+        if vin:
+            data = row.to_dict()
             del data["vin"]
-            del data["postal_code"]
-            del data["snapshot_date"]
-            if key in result:
-                most_recent_ts = result[key]["timestamp"]
-                if most_recent_ts < timestamp:
-                    result[key] = {"timestamp": timestamp, "data": data}
-            else:
-                result[key] = {"timestamp": timestamp, "data": data}
+            result[vin] = data
     return result
 
 
-# returns a dict of (vin, postal_code) -> {id, timestamp}
+# returns a dict of vin -> id
 def get_existing_records_map(vins):
     result = {}
-    records = UploadedVinRecord.objects.only(
-        "id", "vin", "postal_code", "timestamp"
-    ).filter(vin__in=vins)
+    records = UploadedVinRecord.objects.only("id", "vin").filter(vin__in=vins)
     for record in records:
-        key = (record.vin, record.postal_code)
-        result[key] = {"id": record.id, "timestamp": record.timestamp}
+        result[record.vin] = record.id
     return result
 
 
-# df_records_map should be dict of (vin, postal_code) -> {timestamp, data}
-# existing_records_map should be dict of (vin, postal_code) -> {id, timestamp}
+# df_records_map should be dict of vin -> data
+# existing_records_map should be dict of vin -> id
 def get_records_to_insert(df_records_map, existing_records_map):
     result = []
-    for key, value in df_records_map.items():
-        if key not in existing_records_map:
+    for vin, data in df_records_map.items():
+        if vin not in existing_records_map:
             result.append(
                 UploadedVinRecord(
-                    vin=key[0],
-                    postal_code=key[1],
-                    timestamp=value["timestamp"],
-                    data=value["data"],
+                    vin=vin,
+                    data=data,
                 )
             )
     return result
 
 
-# df_records_map should be dict of (vin, postal_code) -> {timestamp, data}
-# existing_records_map should be dict of (vin, postal_code) -> {id, timestamp}
+# df_records_map should be dict of vin -> data
+# existing_records_map should be dict of vin -> id
+# assumes that there are no duplicate vins in the same file
 def get_records_to_update(df_records_map, existing_records_map):
     result = []
-    for key, value in df_records_map.items():
-        if key in existing_records_map:
-            existing_record = existing_records_map[key]
-            timestamp = value["timestamp"]
-            if existing_record["timestamp"] < timestamp:
-                result.append(
-                    UploadedVinRecord(
-                        id=existing_record["id"],
-                        timestamp=timestamp,
-                        data=value["data"],
-                        update_timestamp=timezone.now(),
-                    )
+    for vin, data in df_records_map.items():
+        if vin in existing_records_map:
+            existing_record_id = existing_records_map[vin]
+            result.append(
+                UploadedVinRecord(
+                    id=existing_record_id,
+                    data=data,
+                    update_timestamp=timezone.now(),
+                    change=UploadedVinRecord.Change.MODIFIED,
                 )
+            )
     return result
 
 

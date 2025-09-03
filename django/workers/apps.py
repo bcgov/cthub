@@ -6,6 +6,7 @@ class Config(AppConfig):
     name = "workers"
 
     def ready(self):
+        import workers.signal_receivers
         from workers.scheduled_jobs import (
             schedule_create_minio_bucket,
             schedule_read_uploaded_vins_file,
