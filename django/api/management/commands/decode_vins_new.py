@@ -45,8 +45,7 @@ class Command(BaseCommand):
                 if not rows:
                     break
                 for row in rows:
-                    uploaded_vin_obj = UploadedVinRecord()
-                    setattr(uploaded_vin_obj, "vin", row[0])
+                    uploaded_vin_obj = UploadedVinRecord(vin=row[0])
                     vins.append(uploaded_vin_obj)
                 if service == "vinpower":
                     decoder = vinpower_batch_decode
