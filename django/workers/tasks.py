@@ -17,7 +17,6 @@ def create_minio_bucket():
         client.make_bucket(bucket_name)
 
 
-@transaction.atomic
 def read_uploaded_vins_file():
     vins_file = (
         UploadedVinsFile.objects.filter(processed=False)
@@ -27,12 +26,10 @@ def read_uploaded_vins_file():
     if vins_file is not None:
         file_response = get_minio_object(vins_file.filename)
         if file_response is not None:
-            parse_and_save(vins_file, file_response)
-            try:
-                file_response.close()
-                file_response.release_conn()
-            except Exception:
-                pass
+            with transaction.atomic():
+                parse_and_save(vins_file, file_response)
+            file_response.close()
+            file_response.release_conn()
 
 
 def batch_decode_vins(service_name, batch_size=50):
