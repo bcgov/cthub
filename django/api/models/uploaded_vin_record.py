@@ -1,13 +1,21 @@
 from django.db import models
 from auditable.models import Auditable
+from django.utils.translation import gettext_lazy as _
 
 
 class UploadedVinRecord(Auditable):
-    vin = models.CharField(max_length=17)
+    vin = models.CharField(max_length=17, unique=True)
 
-    postal_code = models.CharField(max_length=7)
+    class Change(models.TextChoices):
+        CREATED = ("created", _("Created"))
+        MODIFIED = ("modified", _("Modified"))
+        REMOVED = ("removed", _("Removed"))
 
-    timestamp = models.DateTimeField()
+    change = models.CharField(
+        max_length=64,
+        default=Change.CREATED,
+        choices=Change.choices,
+    )
 
     data = models.JSONField()
 
@@ -21,10 +29,5 @@ class UploadedVinRecord(Auditable):
 
     class Meta:
         db_table = "uploaded_vin_record"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["vin", "postal_code"], name="unique_vin_postal_code"
-            )
-        ]
 
     db_table_comment = "represents an uploaded VIN, and associated information"

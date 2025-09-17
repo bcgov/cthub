@@ -5,11 +5,9 @@ from api.services.uploaded_vin_record import (
     get_number_of_decode_attempts,
     set_number_of_decode_attempts,
 )
-from django.db import transaction
 from django.utils import timezone
 
 
-@transaction.atomic
 def save_decoded_data(
     uploaded_vin_records,
     vins_to_insert,

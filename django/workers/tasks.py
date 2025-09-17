@@ -7,7 +7,6 @@ from api.utilities.generic import get_unified_map
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
 from django.db import transaction
-from workers.decorators.tasks import timeout
 
 
 def create_minio_bucket():
@@ -18,8 +17,6 @@ def create_minio_bucket():
         client.make_bucket(bucket_name)
 
 
-@transaction.atomic
-@timeout(150)
 def read_uploaded_vins_file():
     vins_file = (
         UploadedVinsFile.objects.filter(processed=False)
@@ -29,15 +26,12 @@ def read_uploaded_vins_file():
     if vins_file is not None:
         file_response = get_minio_object(vins_file.filename)
         if file_response is not None:
-            parse_and_save(vins_file, file_response)
-            try:
-                file_response.close()
-                file_response.release_conn()
-            except Exception:
-                pass
+            with transaction.atomic():
+                parse_and_save(vins_file, file_response)
+            file_response.close()
+            file_response.release_conn()
 
 
-@timeout(90)
 def batch_decode_vins(service_name, batch_size=50):
     max_decode_attempts = settings.MAX_DECODE_ATTEMPTS
     service = get_service(service_name)
@@ -74,19 +68,22 @@ def batch_decode_vins(service_name, batch_size=50):
 
         decoder = service.BATCH_DECODER.value
         decoded_data = decoder(uploaded_vin_records)
+        with transaction.atomic():
+            save_decoded_data(
+                uploaded_vin_records,
+                vins_to_insert,
+                vins_to_decoded_record_ids_map,
+                service_name,
+                decoded_data,
+            )
 
-        save_decoded_data(
-            uploaded_vin_records,
-            vins_to_insert,
-            vins_to_decoded_record_ids_map,
-            service_name,
-            decoded_data,
-        )
 
 def remove_cleaned_datasets():
     try:
         client = get_minio_client()
-        objects = client.list_objects(settings.MINIO_BUCKET_NAME, prefix="cleaned_datasets/")
+        objects = client.list_objects(
+            settings.MINIO_BUCKET_NAME, prefix="cleaned_datasets/"
+        )
         for obj in objects:
             client.remove_object(settings.MINIO_BUCKET_NAME, obj.object_name)
     except Exception:

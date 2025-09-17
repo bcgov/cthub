@@ -202,6 +202,7 @@ Q_CLUSTER = {
     "orm": "default",
     "save_limit": -1,
     "max_attempts": 100,
+    "max_rss": 300000,
 }
 
 MAX_DECODE_ATTEMPTS = os.getenv("MAX_DECODE_ATTEMPTS", 5)
