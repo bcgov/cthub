@@ -20,12 +20,7 @@ public class MainController {
 
     @GetMapping("/decode")
     public ResponseEntity<Map<String, String>> decode(@RequestBody List<String> data) {
-        try {
-            Map<String, String> decodedVins = vinDecodeService.getDecodedVins(data);
-            return new ResponseEntity<Map<String, String>>(decodedVins, HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return new ResponseEntity<Map<String, String>>(HttpStatus.INTERNAL_SERVER_ERROR);
+        Map<String, String> decodedVins = vinDecodeService.getDecodedVins(data);
+        return new ResponseEntity<Map<String, String>>(decodedVins, HttpStatus.OK);
     }
 }
