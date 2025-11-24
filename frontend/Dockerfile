@@ -7,4 +7,6 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
+RUN mkdir -p /web/node_modules/.cache && chmod -R 777 /web/node_modules/.cache
+
 EXPOSE 3000
