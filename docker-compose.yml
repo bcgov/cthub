@@ -103,7 +103,6 @@ services:
     volumes:
       - ./frontend:/web
       - /web/node_modules
-      - /web/node_modules/.cache
     ports:
       - 3000:3000
   spring:
