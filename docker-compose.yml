@@ -7,7 +7,7 @@ services:
       - ./postgres:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=postgres
-      - POSTGRES_MULTIPLE_DATABASES=superset
+      - POSTGRES_MULTIPLE_DATABASES=metabase
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
@@ -51,7 +51,6 @@ services:
     env_file:
       - keycloak.env
       - minio.env
-      - decoder.env
     environment: 
       - ALLOWED_HOSTS=localhost
       - CORS_ORIGIN_ALLOW_ALL=False
