@@ -1,11 +1,17 @@
 import pandas as pd
 from django.utils import timezone
 from api.models.uploaded_vin_record import UploadedVinRecord
-from api.constants.decoder import get_service
+from api.constants.decoder import get_service, ICBC_FILE
 
 
 def parse_and_save(uploaded_vins_file, file_response):
-    chunks = pd.read_csv(file_response, sep="|", chunksize=uploaded_vins_file.chunksize)
+    chunks = pd.read_csv(
+        file_response,
+        chunksize=uploaded_vins_file.chunksize,
+        sep=ICBC_FILE.DELIMITER.value,
+        na_values=ICBC_FILE.NA_VALUES.value,
+        dtype=ICBC_FILE.DATA_TYPES.value,
+    )
     start_index = uploaded_vins_file.start_index
     end_index = start_index + uploaded_vins_file.chunks_per_iteration
     processed = True
@@ -13,11 +19,13 @@ def parse_and_save(uploaded_vins_file, file_response):
         if idx < start_index:
             continue
         elif idx >= start_index and idx < end_index:
+            preprocess_chunk(df)
             df.fillna("", inplace=True)
             vins = []
             for _, row in df.iterrows():
-                if row["vin"] != "":
-                    vins.append(row["vin"])
+                vin = row["vin"]
+                if len(vin) == 17:
+                    vins.append(vin)
             df_records_map = get_df_records_map(df)
             existing_records_map = get_existing_records_map(vins)
             records_to_insert = get_records_to_insert(
@@ -44,12 +52,67 @@ def parse_and_save(uploaded_vins_file, file_response):
     uploaded_vins_file.save()
 
 
+def format_case(s, case="skip"):
+    if len(s.dropna()) != 0:
+        output = (
+            s[
+                s.notna()
+            ]  # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
+            .astype(str)  # Convert to string
+            .str.strip()  # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
+        )
+        if case == "title":
+            return output.str.title()
+        elif case == "upper":
+            return output.str.upper()
+        elif case == "lower":
+            return output.str.lower()
+        elif case == "skip":
+            pass
+
+
+def format_numbers(s):
+    if len(s.dropna()) != 0:
+        output = pd.to_numeric(
+            s[
+                s.notna()
+            ]  # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
+            .astype(str)  # Convert to string
+            .str.strip()
+            .str.replace(
+                ",", ""
+            )  # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
+            .str.replace(" ", "")
+        )
+        return output
+
+
+def preprocess_chunk(df):
+    df.columns = df.columns.str.lower()
+    df.drop(columns=ICBC_FILE.COLUMNS_TO_DROP.value, inplace=True)
+    numeric_cols = list(
+        set(ICBC_FILE.NUMERIC_COLUMNS.value).intersection(set(df.columns))
+    )
+    numeric_cols_w_strings = df[numeric_cols].select_dtypes("object").columns
+    for col in numeric_cols_w_strings:
+        df[col] = format_numbers(df[col])
+    date_cols = list(set(ICBC_FILE.DATE_COLUMNS.value).intersection(set(df.columns)))
+    for col in date_cols:
+        s = (pd.to_datetime(df[col], yearfirst=True, utc=True).dt.date).astype(str)
+        df[col] = s.where(s != "NaT")
+    for key, cols in ICBC_FILE.MODIFICATION_MAP.value.items():
+        col_subset = list(set(cols).intersection(df.columns))
+        if len(col_subset) != 0:
+            for col in col_subset:
+                df[col] = format_case(df[col], case=key)
+
+
 # returns a dict of vin -> data
 def get_df_records_map(df):
     result = {}
     for _, row in df.iterrows():
         vin = row["vin"]
-        if vin:
+        if len(vin) == 17:
             data = row.to_dict()
             del data["vin"]
             result[vin] = data
