@@ -47,7 +47,7 @@ objects:
       runPolicy: Serial
       source:
         git:
-          ref: main
+          ref: devops/postgrest
           uri: https://github.com/bcgov/cthub.git
         type: Git
         contextDir: openshift/templates/postgrest
