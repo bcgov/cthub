@@ -1,11 +1,3 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/postgrest/postgrest:v14.2 AS postgrest
-
-# RUN apt-get -y update \
-#     && apt-get -y install curl
-
-# RUN mkdir /var/run/postgresql \
-#     && chgrp -R root /var/run/postgresql \
-#     && chmod -R g+w /var/run/postgresql
 
 # Stage 1: get official PostgREST binary
 FROM artifacts.developer.gov.bc.ca/docker-remote/postgrest/postgrest:v14.2 AS postgrest
@@ -36,3 +28,4 @@ EXPOSE 3000
 
 # If you configure via env vars (PGRST_*), just run the binary:
 CMD ["/usr/local/bin/postgrest"]
+``
