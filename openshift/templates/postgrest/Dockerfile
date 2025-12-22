@@ -10,8 +10,13 @@ RUN microdnf -y update \
  && microdnf -y install ca-certificates shadow-utils \
  && microdnf -y clean all
 
-# Copy PostgREST binary
-COPY --from=postgrest /usr/local/bin/postgrest /usr/local/bin/postgrest
+
+# For x86-64 (Nix-based image)
+COPY --from=postgrest /bin/postgrest /usr/local/bin/postgrest
+
+# If you build arm64 later, use:
+# COPY --from=postgrest /usr/bin/postgrest /usr/local/bin/postgrest
+
 
 # (Optional) copy your config or mount via ConfigMap/Secret in OpenShift
 # COPY postgrest.conf /etc/postgrest.conf
