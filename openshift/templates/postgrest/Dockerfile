@@ -10,7 +10,6 @@ RUN microdnf -y update \
  && microdnf -y install ca-certificates shadow-utils \
  && microdnf -y clean all
 
-
 # For x86-64 (Nix-based image)
 COPY --from=postgrest /bin/postgrest /usr/local/bin/postgrest
 
@@ -33,4 +32,3 @@ EXPOSE 3000
 
 # If you configure via env vars (PGRST_*), just run the binary:
 CMD ["/usr/local/bin/postgrest"]
-``
