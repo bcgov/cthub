@@ -5,9 +5,14 @@ FROM artifacts.developer.gov.bc.ca/docker-remote/postgrest/postgrest:v14.2 AS po
 # Stage 2: UBI9 minimal with a shell and curl-minimal preinstalled
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
-# Install only what's needed (no 'curl' to avoid conflicts)
+# Install tools:
+# - ca-certificates: TLS CA bundle
+# - shadow-utils: user/group tooling (handy with OpenShift arbitrary UID)
+# - procps-ng: provides `ps`
+# - iproute: provides `ss`
+# Keep curl-minimal (already present in UBI); don't install full `curl` unless needed.
 RUN microdnf -y update \
- && microdnf -y install ca-certificates shadow-utils \
+ && microdnf -y install ca-certificates shadow-utils procps-ng iproute \
  && microdnf -y clean all
 
 # For x86-64 (Nix-based image)
