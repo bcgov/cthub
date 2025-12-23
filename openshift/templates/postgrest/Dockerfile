@@ -10,9 +10,10 @@ FROM registry.access.redhat.com/ubi9/ubi-minimal
 # - shadow-utils: user/group tooling (handy with OpenShift arbitrary UID)
 # - procps-ng: provides `ps`
 # - iproute: provides `ss`
-# Keep curl-minimal (already present in UBI); don't install full `curl` unless needed.
+# - bash: provides /bin/bash and /bin/sh on UBI/RHEL
+# - busybox: tiny shell and utilities; `busybox sh` is a lightweight POSIX shell
 RUN microdnf -y update \
- && microdnf -y install ca-certificates shadow-utils procps-ng iproute \
+ && microdnf -y install ca-certificates shadow-utils procps-ng iproute bash busybox \
  && microdnf -y clean all
 
 # For x86-64 (Nix-based image)
@@ -30,7 +31,8 @@ RUN mkdir -p /var/lib/postgrest \
  && chgrp -R 0 /var/lib/postgrest \
  && chmod -R g+rwX /var/lib/postgrest
 
-EXPOSE 3000
+# 3001 is the admin port
+EXPOSE 3000 3001
 
 # If you use a config file:
 # CMD ["/usr/local/bin/postgrest", "/etc/postgrest.conf"]
