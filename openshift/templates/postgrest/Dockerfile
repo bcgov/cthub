@@ -13,8 +13,13 @@ FROM registry.access.redhat.com/ubi9/ubi-minimal
 # - bash: provides /bin/bash and /bin/sh on UBI/RHEL
 # - busybox: tiny shell and utilities; `busybox sh` is a lightweight POSIX shell
 RUN microdnf -y update \
- && microdnf -y install ca-certificates shadow-utils procps-ng iproute bash busybox \
+ && microdnf -y install ca-certificates shadow-utils procps-ng iproute bash \
  && microdnf -y clean all
+
+# Ensure /bin/sh exists (point to bash). /bin is /usr/bin on UBI9, but we guard both paths.
+RUN set -eux; \
+    if [ ! -e /bin/sh ] && [ -e /usr/bin/bash ]; then ln -s /usr/bin/bash /bin/sh; fi; \
+    if [ ! -e /usr/bin/sh ] && [ -e /usr/bin/bash ]; then ln -s /usr/bin/bash /usr/bin/sh; fi
 
 # For x86-64 (Nix-based image)
 COPY --from=postgrest /bin/postgrest /usr/local/bin/postgrest
