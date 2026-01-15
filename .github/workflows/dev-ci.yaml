@@ -179,7 +179,7 @@ jobs:
     uses: ./.github/workflows/push-images-to-artifactory.yaml
     with:
       env: dev
-      app_name: zeva
+      app_name: cthub
       image_stream: ${{ matrix.image_stream }}
       image_tag: ${{ needs.set-version.outputs.version }}-${{ needs.set-pre-release.outputs.output1 }}
     secrets: inherit
