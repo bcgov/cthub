@@ -12,7 +12,6 @@ on:
   workflow_dispatch:
 
 env:
-  VERSION: 0.5.0
   GIT_URL: https://github.com/bcgov/cthub.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
@@ -22,8 +21,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  set-version:
+    name: Parse version from branch
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.VERSION }}
+    steps:
+      - id: set-version
+        run: |
+          version="${GITHUB_REF_NAME##*-}"
+          if [[ -z "$version" || "$version" == "$GITHUB_REF_NAME" ]]; then
+            echo "Invalid branch name '$GITHUB_REF_NAME'; expected pattern '*-<version>'." >&2
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+
   install-oc:
     runs-on: ubuntu-latest
+    needs: set-version
     outputs:
       cache-hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
@@ -51,7 +66,7 @@ jobs:
   set-pre-release:
     name: Calculate pre-release number
     runs-on: ubuntu-latest
-    needs: [install-oc]
+    needs: [set-version, install-oc]
 
     outputs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
@@ -63,10 +78,11 @@ jobs:
   build:
     name: Build CTHUB
     runs-on: ubuntu-latest
-    needs: set-pre-release
+    needs: [set-version, set-pre-release]
     timeout-minutes: 60
 
     env:
+      VERSION: ${{ needs.set-version.outputs.version }}
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
@@ -122,9 +138,10 @@ jobs:
     name: Deploy CTHUB on Dev
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [set-pre-release, build]
+    needs: [set-version, set-pre-release, build]
 
     env:
+      VERSION: ${{ needs.set-version.outputs.version }}
       PRE_RELEASE: ${{ needs.set-pre-release.outputs.output1 }}
 
     steps:
@@ -154,19 +171,17 @@ jobs:
 
   push-to-artifactory:
     name: Push images to Artifactory (${{ matrix.image_stream }})
-    needs: [set-pre-release, set-pre-release, deploy]
+    needs: [set-version, set-pre-release, deploy]
     strategy:
       matrix:
         image_stream:
-          - zeva-backend
-          - zeva-frontend
+          - cthub-backend
+          - cthub-frontend
     uses: ./.github/workflows/push-images-to-artifactory.yaml
     with:
       env: dev
       app_name: zeva
       image_stream: ${{ matrix.image_stream }}
-      image_tag: ${{ env.VERSION }}-${{ needs.set-pre-release.outputs.output1 }}
+      image_tag: ${{ needs.set-version.outputs.version }}-${{ needs.set-pre-release.outputs.output1 }}
     secrets: inherit
-
-
 
