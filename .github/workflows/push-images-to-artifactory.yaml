@@ -66,10 +66,21 @@ jobs:
       - name: Login to Artifactory
         run: |
           set -euo pipefail
+          if [ -z "${ARTIFACTORY_REPO}" ]; then
+            echo "ARTIFACTORY_REPO is empty; set it to the Artifactory repo key (e.g. docker-local)." >&2
+            exit 1
+          fi
+          if [[ "${ARTIFACTORY_REPO}" == */* ]]; then
+            echo "ARTIFACTORY_REPO includes a path; using repo key '${ARTIFACTORY_REPO%%/*}' for API calls." >&2
+            ARTIFACTORY_REPO_KEY="${ARTIFACTORY_REPO%%/*}"
+          else
+            ARTIFACTORY_REPO_KEY="${ARTIFACTORY_REPO}"
+          fi
+          echo "ARTIFACTORY_REPO_KEY=${ARTIFACTORY_REPO_KEY}" >> "${GITHUB_ENV}"
           AUTH_CURL_FLAGS=(-H "X-JFrog-Art-Api: ${ARTIFACTORY_API_KEY}")
           AUTH_PASSWORD="${ARTIFACTORY_API_KEY}"
           PING_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/system/ping"
-          REPO_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO}"
+          REPO_URL="https://${ARTIFACTORY_REGISTRY}/artifactory/api/repositories/${ARTIFACTORY_REPO_KEY}"
           if ! curl -fsS "${AUTH_CURL_FLAGS[@]}" "${PING_URL}"; then
             echo "Artifactory ping failed: ${PING_URL}"
             exit 1
@@ -109,7 +120,7 @@ jobs:
       - name: Copy OpenShift image to Artifactory
         run: |
           set -euo pipefail
-          REPO_REF="docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO}/${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}"
+          REPO_REF="docker://${ARTIFACTORY_REGISTRY}/${ARTIFACTORY_REPO_KEY}/${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}"
           echo "Fetching tags for ${APP_NAME}/${DEPLOY_ENV}/${IMAGE_STREAM}..."
           if TAGS_JSON="$(skopeo list-tags --authfile /tmp/artifactory-auth.json "${REPO_REF}")"; then
             export TAGS_JSON
