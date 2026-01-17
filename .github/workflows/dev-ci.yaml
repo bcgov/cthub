@@ -4,8 +4,7 @@ name: CTHUB 0.5.0 Dev CI
 
 on:
   push:
-    # branches: [release-0.5.0]
-    branches: [devops/artifactory-0.5.0]
+    branches: [release-0.5.0]
     # paths:
     #   - frontend/**
     #   - backend/**
