@@ -15,8 +15,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  set-version:
+    name: Parse version from branch
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.VERSION }}
+    steps:
+      - id: set-version
+        run: |
+          echo "VERSION=${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
+
   install-oc:
     runs-on: ubuntu-latest
+    needs: [set-version]
     outputs:
       cache-hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
@@ -130,3 +141,21 @@ jobs:
           git add cthub/values-prod.yaml
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on PRODUCTION"
           git push
+
+  push-to-artifactory:
+    name: Push images to Artifactory (${{ matrix.image_stream }})
+    needs: [set-version, set-pre-release, deploy]
+    strategy:
+      matrix:
+        image_stream:
+          - cthub-backend
+          - cthub-frontend
+          - cthub-task-queue
+          - cthub-vinpower
+    uses: ./.github/workflows/push-images-to-artifactory.yaml
+    with:
+      env: prod
+      app_name: cthub
+      image_stream: ${{ matrix.image_stream }}
+      image_tag: ${{ needs.set-version.outputs.version }}-${{ needs.set-pre-release.outputs.output1 }}
+    secrets: inherit
