@@ -40,7 +40,7 @@ class LdvData(Auditable):
     )
 
     vin = models.CharField(
-        max_length=17, blank=False, null=False
+        max_length=17, blank=True, null=True
     )
 
     year = models.IntegerField(

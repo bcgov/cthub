@@ -23,6 +23,8 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_scrap_it,
     prepare_go_electric_rebates,
     prepare_cvp_data,
+    warn_if_empty_columns,
+    validate_unique_columns,
     validate_phone_numbers,
     typo_checker,
     location_checker,
@@ -940,7 +942,9 @@ DATASET_CONFIG = {
         "preparation_functions": [prepare_ldv_data],
         "validation_functions": [
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": LDV_DATA_VALID_FIELD_VALUES, "delimiter": ","}},
-            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}}
+            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}},
+            {"function": warn_if_empty_columns, "columns": ["VIN", "VIN_Token"], "kwargs": {"indices_offset":2}},
+            {"function": validate_unique_columns, "columns": ["ApplicationID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"ApplicationID": "application_id"}}},
         ]
     },
 

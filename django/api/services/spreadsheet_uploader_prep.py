@@ -463,3 +463,89 @@ def format_postal_codes(df, *columns, **kwargs):
             }
     
     return result if validate else None
+
+
+def warn_if_empty_columns(df, *columns, **kwargs):
+    """
+    Returns warnings (not errors) when specified columns contain empty / null values.
+    """
+    indices_offset = kwargs.get("indices_offset", 0)
+    result = {}
+
+    for column in columns:
+        indices = [
+            index + indices_offset
+            for index, value in df[column].items()
+            if pd.isna(value) or value == "" or value is None
+        ]
+        if indices:
+            result[column] = {
+                "empty_value": {
+                    "expected_type": "Value is recommended but not required",
+                    "Rows": indices,
+                    # Frontend warning handler expects Groups; provide one group with Rows
+                    "Groups": [{"Rows": indices}],
+                    "Severity": "Warning",
+                }
+            }
+
+    return result if result else None
+
+
+def validate_unique_columns(df, *columns, **kwargs):
+    """
+    Reports duplicate values in given columns. Can also check against existing DB rows
+    when provided a model and field_name_map.
+    """
+    indices_offset = kwargs.get("indices_offset", 0)
+    model = kwargs.get("model")
+    field_name_map = kwargs.get("field_name_map", {})
+
+    result = {}
+
+    for column in columns:
+        # Normalize values to trimmed strings so comparisons match DB char fields
+        normalized_series = df[column].apply(
+            lambda v: None if (pd.isna(v) or v == "") else str(v).strip()
+        )
+        value_to_indices = get_map_of_values_to_indices(normalized_series, indices_offset)
+
+        # Duplicates within the uploaded file
+        duplicate_indices = []
+        for value, indices in value_to_indices.items():
+            if value is None or (isinstance(value, float) and pd.isna(value)) or value == "":
+                continue
+            if len(indices) > 1:
+                duplicate_indices.extend(indices)
+
+        if duplicate_indices:
+            result.setdefault(column, {})
+            result[column]["duplicate_values"] = {
+                "expected_type": "Values must be unique within the uploaded file",
+                "Rows": sorted(duplicate_indices),
+                "Severity": "Error",
+            }
+
+        if model is not None:
+            field_name = field_name_map.get(column, column)
+            candidate_values = [
+                value for value in value_to_indices.keys()
+                if value is not None and value != ""
+            ]
+            if candidate_values:
+                existing_values = set(
+                    model.objects.filter(**{f"{field_name}__in": candidate_values})
+                    .values_list(field_name, flat=True)
+                )
+                if existing_values:
+                    db_conflict_indices = []
+                    for value in existing_values:
+                        db_conflict_indices.extend(value_to_indices.get(value, []))
+                    result.setdefault(column, {})
+                    result[column]["duplicate_in_database"] = {
+                        "expected_type": "Value already exists in the database; must be unique",
+                        "Rows": sorted(db_conflict_indices),
+                        "Severity": "Error",
+                    }
+
+    return result if result else None
