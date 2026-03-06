@@ -483,7 +483,6 @@ def warn_if_empty_columns(df, *columns, **kwargs):
                 "empty_value": {
                     "expected_type": "Value is recommended but not required",
                     "Rows": indices,
-                    # Frontend warning handler expects Groups; provide one group with Rows
                     "Groups": [{"Rows": indices}],
                     "Severity": "Warning",
                 }

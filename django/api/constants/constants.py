@@ -529,6 +529,7 @@ class CVPDataColumnMapping(Enum):
 from enum import Enum
 
 class LDVDataColumns(Enum):
+    LDV_ID = "LDV_ID"
     APPLICANT_TYPE = "ApplicantType"
     APPLICATION_ID = "ApplicationID"
     DEALERSHIP_NAME = "DealershipName"
@@ -559,6 +560,7 @@ class LDVDataColumns(Enum):
 
 
 class LDVDataColumnMapping(Enum):
+    ldv_id = "LDV_ID"
     applicant_type = "ApplicantType"
     application_id = "ApplicationID"
     dealership_name = "DealershipName"
@@ -819,6 +821,7 @@ FIELD_TYPES = {
         "imhzev": str,
     },
     "LDV Data": {
+        "ldv_id": int,
         "applicant_type": str,
         "application_id": str,
         "dealership_name": str,
@@ -945,6 +948,7 @@ DATASET_CONFIG = {
             {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}},
             {"function": warn_if_empty_columns, "columns": ["VIN", "VIN_Token"], "kwargs": {"indices_offset":2}},
             {"function": validate_unique_columns, "columns": ["ApplicationID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"ApplicationID": "application_id"}}},
+            {"function": validate_unique_columns, "columns": ["LDV_ID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"LDV_ID": "ldv_id"}}},
         ]
     },
 

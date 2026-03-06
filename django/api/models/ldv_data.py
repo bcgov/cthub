@@ -3,6 +3,10 @@ from django.db import models
 
 class LdvData(Auditable):
 
+    ldv_id = models.PositiveBigIntegerField(
+        unique=True, blank=False, null=False
+    )
+
     applicant_type = models.CharField(
         max_length=100, unique=False, blank=False, null=False
     )
