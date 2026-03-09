@@ -3,6 +3,10 @@ from django.db import models
 
 class LdvData(Auditable):
 
+    ldv_id = models.PositiveBigIntegerField(
+        unique=True, blank=False, null=False
+    )
+
     applicant_type = models.CharField(
         max_length=100, unique=False, blank=False, null=False
     )
@@ -40,7 +44,7 @@ class LdvData(Auditable):
     )
 
     vin = models.CharField(
-        max_length=17, blank=False, null=False
+        max_length=17, blank=True, null=True
     )
 
     year = models.IntegerField(

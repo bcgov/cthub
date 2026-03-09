@@ -23,6 +23,8 @@ from api.services.spreadsheet_uploader_prep import (
     prepare_scrap_it,
     prepare_go_electric_rebates,
     prepare_cvp_data,
+    warn_if_empty_columns,
+    validate_unique_columns,
     validate_phone_numbers,
     typo_checker,
     location_checker,
@@ -527,6 +529,7 @@ class CVPDataColumnMapping(Enum):
 from enum import Enum
 
 class LDVDataColumns(Enum):
+    LDV_ID = "LDV_ID"
     APPLICANT_TYPE = "ApplicantType"
     APPLICATION_ID = "ApplicationID"
     DEALERSHIP_NAME = "DealershipName"
@@ -557,6 +560,7 @@ class LDVDataColumns(Enum):
 
 
 class LDVDataColumnMapping(Enum):
+    ldv_id = "LDV_ID"
     applicant_type = "ApplicantType"
     application_id = "ApplicationID"
     dealership_name = "DealershipName"
@@ -817,6 +821,7 @@ FIELD_TYPES = {
         "imhzev": str,
     },
     "LDV Data": {
+        "ldv_id": int,
         "applicant_type": str,
         "application_id": str,
         "dealership_name": str,
@@ -940,7 +945,10 @@ DATASET_CONFIG = {
         "preparation_functions": [prepare_ldv_data],
         "validation_functions": [
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": LDV_DATA_VALID_FIELD_VALUES, "delimiter": ","}},
-            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}}
+            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}},
+            {"function": warn_if_empty_columns, "columns": ["VIN", "VIN_Token"], "kwargs": {"indices_offset":2}},
+            {"function": validate_unique_columns, "columns": ["ApplicationID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"ApplicationID": "application_id"}}},
+            {"function": validate_unique_columns, "columns": ["LDV_ID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"LDV_ID": "ldv_id"}}},
         ]
     },
 
