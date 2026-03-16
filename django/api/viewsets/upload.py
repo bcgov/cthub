@@ -42,6 +42,7 @@ class UploadViewset(GenericViewSet):
         serializer = DatasetsSerializer(datasets, many=True, read_only=True)
         serializer_data = serializer.data
         serializer_data.append({"id": -1, "name": "ICBC Vins"})
+        serializer_data.append({"id": -2, "name": "CSV Vin Decode"})
         return Response(serializer_data)
 
     @action(detail=False, methods=["post"])
@@ -56,11 +57,11 @@ class UploadViewset(GenericViewSet):
         #after displaying warnings, code can be rerun with show_warnings = false
         #if warnings have been ignore
 
-        if dataset_selected == "ICBC Vins":
+        if dataset_selected in ["ICBC Vins", "CSV Vin Decode"]:
             file_extension = pathlib.Path(filepath).suffix
             if file_extension == '.csv':
                 try:
-                    create_vins_file(filename)
+                    create_vins_file(filename, icbc=(dataset_selected == "ICBC Vins"))
                     return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
                 except Exception as error:
                     return Response({"success": False, "message": str(error)})
