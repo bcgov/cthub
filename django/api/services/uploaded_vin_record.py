@@ -57,7 +57,6 @@ def parse_and_save(uploaded_vins_file, file_response):
                 update_timestamp=timezone.now(),
             )
     else:
-        print('test')
         chunks = pd.read_csv(
             file_response,
             chunksize=uploaded_vins_file.chunksize,
@@ -66,7 +65,6 @@ def parse_and_save(uploaded_vins_file, file_response):
         )
 
         for idx, df in enumerate(chunks):
-            print(df)
             if idx < start_index:
                 continue
             if idx >= end_index:
@@ -99,7 +97,6 @@ def parse_and_save(uploaded_vins_file, file_response):
                         )
                     )
                 else:
-                    print(vin)
                     records_to_insert.append(UploadedVinRecord(vin=vin, data={}))
 
             if records_to_insert:
