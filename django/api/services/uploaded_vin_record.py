@@ -5,48 +5,110 @@ from api.constants.decoder import get_service, ICBC_FILE
 
 
 def parse_and_save(uploaded_vins_file, file_response):
-    chunks = pd.read_csv(
-        file_response,
-        chunksize=uploaded_vins_file.chunksize,
-        sep=ICBC_FILE.DELIMITER.value,
-        na_values=ICBC_FILE.NA_VALUES.value,
-        dtype=ICBC_FILE.DATA_TYPES.value,
-    )
+    """Parse uploaded VIN files. For ICBC files apply full preprocessing; otherwise treat as plain VIN list."""
+
+    is_icbc = getattr(uploaded_vins_file, "icbc", True)
+
     start_index = uploaded_vins_file.start_index
     end_index = start_index + uploaded_vins_file.chunks_per_iteration
     processed = True
-    for idx, df in enumerate(chunks):
-        if idx < start_index:
-            continue
-        elif idx >= start_index and idx < end_index:
-            preprocess_chunk(df)
-            df.fillna("", inplace=True)
-            vins = []
-            for _, row in df.iterrows():
-                vin = row["vin"]
-                if len(vin) == 17:
-                    vins.append(vin)
-            df_records_map = get_df_records_map(df)
-            existing_records_map = get_existing_records_map(vins)
-            records_to_insert = get_records_to_insert(
-                df_records_map, existing_records_map
-            )
-            UploadedVinRecord.objects.bulk_create(records_to_insert)
-            records_to_update = get_records_to_update(
-                df_records_map, existing_records_map
-            )
-            UploadedVinRecord.objects.bulk_update(
-                records_to_update, ["data", "change", "update_timestamp"]
-            )
-        else:
-            processed = False
-            break
-    if processed:
-        UploadedVinRecord.objects.exclude(
-            update_timestamp__gte=uploaded_vins_file.create_timestamp
-        ).update(
-            change=UploadedVinRecord.Change.REMOVED, update_timestamp=timezone.now()
+
+    if is_icbc:
+        chunks = pd.read_csv(
+            file_response,
+            chunksize=uploaded_vins_file.chunksize,
+            sep=ICBC_FILE.DELIMITER.value,
+            na_values=ICBC_FILE.NA_VALUES.value,
+            dtype=ICBC_FILE.DATA_TYPES.value,
         )
+
+        for idx, df in enumerate(chunks):
+            if idx < start_index:
+                continue
+            elif idx >= start_index and idx < end_index:
+                preprocess_chunk(df)
+                df.fillna("", inplace=True)
+                vins = []
+                for _, row in df.iterrows():
+                    vin = row["vin"]
+                    if len(vin) == 17:
+                        vins.append(vin)
+                df_records_map = get_df_records_map(df)
+                existing_records_map = get_existing_records_map(vins)
+                records_to_insert = get_records_to_insert(
+                    df_records_map, existing_records_map
+                )
+                UploadedVinRecord.objects.bulk_create(records_to_insert)
+                records_to_update = get_records_to_update(
+                    df_records_map, existing_records_map
+                )
+                UploadedVinRecord.objects.bulk_update(
+                    records_to_update, ["data", "change", "update_timestamp"]
+                )
+            else:
+                processed = False
+                break
+
+        if processed:
+            UploadedVinRecord.objects.exclude(
+                update_timestamp__gte=uploaded_vins_file.create_timestamp
+            ).update(
+                change=UploadedVinRecord.Change.REMOVED,
+                update_timestamp=timezone.now(),
+            )
+    else:
+        print('test')
+        chunks = pd.read_csv(
+            file_response,
+            chunksize=uploaded_vins_file.chunksize,
+            header=None,
+            names=["vin"],
+        )
+
+        for idx, df in enumerate(chunks):
+            print(df)
+            if idx < start_index:
+                continue
+            if idx >= end_index:
+                processed = False
+                break
+
+            vins = (
+                df["vin"]
+                .astype(str)
+                .str.strip()
+                .str.upper()
+            )
+            vins = [vin for vin in vins if len(vin) == 17]
+
+            if len(vins) == 0:
+                continue
+
+            existing_records_map = get_existing_records_map(vins)
+            records_to_insert = []
+            records_to_update = []
+            now = timezone.now()
+
+            for vin in vins:
+                if vin in existing_records_map:
+                    records_to_update.append(
+                        UploadedVinRecord(
+                            id=existing_records_map[vin],
+                            update_timestamp=now,
+                            change=UploadedVinRecord.Change.MODIFIED,
+                        )
+                    )
+                else:
+                    print(vin)
+                    records_to_insert.append(UploadedVinRecord(vin=vin, data={}))
+
+            if records_to_insert:
+                UploadedVinRecord.objects.bulk_create(records_to_insert)
+            if records_to_update:
+                UploadedVinRecord.objects.bulk_update(
+                    records_to_update, ["update_timestamp", "change"]
+                )
+
     uploaded_vins_file.processed = processed
     uploaded_vins_file.start_index = end_index
     uploaded_vins_file.save()
