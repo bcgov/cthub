@@ -18,14 +18,14 @@ COPY . .
 ENV CI=false
 RUN npm run build
 
-FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.26
+FROM artifacts.developer.gov.bc.ca/docker-remote/nginx:1.29.6
 
-COPY nginx.conf /opt/bitnami/nginx/conf/nginx.conf
-COPY --from=builder /usr/src/app/build /app
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD test -f /app/index.html || exit 1
+    CMD test -f /usr/share/nginx/html/index.html || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]
