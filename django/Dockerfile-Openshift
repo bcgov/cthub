@@ -20,7 +20,8 @@ ENV PATH=/opt/venv/bin:$PATH
 COPY requirements.txt ./
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    python -c "import pkg_resources"
 
 FROM artifacts.developer.gov.bc.ca/docker-remote/python:3.10-slim-bookworm
 
@@ -40,6 +41,7 @@ COPY --chown=1001:0 . /app
 
 # OpenShift commonly runs with an arbitrary UID in the root group.
 RUN chgrp -R 0 /app && chmod -R g=u /app
+RUN python -c "import pkg_resources"
 
 EXPOSE 8080
 
