@@ -7,16 +7,16 @@ from workers.external_apis.vinpower import batch_decode as vinpower_batch_decode
 
 class VPIC(Enum):
     NAME = "vpic"
-    CURRENT_DECODE_SUCCESSFUL = "vpic_current_decode_successful"
-    NUMBER_OF_CURRENT_DECODE_ATTEMPTS = "vpic_number_of_current_decode_attempts"
+    DECODE_SUCCESSFUL = "vpic_decode_successful"
+    NUMBER_OF_DECODE_ATTEMPTS = "vpic_number_of_decode_attempts"
     MODEL = VpicDecodedVinRecord
     BATCH_DECODER = partial(vpic_batch_decode)
 
 
 class VINPOWER(Enum):
     NAME = "vinpower"
-    CURRENT_DECODE_SUCCESSFUL = "vinpower_current_decode_successful"
-    NUMBER_OF_CURRENT_DECODE_ATTEMPTS = "vinpower_number_of_current_decode_attempts"
+    DECODE_SUCCESSFUL = "vinpower_decode_successful"
+    NUMBER_OF_DECODE_ATTEMPTS = "vinpower_number_of_decode_attempts"
     MODEL = VinpowerDecodedVinRecord
     BATCH_DECODER = partial(vinpower_batch_decode)
 

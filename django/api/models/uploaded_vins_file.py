@@ -1,5 +1,6 @@
 from django.db import models
 from auditable.models import Auditable
+from django.utils.translation import gettext_lazy as _
 
 
 class UploadedVinsFile(Auditable):
@@ -15,7 +16,12 @@ class UploadedVinsFile(Auditable):
 
     chunks_per_iteration = models.IntegerField(default=100)
 
-    processed = models.BooleanField(default=False)
+    class FileStatus(models.TextChoices):
+        ERROR = ("error", _("Error"))
+        PROCESSING = ("processing", _("Processing"))
+        SUCCESS = ("success", _("Success"))
+
+    status = models.TextField(default=FileStatus.PROCESSING, choices=FileStatus.choices)
 
     class Meta:
         db_table = "uploaded_vins_file"
