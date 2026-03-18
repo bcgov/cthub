@@ -22,7 +22,7 @@ RUN curl -fsSL -u "${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}" \
     "${ARTIFACTORY_URL}"
 
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw dependency:go-offline
+    ./mvnw dependency:resolve
 
 COPY src ./src
 
