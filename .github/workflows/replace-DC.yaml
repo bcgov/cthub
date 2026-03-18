@@ -9,9 +9,10 @@ on:
 
 env:
   VERSION: 0.3.0
-  GIT_URL: https://github.com/bcgov/cthub.git 
+  GIT_URL: https://github.com/bcgov/cthub.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 
 concurrency:

@@ -39,6 +39,9 @@ permissions:
   contents: read
   issues: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   push-images-to-artifactory:
     name: Push images to Artifactory
