@@ -1,7 +1,7 @@
 from rest_framework.viewsets import GenericViewSet
 from api.token_authentication import CustomTokenAuthentication
 from api.models.decoded_vin_record import VpicDecodedVinRecord
-from api.services.decoded_vin_record import get_decoded_vins
+from api.services.decoded_vin_record import get_vinpower_decoded_ev_vins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -12,8 +12,7 @@ class DecodedVinRecordViewset(GenericViewSet):
     queryset = VpicDecodedVinRecord.objects.all()
 
     @action(detail=False, methods=["post"])
-    def get_decoded_vins(self, request):
-        service_name = request.data.get("service_name")
+    def get_vinpower_decoded_ev_vins(self, request):
         vins = request.data.get("vins")
-        decoded_vins = get_decoded_vins(service_name, vins)
+        decoded_vins = get_vinpower_decoded_ev_vins(vins)
         return Response(decoded_vins)

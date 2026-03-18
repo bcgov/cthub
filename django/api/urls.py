@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
+from api.viewsets.icbc import IcbcRecordViewset
 from api.viewsets.icbc_data import IcbcViewset
 from api.viewsets.minio import MinioViewSet
 from api.viewsets.upload import UploadViewset
@@ -28,6 +29,7 @@ from api.viewsets.decoded_vin_record import DecodedVinRecordViewset
 
 ROUTER = routers.SimpleRouter(trailing_slash=False)
 
+ROUTER.register(r"icbc", IcbcRecordViewset, basename="icbc")
 ROUTER.register(r"icbc-data", IcbcViewset, basename="icbc-data")
 
 ROUTER.register(r"uploads", UploadViewset, basename="uploads")
