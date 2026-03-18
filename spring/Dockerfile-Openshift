@@ -1,12 +1,11 @@
-# syntax=docker/dockerfile:1
-
-FROM --platform=linux/amd64 artifacts.developer.gov.bc.ca/docker-remote/eclipse-temurin:17-jdk-jammy AS builder
+FROM artifacts.developer.gov.bc.ca/docker-remote/eclipse-temurin:17-jdk-jammy AS builder
 
 ARG ARTIFACTORY_URL
 ARG ARTIFACTORY_USER
 ARG ARTIFACTORY_PASSWORD
 
 WORKDIR /app
+ENV MAVEN_CONFIG=/tmp/.m2
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
@@ -21,18 +20,15 @@ RUN curl -fsSL -u "${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}" \
     -o /app/libs/vp4jo_bttm_msrp_gvw_50011.jar \
     "${ARTIFACTORY_URL}"
 
-RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw dependency:resolve
+RUN ./mvnw dependency:resolve
 
 COPY src ./src
 
-FROM --platform=linux/amd64 artifacts.developer.gov.bc.ca/docker-remote/eclipse-temurin:17-jdk-jammy
-
-ENV MAVEN_CONFIG=/tmp/.m2
+FROM artifacts.developer.gov.bc.ca/docker-remote/eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-COPY --from=builder /root/.m2 /tmp/.m2
+COPY --from=builder /tmp/.m2 /tmp/.m2
 COPY --from=builder /app /app
 
 RUN chgrp -R 0 /app /tmp/.m2 && \
