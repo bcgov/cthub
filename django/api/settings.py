@@ -102,6 +102,15 @@ DATABASES = {
         "HOST": os.getenv("DB_HOST", "db"),
         "PORT": os.getenv("DB_PORT", "5432"),
     },
+    # currently used to exclude certain db operations inside a transaction from being part of said transaction
+    "other": {
+        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
+        "NAME": os.getenv("DB_NAME", "postgres"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
+        "HOST": os.getenv("DB_HOST", "db"),
+        "PORT": os.getenv("DB_PORT", "5432"),
+    },
     "metabase": {
         "ENGINE": os.getenv("METABASE_DB_ENGINE", "django.db.backends.postgresql"),
         "NAME": os.getenv("METABASE_DB_NAME", "metabase"),

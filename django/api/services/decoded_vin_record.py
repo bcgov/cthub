@@ -36,7 +36,9 @@ def save_decoded_data(
                 get_number_of_decode_attempts(service_name, uploaded_record) + 1,
             )
 
-        decoded_vin_model.objects.bulk_create(decoded_records_to_insert, ignore_conflicts=True)
+        decoded_vin_model.objects.bulk_create(
+            decoded_records_to_insert, ignore_conflicts=True
+        )
         UploadedVinRecord.objects.bulk_update(
             uploaded_vin_records,
             [
@@ -56,7 +58,13 @@ def get_vinpower_decoded_ev_vins(vins):
     )
     for record in records:
         fuel_type = record.get("data__Fuel Type")
-        if fuel_type and fuel_type == "Electric":
+        if fuel_type and (
+            fuel_type == "Electric"
+            or fuel_type == "Fuel Cell"
+            or fuel_type == "Electric/Gasoline"
+            or fuel_type == "Hydrogen"
+            or fuel_type == "Diesel/Electric"
+        ):
             result[record.get("vin")] = {
                 "make": record.get("data__Make"),
                 "model": record.get("data__Model"),

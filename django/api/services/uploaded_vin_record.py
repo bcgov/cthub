@@ -40,9 +40,10 @@ def parse_and_save(uploaded_vins_file, file_response):
                 status_to_save = UploadedVinsFile.FileStatus.PROCESSING
                 break
     except:
-        status_to_save = UploadedVinsFile.FileStatus.ERROR
-        end_index = start_index
         traceback.print_exc()
+        uploaded_vins_file.status = UploadedVinsFile.FileStatus.ERROR
+        uploaded_vins_file.save(using="other")
+        raise Exception()
 
     uploaded_vins_file.status = status_to_save
     uploaded_vins_file.start_index = end_index
