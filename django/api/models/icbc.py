@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 class IcbcRecord(models.Model):
@@ -74,7 +73,7 @@ class IcbcRecord(models.Model):
     class Meta:
         db_table = "icbc"
         indexes = [
-            models.Index(fields=["vin"]),
+            models.Index(fields=["vin", "-create_timestamp"]),
         ]
 
     db_table_comment = "represents an ICBC VIN record"

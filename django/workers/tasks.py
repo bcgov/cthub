@@ -3,8 +3,10 @@ from api.services.minio import get_minio_client, get_minio_object
 from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
 from api.constants.decoder import get_service
+from api.services.uploaded_vins_file import get_file_to_process, get_prev_icbc_file
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
+from api.services.icbc import icbc_parse_and_save
 from django.db import transaction
 
 
@@ -17,16 +19,37 @@ def create_minio_bucket():
 
 
 def read_uploaded_vins_file():
-    vins_file = (
-        UploadedVinsFile.objects.filter(status=UploadedVinsFile.FileStatus.PROCESSING)
-        .order_by("create_timestamp")
-        .first()
-    )
+    vins_file = get_file_to_process()
     if vins_file is not None:
-        file_response = get_minio_object(vins_file.filename)
+        file_response = None
+        is_icbc = vins_file.icbc
+        filename = vins_file.filename
+        byte_offset = vins_file.byte_offset
+        if is_icbc:
+            status = vins_file.status
+            if (
+                status
+                == UploadedVinsFile.FileStatus.SUCCESS_TRACKING_CREATED_AND_MODIFIED_RECORDS
+                or status == UploadedVinsFile.FileStatus.TRACKING_REMOVED_RECORDS
+            ):
+                prev_icbc_file = get_prev_icbc_file()
+                if prev_icbc_file is None:
+                    raise Exception(
+                        "Expected a previous ICBC file, but one wasn't found!"
+                    )
+                file_response = get_minio_object(prev_icbc_file.filename, byte_offset)
+            elif status == UploadedVinsFile.FileStatus.SUCCESS_TRACKING_REMOVED_RECORDS:
+                file_response = get_minio_object(filename, 0)
+            else:
+                file_response = get_minio_object(filename, byte_offset)
+        else:
+            file_response = get_minio_object(filename, byte_offset)
         if file_response is not None:
             with transaction.atomic():
-                parse_and_save(vins_file, file_response)
+                if is_icbc:
+                    icbc_parse_and_save(vins_file, file_response)
+                else:
+                    parse_and_save(vins_file, file_response)
             file_response.close()
             file_response.release_conn()
 

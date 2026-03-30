@@ -31,6 +31,9 @@ def get_service(service_name):
 
 
 class ICBC_FILE(Enum):
+    TS_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+    CHUNKS_PER_ITERATION = 50
+    CHUNK_SIZE = 5000
     DELIMITER = "|"
     NA_VALUES = ["NIL", "Unknown", "unknown", "UNKNOWN"]
     DATA_TYPES = {
