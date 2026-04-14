@@ -29,7 +29,6 @@ def parse_and_save(uploaded_vins_file, file_response):
             elif idx >= start_index and idx < end_index:
                 if is_icbc:
                     df = preprocess_chunk(df)
-                    df.fillna("", inplace=True)
                     icbc_records_to_create = get_icbc_records_to_create(df)
                     IcbcRecord.objects.bulk_create(icbc_records_to_create)
                 uploaded_vin_records_to_create = get_uploaded_vin_records_to_create(df)

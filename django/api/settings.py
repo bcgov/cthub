@@ -41,8 +41,6 @@ CORS_ORIGIN_WHITELIST = [os.getenv("CORS_ORIGIN_WHITELIST", "https://localhost:3
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
     "workers.apps.Config",
-    "tfrs.apps.ApiConfig",
-    "metabase.apps.MetabaseConfig",
     "corsheaders",
     "django_filters",
     "django.contrib.admin",
@@ -96,7 +94,7 @@ WSGI_APPLICATION = "api.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.getenv("DB_NAME", "postgres"),
+        "NAME": os.getenv("DB_NAME", "cthub"),
         "USER": os.getenv("DB_USER", "postgres"),
         "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
         "HOST": os.getenv("DB_HOST", "db"),
@@ -105,25 +103,13 @@ DATABASES = {
     # currently used to exclude certain db operations inside a transaction from being part of said transaction
     "other": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.getenv("DB_NAME", "postgres"),
+        "NAME": os.getenv("DB_NAME", "cthub"),
         "USER": os.getenv("DB_USER", "postgres"),
         "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
         "HOST": os.getenv("DB_HOST", "db"),
         "PORT": os.getenv("DB_PORT", "5432"),
     },
-    "metabase": {
-        "ENGINE": os.getenv("METABASE_DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.getenv("METABASE_DB_NAME", "metabase"),
-        "USER": os.getenv("METABASE_DB_USER", "postgres"),
-        "PASSWORD": os.getenv("METABASE_DB_PASSWORD", "postgres"),
-        "HOST": os.getenv("METABASE_DB_HOST", "db"),
-        "PORT": os.getenv("METABASE_DB_PORT", "5432"),
-    },
 }
-
-DATABASE_ROUTERS = [
-    "metabase.db_router.MetabaseRouter",
-]
 
 
 # Password validation

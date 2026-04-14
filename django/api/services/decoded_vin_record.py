@@ -54,10 +54,10 @@ def get_vinpower_decoded_ev_vins(vins):
     service = get_service("vinpower")
     decoded_records_model = service.MODEL.value
     records = decoded_records_model.objects.filter(vin__in=vins).values(
-        "vin", "data__Fuel Type", "data__Make", "data__Model", "data__Model Year"
+        "vin", "data__fuel_type", "data__make", "data__model", "data__model_year"
     )
     for record in records:
-        fuel_type = record.get("data__Fuel Type")
+        fuel_type = record.get("data__fuel_type")
         if fuel_type and (
             fuel_type == "Electric"
             or fuel_type == "Fuel Cell"
@@ -66,8 +66,8 @@ def get_vinpower_decoded_ev_vins(vins):
             or fuel_type == "Diesel/Electric"
         ):
             result[record.get("vin")] = {
-                "make": record.get("data__Make"),
-                "model": record.get("data__Model"),
-                "model_year": record.get("data__Model Year"),
+                "make": record.get("data__make"),
+                "model": record.get("data__model"),
+                "model_year": record.get("data__model_year"),
             }
     return result
