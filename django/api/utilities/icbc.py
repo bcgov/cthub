@@ -137,24 +137,6 @@ def records_differ(icbc_data, file_data):
     return False
 
 
-# prev_file_records is a dict of vins to dicts,
-# each vin key of Prev_file_records should be a tracked vin
-# current_file_vins should be a set of tracked vins
-# returns a df if there are records to create; otherwise, return None
-def get_removed(prev_file_records, current_file_vins, first_snapshot_date):
-    # a list of dicts
-    df_rows = []
-    for vin, data in prev_file_records.items():
-        if vin not in current_file_vins:
-            data["change"] = "removed"
-            data["change_date"] = first_snapshot_date
-            df_rows.append(data)
-    if df_rows:
-        df = pd.DataFrame(df_rows)
-        return preprocess(df)
-    return None
-
-
 def get_transformed_dict(dict):
     result = {}
     for key, value in dict.items():
