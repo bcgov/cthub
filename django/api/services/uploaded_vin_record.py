@@ -45,7 +45,8 @@ def save_vins(file_response, headers):
             break
         bytes_read = bytes_read + record[1]
         vin = record[0]
-        uploaded_vin_records_to_create.append(UploadedVinRecord(vin=vin))
+        if vin:
+            uploaded_vin_records_to_create.append(UploadedVinRecord(vin=vin))
     if uploaded_vin_records_to_create:
         UploadedVinRecord.objects.bulk_create(
             uploaded_vin_records_to_create, ignore_conflicts=True
