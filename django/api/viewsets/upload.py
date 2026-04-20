@@ -64,7 +64,7 @@ class UploadViewset(GenericViewSet):
                     create_vins_file(filename, icbc=(dataset_selected == "ICBC Vins"))
                     return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
                 except Exception as error:
-                    return Response({"success": False, "message": str(error)})
+                    return Response({"success": False, "message": str(error)}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
         try:

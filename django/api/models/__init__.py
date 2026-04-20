@@ -25,3 +25,5 @@ from . import regions
 from . import cvp_data
 from . import file_requirements
 from . import icbc
+from . import icbc_duplicate_vin
+from . import icbc_vin_lookup

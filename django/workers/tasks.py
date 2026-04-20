@@ -1,10 +1,11 @@
 from django.conf import settings
 from api.services.minio import get_minio_client, get_minio_object
-from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
 from api.constants.decoder import get_service
+from api.services.uploaded_vins_file import get_file_to_process
 from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
+from api.services.icbc import icbc_parse_and_save
 from django.db import transaction
 
 
@@ -17,18 +18,16 @@ def create_minio_bucket():
 
 
 def read_uploaded_vins_file():
-    vins_file = (
-        UploadedVinsFile.objects.filter(status=UploadedVinsFile.FileStatus.PROCESSING)
-        .order_by("create_timestamp")
-        .first()
-    )
+    vins_file = get_file_to_process()
     if vins_file is not None:
-        file_response = get_minio_object(vins_file.filename)
-        if file_response is not None:
-            with transaction.atomic():
+        file_response = get_minio_object(vins_file.filename, vins_file.byte_offset)
+        with transaction.atomic():
+            if vins_file.icbc:
+                icbc_parse_and_save(vins_file, file_response)
+            else:
                 parse_and_save(vins_file, file_response)
-            file_response.close()
-            file_response.release_conn()
+        file_response.close()
+        file_response.release_conn()
 
 
 def batch_decode_vins(service_name, batch_size=50):

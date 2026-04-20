@@ -9,7 +9,7 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
         auth = request.headers.get("Authorization", None)
         if settings.KEYCLOAK_TESTING:
             try:
-                user = User.objects.get(idir=auth['idir'])
+                user = User.objects.get(idir=auth["idir"])
                 return user.idir, None
             except User.DoesNotExist as exc:
                 # print("Testing User does not exist")
@@ -30,7 +30,9 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
             realm_name=settings.KEYCLOAK_REALM,
         )
 
-        token_info = keycloak_openid.decode_token(token, True, check_claims={"aud": settings.KEYCLOAK_CLIENT_ID, "exp": None})
+        token_info = keycloak_openid.decode_token(
+            token, True, check_claims={"aud": settings.KEYCLOAK_CLIENT_ID, "exp": None}
+        )
         if token_info.get("identity_provider") != "idir":
             raise exceptions.AuthenticationFailed("Invalid Token")
         return token_info.get("idir_username"), None
