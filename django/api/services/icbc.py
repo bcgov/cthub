@@ -25,6 +25,7 @@ def get_icbc_ev_records(vins):
         .distinct("vin")
         .only(
             "vin",
+            "change",
             "electric_vehicle_flag",
             "fuel_type",
             "hybrid_vehicle_flag",
