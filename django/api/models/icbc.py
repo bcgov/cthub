@@ -73,7 +73,7 @@ class IcbcRecord(models.Model):
     class Meta:
         db_table = "icbc"
         indexes = [
-            models.Index(fields=["vin", "-create_timestamp"]),
+            models.Index(fields=["vin", "-snapshot_date"]),
         ]
 
     db_table_comment = "represents an ICBC VIN record"
