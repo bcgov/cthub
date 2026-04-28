@@ -58,15 +58,16 @@ class UploadViewset(GenericViewSet):
         #if warnings have been ignore
 
         if dataset_selected in ["ICBC Vins", "CSV Vin Decode"]:
-            file_extension = pathlib.Path(filepath).suffix
-            if file_extension == '.csv':
-                try:
-                    create_vins_file(filename, icbc=(dataset_selected == "ICBC Vins"))
-                    return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
-                except Exception as error:
-                    return Response({"success": False, "message": str(error)}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": "Restricted!"}, status=status.HTTP_403_FORBIDDEN)
+            # file_extension = pathlib.Path(filepath).suffix
+            # if file_extension == '.csv':
+            #     try:
+            #         create_vins_file(filename, icbc=(dataset_selected == "ICBC Vins"))
+            #         return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
+            #     except Exception as error:
+            #         return Response({"success": False, "message": str(error)}, status=status.HTTP_400_BAD_REQUEST)
+            # else:
+            #     return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             file_data = get_minio_object(filename).data
             config = constants.DATASET_CONFIG.get(dataset_selected)
