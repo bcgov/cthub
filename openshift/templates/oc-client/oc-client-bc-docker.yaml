@@ -38,7 +38,7 @@ objects:
           cpu: 50m
           memory: 100Mi
       source:
-        contextDir: openshift/templates/cleanup
+        contextDir: openshift/templates/oc-client
         git:
           uri: ${GIT_URL}
           ref: ${GIT_REF}
