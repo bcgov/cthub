@@ -1,0 +1,49 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: oc-client-template
+parameters:
+  - name: GIT_URL
+    displayName:
+    description: itvr repo
+    required: true
+  - name: GIT_REF
+    displayName:
+    description: itvr branch name of the pr
+    required: true
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: oc-client
+      creationTimestamp: null
+      name: oc-client
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: oc-client
+      creationTimestamp:
+    spec:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: oc-client:prod
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+      source:
+        contextDir: openshift/templates/cleanup
+        git:
+          uri: ${GIT_URL}
+          ref: ${GIT_REF}
+        type: Git
+      strategy:
+        type: Docker
+        dockerStrategy:
+          dockerfilePath: Dockerfile
