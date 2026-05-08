@@ -15,7 +15,7 @@ def prepare_arc_project_tracking(df):
 
 
 def prepare_hydrogen_fleets(df):
-    df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df.map(lambda s: s.upper() if type(s) == str else s)
     df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
     return df
 
@@ -61,7 +61,7 @@ def prepare_ldv_rebates(df):
 
 def prepare_public_charging(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
 
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
 
@@ -73,14 +73,14 @@ def prepare_public_charging(df):
 
 def prepare_scrap_it(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
 
     return df
 
 def prepare_go_electric_rebates(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
 
     non_num_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
     df[non_num_columns] = df[non_num_columns].fillna("")
@@ -103,14 +103,14 @@ def prepare_go_electric_rebates(df):
 
 def prepare_ldv_data(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
     make_names_consistent(df)
     make_prepositions_consistent(df)
 
     return df
 
 def prepare_cvp_data(df):
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
 
     return df
@@ -193,7 +193,7 @@ def make_prepositions_consistent(df):
             regex=True
         )
 
-        df[columns_to_process] = df[columns_to_process].applymap(
+        df[columns_to_process] = df[columns_to_process].map(
             lambda x: x[0].upper() + x[1:] if isinstance(x, str) and len(x) > 1 else x.upper() if isinstance(x, str) and len(x) == 1 else x
         )
 

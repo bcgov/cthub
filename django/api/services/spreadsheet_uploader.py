@@ -28,12 +28,13 @@ def get_nullable_fields(model):
 
 def trim_all_columns(df):
     trim_strings = lambda x: x.strip() if isinstance(x, str) else x
-    return df.applymap(trim_strings)
+    return df.map(trim_strings)
 
 
 def extract_data(excel_file, sheet_name, header_row):
     try:
-        df = pd.read_excel(excel_file, sheet_name, header=header_row)
+        file_wrapper = io.BytesIO(excel_file)
+        df = pd.read_excel(file_wrapper, sheet_name, header=header_row)
         df = trim_all_columns(df)
         return df
     except Exception as e:
