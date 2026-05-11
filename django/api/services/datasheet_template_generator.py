@@ -41,6 +41,7 @@ def generate_template(dataset_name):
             "Hydrogen Fueling": "Station_Tracking",
             "Hydrogen Fleets": "Fleets",
             "Scrap It": "TOP OTHER TRANSACTIONS",
+            "LDV Data": "SP-Complete sheet",
         }
         custom_start_rows = {
             "Public Charging": 2,
