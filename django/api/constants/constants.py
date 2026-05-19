@@ -12,15 +12,19 @@ from api.models.public_charging import PublicCharging
 from api.models.scrap_it import ScrapIt
 from api.models.go_electric_rebates import GoElectricRebates
 from api.models.cvp_data import CVPData
+from api.models.ldv_data import LdvData
 from api.services.spreadsheet_uploader_prep import (
     prepare_arc_project_tracking,
     prepare_hydrogen_fleets,
     prepare_hydrogen_fueling,
+    prepare_ldv_data,
     prepare_ldv_rebates,
     prepare_public_charging,
     prepare_scrap_it,
     prepare_go_electric_rebates,
     prepare_cvp_data,
+    warn_if_empty_columns,
+    validate_unique_columns,
     validate_phone_numbers,
     typo_checker,
     location_checker,
@@ -30,7 +34,7 @@ from api.services.spreadsheet_uploader_prep import (
     format_postal_codes
 )
 from api.services.resolvers import get_google_resolver
-from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES, LOCALITY_FEATURES_MAP, CVP_DATA_VALID_FIELD_VALUES
+from api.constants.misc import GER_VALID_FIELD_VALUES, ARC_VALID_FIELD_VALUES, LOCALITY_FEATURES_MAP, CVP_DATA_VALID_FIELD_VALUES, LDV_DATA_VALID_FIELD_VALUES
 
 
 from enum import Enum
@@ -522,6 +526,69 @@ class CVPDataColumnMapping(Enum):
     notes = "Notes"
     imhzev = "iMHZEV"
 
+from enum import Enum
+
+class LDVDataColumns(Enum):
+    LDV_ID = "LDV_ID"
+    APPLICANT_TYPE = "ApplicantType"
+    APPLICATION_ID = "ApplicationID"
+    DEALERSHIP_NAME = "DealershipName"
+    DATE_SUBMITTED = "DateSubmitted"
+    PAYMENT_DT = "PaymentDT"
+    BC_DRIVERS_LICENSE_NO = "BC_DriverLicenseNo"
+    BC_INC_NO = "BC_IncNo"
+    ELIGIBLE_REBATE_AMT = "EligibleRebateAmt"
+    SALE_TYPE = "SaleType"
+    VIN = "VIN"
+    YEAR = "Year"
+    MANUFACTURER = "Manufacturer"
+    MODEL = "Model"
+    TRIM = "Trim"
+    VEHICLE_TYPE = "VehicleType"
+    VEHICLE_CLASS = "Class"
+    MSRP = "MSRP"
+    ELECTRIC_RANGE = "ElectricRange"
+    VIN_TOKEN = "VIN_Token"
+    CITY = "City"
+    POSTAL_CODE = "PostalCode"
+    BUSINESS_CORP_NAME = "BusinessCorpName"
+    CAR_SHARE_NAME = "CarShareName"
+    NON_PROFIT_NAME = "NonProfitName"
+    MUNICIPALITY_NAME = "MunicipalityName"
+    DATE_OF_DELIVERY = "DateOfDelivery"
+    LEASE_TERM = "LeaseTerm"
+
+
+class LDVDataColumnMapping(Enum):
+    ldv_id = "LDV_ID"
+    applicant_type = "ApplicantType"
+    application_id = "ApplicationID"
+    dealership_name = "DealershipName"
+    date_submitted = "DateSubmitted"
+    payment_dt = "PaymentDT"
+    bc_drivers_license_no = "BC_DriverLicenseNo"
+    bc_inc_no = "BC_IncNo"
+    eligible_rebate_amt = "EligibleRebateAmt"
+    sale_type = "SaleType"
+    vin = "VIN"
+    year = "Year"
+    manufacturer = "Manufacturer"
+    model = "Model"
+    trim = "Trim"
+    vehicle_type = "VehicleType"
+    vehicle_class = "Class"
+    msrp = "MSRP"
+    electric_range = "ElectricRange"
+    vin_token = "VIN_Token"
+    city = "City"
+    postal_code = "PostalCode"
+    business_corp_name = "BusinessCorpName"
+    car_share_name = "CarShareName"
+    non_profit_name = "NonProfitName"
+    municipality_name = "MunicipalityName"
+    date_of_delivery = "DateOfDelivery"
+    lease_term = "LeaseTerm"
+
 
 FIELD_TYPES = {
     "ARC Project Tracking": {
@@ -753,7 +820,36 @@ FIELD_TYPES = {
         "notes": str,
         "imhzev": str,
     },
-
+    "LDV Data": {
+        "ldv_id": int,
+        "applicant_type": str,
+        "application_id": str,
+        "dealership_name": str,
+        "date_submitted": datetime.date,
+        "payment_dt": datetime.date,
+        "bc_drivers_license_no": str,
+        "bc_inc_no": str,
+        "eligible_rebate_amt": int,
+        "sale_type": str,
+        "vin": str,
+        "year": int,
+        "manufacturer": str,
+        "model": str,
+        "trim": str,
+        "vehicle_type": str,
+        "vehicle_class": str,
+        "msrp": int,
+        "electric_range": int,
+        "vin_token": str,
+        "city": str,
+        "postal_code": str,
+        "business_corp_name": str,
+        "car_share_name": str,
+        "non_profit_name": str,
+        "municipality_name": str,
+        "date_of_delivery": datetime.date,
+        "lease_term": str,
+    }
 
 }
 
@@ -830,7 +926,7 @@ DATASET_CONFIG = {
             {"function": location_checker, "columns": ["City"], "kwargs": {"columns_to_features_map": {"City": LOCALITY_FEATURES_MAP}, "indices_offset":2}},
             {"function": email_validator, "columns": ["Email"], "kwargs": {"indices_offset":2, "get_resolver": get_google_resolver}},
             {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": GER_VALID_FIELD_VALUES}},
-            {"function": format_postal_codes, "columns": ["Postal code"], "kwargs": {"indices_offset":2, "validate": True}}
+            {"function": format_postal_codes, "columns": ["Postal code"], "kwargs": {"indices_offset":2, "validate": True, "allow_empty": True}}
         ]
     },
     "CVP Data": {
@@ -840,6 +936,20 @@ DATASET_CONFIG = {
         "sheet_name": "Data",
         "preparation_functions": [prepare_cvp_data],
         "validation_functions": [{"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": CVP_DATA_VALID_FIELD_VALUES, "delimiter": ","}},]
+    },
+    "LDV Data": {
+        "model": LdvData,
+        "columns": LDVDataColumns,
+        "column_mapping": LDVDataColumnMapping,
+        "sheet_name": "SP-Complete sheet",
+        "preparation_functions": [prepare_ldv_data],
+        "validation_functions": [
+            {"function": validate_field_values, "columns": [], "kwargs": {"indices_offset":2, "fields_and_values": LDV_DATA_VALID_FIELD_VALUES, "delimiter": ","}},
+            {"function": format_postal_codes, "columns": ["PostalCode"], "kwargs": {"indices_offset":2, "validate": True}},
+            {"function": warn_if_empty_columns, "columns": ["VIN", "VIN_Token"], "kwargs": {"indices_offset":2}},
+            {"function": validate_unique_columns, "columns": ["ApplicationID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"ApplicationID": "application_id"}}},
+            {"function": validate_unique_columns, "columns": ["LDV_ID"], "kwargs": {"indices_offset":2, "model": LdvData, "field_name_map": {"LDV_ID": "ldv_id"}}},
+        ]
     },
 
 }

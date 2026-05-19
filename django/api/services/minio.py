@@ -27,11 +27,11 @@ def minio_get_object(object_name):
     )
 
 
-def get_minio_object(object_name):
+def get_minio_object(object_name, offset=0):
     try:
         client = get_minio_client()
         refined_object_name = get_refined_object_name(object_name)
-        return client.get_object(settings.MINIO_BUCKET_NAME, refined_object_name)
+        return client.get_object(settings.MINIO_BUCKET_NAME, refined_object_name, offset)
     except:
         raise
 

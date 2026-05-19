@@ -1,34 +1,49 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: CTHUB 0.4.0 Prod CI
+name: CTHUB 0.5.0 Prod CI
 on:
   workflow_dispatch:
 
 env:
-  VERSION: 0.4.0
-  GIT_URL: https://github.com/bcgov/cthub.git 
+  VERSION: 0.5.0
+  GIT_URL: https://github.com/bcgov/cthub.git
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
   PROD_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-prod
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true  
+  cancel-in-progress: true
 
 jobs:
+  set-version:
+    name: Parse version from branch
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.VERSION }}
+    steps:
+      - id: set-version
+        run: |
+          echo "VERSION=${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
+
   install-oc:
     runs-on: ubuntu-latest
+    needs: [set-version]
     outputs:
       cache-hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v6.0.2
 
       - name: Set up cache for OpenShift CLI
         id: cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
-          path: /usr/local/bin/oc  # Path where the `oc` binary will be installed
+          path: /usr/local/bin/oc # Path where the `oc` binary will be installed
           key: oc-cli-${{ runner.os }}
 
       - name: Install OpenShift CLI (if not cached)
@@ -46,13 +61,13 @@ jobs:
     name: Find Test deployment pre-release number
     runs-on: ubuntu-latest
     needs: [install-oc]
-  
+
     outputs:
       output1: ${{ steps.set-pre-release.outputs.PRE_RELEASE }}
 
     steps:
       - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
@@ -70,7 +85,6 @@ jobs:
           echo "PRE_RELEASE=$(oc -n ${{ env.TEST_NAMESPACE }} describe deployment/cthub-test-frontend | grep Image | awk -F '-' '{print $NF}')" >> $GITHUB_OUTPUT
 
   deploy:
-
     name: Deploy CTHUB on Prod
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -86,10 +100,10 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: emi-hi,kuanfandevops,tim738745,JulianForeman
           minimum-approvals: 2
-          issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} PRODUCTION Deployment"   
+          issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} PRODUCTION Deployment"
 
       - name: Restore oc command from Cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v5.0.4
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
@@ -100,7 +114,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
-          namespace: ${{ env.TEST_NAMESPACE }}          
+          namespace: ${{ env.TEST_NAMESPACE }}
 
       - name: Tag CTHUB images to Test
         run: |
@@ -108,22 +122,22 @@ jobs:
           oc tag ${{ env.TEST_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/cthub-frontend:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.TEST_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
           oc tag ${{ env.TEST_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-  
+
       - name: Checkout Manifest repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v6.0.2
         with:
           repository: bcgov-c/tenant-gitops-30b186
           ref: main
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-      
+
       - name: Update frontend tag
         uses: mikefarah/yq@v4.40.5
         with:
-            cmd: |
-              yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
-              yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
-              yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
-              yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
+          cmd: |
+            yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
+            yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
+            yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
+            yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
 
       - name: GitHub Commit & Push
         run: |
@@ -132,4 +146,21 @@ jobs:
           git add cthub/values-prod.yaml
           git commit -m "Update the image tag to ${{ env.VERSION }}-${{ env.PRE_RELEASE }} on PRODUCTION"
           git push
-      
+
+  push-to-artifactory:
+    name: Push images to Artifactory (${{ matrix.image_stream }})
+    needs: [set-version, set-pre-release, deploy]
+    strategy:
+      matrix:
+        image_stream:
+          - cthub-backend
+          - cthub-frontend
+          - cthub-task-queue
+          - cthub-vinpower
+    uses: ./.github/workflows/push-images-to-artifactory.yaml
+    with:
+      env: prod
+      app_name: cthub
+      image_stream: ${{ matrix.image_stream }}
+      image_tag: ${{ needs.set-version.outputs.version }}-${{ needs.set-pre-release.outputs.output1 }}
+    secrets: inherit

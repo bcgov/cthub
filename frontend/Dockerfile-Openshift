@@ -1,26 +1,30 @@
-# Stage 1: Use yarn to build the app
-# FROM artifacts.developer.gov.bc.ca/docker-remote/node:20 as builder
-# WORKDIR /usr/src/app
-# COPY ./ ./
-# RUN npm install -g npm@9.1.1 \
-#     && npm install --omit=dev \
-#     && npm install -D webpack webpack-cli
-# RUN yes | npm run dist
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:20.18.1 as builder
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:20-bookworm-slim AS builder
+
 WORKDIR /usr/src/app
-COPY ./ ./
-# RUN npm install -g npm@latest    doesn't work for node 16
-RUN npm install --force
-RUN pwd && \
-  ls -l && \
-  ls -l node_modules
-RUN yes | npm run build
 
-# Stage 2: Copy the JS React SPA into the Nginx HTML directory
-FROM artifacts.developer.gov.bc.ca/docker-remote/bitnami/nginx:1.24.0
-COPY ./nginx.conf /opt/bitnami/nginx/conf/
-COPY --from=builder /usr/src/app/build /app
-RUN ls -l /app
+# CRA needs devDependencies for the production build.
+# This repo's lockfile is not fully aligned with package.json, so use
+# npm install with legacy peer dependency resolution for compatibility.
+COPY package*.json ./
+RUN npm install --legacy-peer-deps --no-audit --no-fund && \
+    npm cache clean --force
+
+COPY . .
+
+# Avoid CI-mode warning escalation during the static bundle build.
+ENV CI=false
+RUN npm run build
+
+FROM artifacts.developer.gov.bc.ca/docker-remote/nginx:1.29.6
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+RUN mkdir -p /app/static/js/config
+
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD test -f /usr/share/nginx/html/index.html || exit 1
+
+ENTRYPOINT ["nginx"]
+CMD ["-g", "daemon off;"]

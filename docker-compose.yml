@@ -2,30 +2,22 @@ version: "3.9"
 
 services:
   db:
-    image: postgres
-    volumes:
-      - ./postgres:/docker-entrypoint-initdb.d
+    image: postgres:17.0
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_MULTIPLE_DATABASES=superset
+      - POSTGRES_DB=cthub
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
-  metabase:
-    image: metabase/metabase
-    ports:
-      - 3001:3000
-    env_file:
-      - metabase.env
-    depends_on:
-      db:
-        condition: service_healthy
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
   minio:
-    image: minio/minio
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     hostname: "minio"
     volumes:
       - ./minio/minio_files:/minio_files
@@ -49,14 +41,12 @@ services:
     env_file:
       - keycloak.env
       - minio.env
-      - decoder.env
     environment: 
-      - ALLOWED_HOSTS=localhost
       - CORS_ORIGIN_ALLOW_ALL=False
       - CORS_ORIGIN_WHITELIST=http://localhost:3000
       - DB_ENGINE=django.db.backends.postgresql
       - DB_HOST=db
-      - DB_NAME=postgres
+      - DB_NAME=cthub
       - DB_PASSWORD=postgres
       - DB_PORT=5432
       - DB_USER=postgres
@@ -85,7 +75,7 @@ services:
     environment:
       - DB_ENGINE=django.db.backends.postgresql
       - DB_HOST=db
-      - DB_NAME=postgres
+      - DB_NAME=cthub
       - DB_PASSWORD=postgres
       - DB_PORT=5432
       - DB_USER=postgres
@@ -111,9 +101,5 @@ services:
       - SERVER_PORT=8080
     volumes:
       - ./spring:/app
-
 volumes:
-  superset_home:
-    external: false
-  redis:
-    external: false
+  postgres-data:

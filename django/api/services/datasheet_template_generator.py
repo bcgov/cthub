@@ -13,10 +13,11 @@ def generate_template(dataset_name):
         "Data Fleets": DataFleetsColumns,
         "Hydrogen Fleets": HydrogenFleetsColumns,
         "Hydrogen Fueling": HydrogenFuelingColumns,
-        "LDV Rebates": LDVRebatesColumns,
+        "LDV Data": LDVDataColumns,
         "Public Charging": PublicChargingColumns,
         "Scrap It": ScrapItColumns,
         "Go Electric Rebates Program": GoElectricRebatesColumns,
+        "CVP Data": CVPDataColumns
     }
 
     if dataset_name not in dataset_column_enum_map:
@@ -40,6 +41,7 @@ def generate_template(dataset_name):
             "Hydrogen Fueling": "Station_Tracking",
             "Hydrogen Fleets": "Fleets",
             "Scrap It": "TOP OTHER TRANSACTIONS",
+            "LDV Data": "SP-Complete sheet",
         }
         custom_start_rows = {
             "Public Charging": 2,

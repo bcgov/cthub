@@ -15,7 +15,7 @@ def prepare_arc_project_tracking(df):
 
 
 def prepare_hydrogen_fleets(df):
-    df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df.map(lambda s: s.upper() if type(s) == str else s)
     df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
     return df
 
@@ -61,7 +61,7 @@ def prepare_ldv_rebates(df):
 
 def prepare_public_charging(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
 
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
 
@@ -73,14 +73,14 @@ def prepare_public_charging(df):
 
 def prepare_scrap_it(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
 
     return df
 
 def prepare_go_electric_rebates(df):
 
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
 
     non_num_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
     df[non_num_columns] = df[non_num_columns].fillna("")
@@ -101,8 +101,16 @@ def prepare_go_electric_rebates(df):
     adjust_ger_manufacturer_names(df)
     return df
 
+def prepare_ldv_data(df):
+
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
+    make_names_consistent(df)
+    make_prepositions_consistent(df)
+
+    return df
+
 def prepare_cvp_data(df):
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
     df = df.apply(lambda x: x.fillna(0) if x.dtype.kind in "biufc" else x.fillna(""))
 
     return df
@@ -158,29 +166,36 @@ def make_names_consistent(df):
     {', Inc.': ' Inc.',
     '(?i)\\bdba\\b': 'DBA'} # Matches word "dba" regardless of case
 )
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].replace(
-        consistent_name_dict,
-        regex=True)
+    existing_columns = {col.lower(): col for col in df.columns}
+    columns_to_process = [existing_columns[key] for key in ['applicant name', 'manufacturer'] if key in existing_columns]
+
+    if columns_to_process:
+        df[columns_to_process] = df[columns_to_process].replace(consistent_name_dict, regex=True)
 
 def make_prepositions_consistent(df):
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].replace(
-    dict.fromkeys(
-    ['(?i)\\bbc(?=\\W)', # Matches word "bc" regardless of case
-     '(?i)\\bb\\.c\\.(?=\\W)'], 'BC'), # Matches word "b.c." regardless of case
-    regex=True
-    ).replace(
-        {'BC Ltd.': 'B.C. Ltd.',
-         '\\bOf(?=\\W)': 'of',
-         '\\bAnd(?=\\W)': 'and', # Matches word "And"
-         '\\bThe(?=\\W)': 'the',
-         '\\bA(?=\\W)': 'a',
-         '\\bAn(?=\\W)': 'an'},
-        regex=True
-    )
-    ##The first letter should be capitalized
-    df[['Applicant Name', 'Manufacturer']] = df[['Applicant Name', 'Manufacturer']].applymap(
-    lambda x: x[0].upper() + x[1:] if isinstance(x, str) and len(x) > 1 else x.upper() if isinstance(x, str) and len(x) == 1 else x
-)
+    existing_columns = {col.lower(): col for col in df.columns}
+    columns_to_process = [existing_columns[key] for key in ['applicant name', 'manufacturer'] if key in existing_columns]
+
+    if columns_to_process:
+        df[columns_to_process] = df[columns_to_process].replace(
+            dict.fromkeys(
+                ['(?i)\\bbc(?=\\W)',  # Matches word "bc" regardless of case
+                 '(?i)\\bb\\.c\\.(?=\\W)'], 'BC'  # Matches word "b.c." regardless of case
+            ),
+            regex=True
+        ).replace(
+            {'BC Ltd.': 'B.C. Ltd.',
+             '\\bOf(?=\\W)': 'of',
+             '\\bAnd(?=\\W)': 'and',
+             '\\bThe(?=\\W)': 'the',
+             '\\bA(?=\\W)': 'a',
+             '\\bAn(?=\\W)': 'an'},
+            regex=True
+        )
+
+        df[columns_to_process] = df[columns_to_process].map(
+            lambda x: x[0].upper() + x[1:] if isinstance(x, str) and len(x) > 1 else x.upper() if isinstance(x, str) and len(x) == 1 else x
+        )
 
     
 def adjust_ger_manufacturer_names(df):
@@ -355,13 +370,13 @@ def email_validator(df, *columns, **kwargs):
 
 def validate_field_values(df, *columns, **kwargs):
     allowed_values = kwargs.get("fields_and_values")
-    invalid_values = []
     
     result = {}
     delimiter = kwargs.get("delimiter")
     for column in df.columns:
         if column in allowed_values:
             indices = []
+            invalid_values = []
             series = df[column]
             for index, value in series.items():
                 if value is not None and pd.notna(value):
@@ -414,6 +429,7 @@ def region_checker(df, *columns, **kwargs):
 
 def format_postal_codes(df, *columns, **kwargs):
     validate = kwargs.get('validate', False)
+    allow_empty = kwargs.get('allow_empty', False)
     indices_offset = kwargs.get("indices_offset", 0)
     
     result = {}
@@ -425,13 +441,12 @@ def format_postal_codes(df, *columns, **kwargs):
 
         for value, indices in map_of_values_to_indices.items():
             clean_value = value.replace(" ", "") if isinstance(value, str) else ""
-            
-            if len(clean_value) == 6:
+            if len(clean_value) == 6 or (allow_empty and len(clean_value) == 0):
                 formatted_value = clean_value[:3] + " " + clean_value[3:]
                 for index in indices:
                     df.at[index - indices_offset, column] = formatted_value
             elif validate:
-                if pd.isna(value) or value == "":
+                if (pd.isna(value) or value == "") and not allow_empty:
                     value = "Empty"
                 invalid_groups.append({
                     "invalid_postal_code": value,
@@ -448,3 +463,88 @@ def format_postal_codes(df, *columns, **kwargs):
             }
     
     return result if validate else None
+
+
+def warn_if_empty_columns(df, *columns, **kwargs):
+    """
+    Returns warnings (not errors) when specified columns contain empty / null values.
+    """
+    indices_offset = kwargs.get("indices_offset", 0)
+    result = {}
+
+    for column in columns:
+        indices = [
+            index + indices_offset
+            for index, value in df[column].items()
+            if pd.isna(value) or value == "" or value is None
+        ]
+        if indices:
+            result[column] = {
+                "empty_value": {
+                    "expected_type": "Value is recommended but not required",
+                    "Rows": indices,
+                    "Groups": [{"Rows": indices}],
+                    "Severity": "Warning",
+                }
+            }
+
+    return result if result else None
+
+
+def validate_unique_columns(df, *columns, **kwargs):
+    """
+    Reports duplicate values in given columns. Can also check against existing DB rows
+    when provided a model and field_name_map.
+    """
+    indices_offset = kwargs.get("indices_offset", 0)
+    model = kwargs.get("model")
+    field_name_map = kwargs.get("field_name_map", {})
+
+    result = {}
+
+    for column in columns:
+        # Normalize values to trimmed strings so comparisons match DB char fields
+        normalized_series = df[column].apply(
+            lambda v: None if (pd.isna(v) or v == "") else str(v).strip()
+        )
+        value_to_indices = get_map_of_values_to_indices(normalized_series, indices_offset)
+
+        # Duplicates within the uploaded file
+        duplicate_indices = []
+        for value, indices in value_to_indices.items():
+            if value is None or (isinstance(value, float) and pd.isna(value)) or value == "":
+                continue
+            if len(indices) > 1:
+                duplicate_indices.extend(indices)
+
+        if duplicate_indices:
+            result.setdefault(column, {})
+            result[column]["duplicate_values"] = {
+                "expected_type": "Values must be unique within the uploaded file",
+                "Rows": sorted(duplicate_indices),
+                "Severity": "Error",
+            }
+
+        if model is not None:
+            field_name = field_name_map.get(column, column)
+            candidate_values = [
+                value for value in value_to_indices.keys()
+                if value is not None and value != ""
+            ]
+            if candidate_values:
+                existing_values = set(
+                    model.objects.filter(**{f"{field_name}__in": candidate_values})
+                    .values_list(field_name, flat=True)
+                )
+                if existing_values:
+                    db_conflict_indices = []
+                    for value in existing_values:
+                        db_conflict_indices.extend(value_to_indices.get(value, []))
+                    result.setdefault(column, {})
+                    result[column]["duplicate_in_database"] = {
+                        "expected_type": "Value already exists in the database; must be unique",
+                        "Rows": sorted(db_conflict_indices),
+                        "Severity": "Error",
+                    }
+
+    return result if result else None

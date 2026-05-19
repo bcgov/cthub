@@ -1,19 +1,16 @@
-import urllib.request
-import os
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse
 import pathlib
 from django.http import HttpResponse
-from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
 from api.decorators.permission import check_upload_permission
 from api.models.datasets import Datasets
 from api.serializers.datasets import DatasetsSerializer
-from api.services.minio import generate_presigned_url, minio_get_object, minio_remove_object
+from api.services.minio import generate_presigned_url, get_minio_object, minio_remove_object
 from api.services.datasheet_template_generator import generate_template
 from api.services.spreadsheet_uploader import import_from_xls
 import api.constants.constants as constants
@@ -45,6 +42,7 @@ class UploadViewset(GenericViewSet):
         serializer = DatasetsSerializer(datasets, many=True, read_only=True)
         serializer_data = serializer.data
         serializer_data.append({"id": -1, "name": "ICBC Vins"})
+        serializer_data.append({"id": -2, "name": "CSV Vin Decode"})
         return Response(serializer_data)
 
     @action(detail=False, methods=["post"])
@@ -59,20 +57,19 @@ class UploadViewset(GenericViewSet):
         #after displaying warnings, code can be rerun with show_warnings = false
         #if warnings have been ignore
 
-        if dataset_selected == "ICBC Vins":
-            file_extension = pathlib.Path(filepath).suffix
-            if file_extension == '.csv':
-                try:
-                    create_vins_file(filename)
-                    return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
-                except Exception as error:
-                    return Response({"success": False, "message": str(error)})
-            else:
-                return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
+        if dataset_selected in ["ICBC Vins", "CSV Vin Decode"]:
+            return Response({"success": False, "message": "Restricted!"}, status=status.HTTP_403_FORBIDDEN)
+            # file_extension = pathlib.Path(filepath).suffix
+            # if file_extension == '.csv':
+            #     try:
+            #         create_vins_file(filename, icbc=(dataset_selected == "ICBC Vins"))
+            #         return Response({"success": True, "message": "File successfully uploaded!"}, status=status.HTTP_200_OK)
+            #     except Exception as error:
+            #         return Response({"success": False, "message": str(error)}, status=status.HTTP_400_BAD_REQUEST)
+            # else:
+            #     return Response({"success": False, "message": "File must be a csv."}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            url = minio_get_object(filename)
-            urllib.request.urlretrieve(url, filename)
-
+            file_data = get_minio_object(filename).data
             config = constants.DATASET_CONFIG.get(dataset_selected)
             if not config:
                 return Response(
@@ -90,7 +87,7 @@ class UploadViewset(GenericViewSet):
             header_row = config.get("header_row", 0)
 
             result = import_from_xls(
-                excel_file=filename,
+                excel_file=file_data,
                 sheet_name=sheet_name,
                 model=model,
                 header_row=header_row,
@@ -115,7 +112,6 @@ class UploadViewset(GenericViewSet):
             )
 
         finally:
-            os.remove(filename)
             minio_remove_object(filename)
 
     @action(detail=False, methods=["get"])

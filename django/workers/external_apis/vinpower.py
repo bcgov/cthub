@@ -24,7 +24,8 @@ def batch_decode(uploaded_vin_records):
             atts = dict["VINPOWER"]["VIN"]["DECODED"]["ITEM"]
             decoded_data = {}
             for att in atts:
-                decoded_data[att["@name"]] = att["@value"]
+                att_name = att["@name"].replace(" ", "_").lower()
+                decoded_data[att_name] = att["@value"]
             successful_records[vin] = decoded_data
         else:
             failed_vins.add(vin)

@@ -7,14 +7,14 @@ def trim_all_columns(df):
     Trim whitespace from ends of each value across all series in dataframe
     """
     trim_strings = lambda x: x.strip() if isinstance(x, str) else x
-    return df.applymap(trim_strings)
+    return df.map(trim_strings)
 
 
 def import_from_xls(excel_file):
     row_count = 1
     df = pd.read_excel(excel_file, "Raw Data")
     df = trim_all_columns(df)
-    df = df.applymap(lambda s: s.upper() if type(s) == str else s)
+    df = df.map(lambda s: s.upper() if type(s) == str else s)
     df["CASL Consent"].replace(to_replace=["YES", "Y"], value=True, inplace=True)
     df["CASL Consent"].replace(to_replace=["NO", "N"], value=False, inplace=True)
     df["Delivered"].replace(to_replace=["YES", "Y"], value=True, inplace=True)

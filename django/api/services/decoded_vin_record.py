@@ -5,20 +5,14 @@ from api.services.uploaded_vin_record import (
     get_number_of_decode_attempts,
     set_number_of_decode_attempts,
 )
-from django.db import transaction
-from django.utils import timezone
 
 
-@transaction.atomic
 def save_decoded_data(
     uploaded_vin_records,
-    vins_to_insert,
-    vins_to_decoded_record_ids_map,
     service_name,
     decoded_data,
 ):
     decoded_records_to_insert = []
-    decoded_records_to_update = []
     successful_records = decoded_data["successful_records"]
     failed_vins = decoded_data["failed_vins"]
 
@@ -30,17 +24,9 @@ def save_decoded_data(
             if vin in successful_records:
                 decoded_datum = successful_records.get(vin)
                 set_decode_successful(service_name, uploaded_record, True)
-                if vin in vins_to_insert:
-                    decoded_records_to_insert.append(
-                        decoded_vin_model(vin=vin, data=decoded_datum)
-                    )
-                elif vin in vins_to_decoded_record_ids_map:
-                    decoded_record_to_update = decoded_vin_model(
-                        id=vins_to_decoded_record_ids_map[vin],
-                        update_timestamp=timezone.now(),
-                        data=decoded_datum,
-                    )
-                    decoded_records_to_update.append(decoded_record_to_update)
+                decoded_records_to_insert.append(
+                    decoded_vin_model(vin=vin, data=decoded_datum)
+                )
             elif vin in failed_vins:
                 set_decode_successful(service_name, uploaded_record, False)
 
@@ -50,26 +36,38 @@ def save_decoded_data(
                 get_number_of_decode_attempts(service_name, uploaded_record) + 1,
             )
 
-        decoded_vin_model.objects.bulk_update(
-            decoded_records_to_update, ["update_timestamp", "data"]
+        decoded_vin_model.objects.bulk_create(
+            decoded_records_to_insert, ignore_conflicts=True
         )
-        decoded_vin_model.objects.bulk_create(decoded_records_to_insert)
         UploadedVinRecord.objects.bulk_update(
             uploaded_vin_records,
             [
                 "update_timestamp",
-                service.CURRENT_DECODE_SUCCESSFUL.value,
-                service.NUMBER_OF_CURRENT_DECODE_ATTEMPTS.value,
+                service.DECODE_SUCCESSFUL.value,
+                service.NUMBER_OF_DECODE_ATTEMPTS.value,
             ],
         )
 
 
-def get_decoded_vins(service_name, vins):
+def get_vinpower_decoded_ev_vins(vins):
     result = {}
-    service = get_service(service_name)
-    if service:
-        decoded_records_model = service.MODEL.value
-        records = decoded_records_model.objects.filter(vin__in=vins)
-        for record in records:
-            result[record.vin] = record.data
+    service = get_service("vinpower")
+    decoded_records_model = service.MODEL.value
+    records = decoded_records_model.objects.filter(vin__in=vins).values(
+        "vin", "data__fuel_type", "data__make", "data__model", "data__model_year"
+    )
+    for record in records:
+        fuel_type = record.get("data__fuel_type")
+        if fuel_type and (
+            fuel_type == "Electric"
+            or fuel_type == "Fuel Cell"
+            or fuel_type == "Electric/Gasoline"
+            or fuel_type == "Hydrogen"
+            or fuel_type == "Diesel/Electric"
+        ):
+            result[record.get("vin")] = {
+                "make": record.get("data__make"),
+                "model": record.get("data__model"),
+                "model_year": record.get("data__model_year"),
+            }
     return result

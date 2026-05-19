@@ -70,7 +70,7 @@ const UploadPage = (props) => {
           >
             {selectionList}
           </Select>
-          {datasetSelected && (
+          {datasetSelected && !['ICBC Vins', 'CSV Vin Decode'].includes(datasetSelected) && (
             <Button
               className="button-dark-blue button-lowercase"
               type="button"
