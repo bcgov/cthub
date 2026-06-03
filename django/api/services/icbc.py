@@ -32,6 +32,7 @@ def get_icbc_ev_records(vins):
             "make",
             "model",
             "model_year",
+            "vehicle_registration_date",
         )
     )
     for record in records:
@@ -50,6 +51,7 @@ def get_icbc_ev_records(vins):
                 "make": record.make,
                 "model": record.model,
                 "model_year": record.model_year,
+                "registration_date": record.vehicle_registration_date.strftime('%Y-%m-%d') if record.vehicle_registration_date else None
             }
     return result
 
