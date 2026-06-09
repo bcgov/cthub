@@ -1,5 +1,5 @@
 import traceback
-from datetime import datetime
+import pandas as pd
 from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
 from api.models.icbc import IcbcRecord
@@ -160,9 +160,7 @@ def get_first_snapshot_date(file_response, headers):
         record = get_record(file_response, headers)
         data = record[2]
         try:
-            first_snapshot_date = datetime.strptime(
-                data["snapshot_date"], ICBC_FILE.TS_FORMAT.value
-            ).date()
+            first_snapshot_date = pd.to_datetime(data["snapshot_date"], errors="raise").date()
         except:
             pass
     return first_snapshot_date
