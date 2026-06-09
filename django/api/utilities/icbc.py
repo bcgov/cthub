@@ -1,7 +1,6 @@
 from api.constants.decoder import ICBC_FILE
 import pandas as pd
 import numpy as np
-from datetime import datetime
 import math
 
 
@@ -101,39 +100,29 @@ def get_modified(icbc_records, file_records):
 # each value in the icbc_data dict must be a non-empty string, a number, a date, or None;
 # each value in the file_data dict must be a string
 def records_differ(icbc_data, file_data):
-    for key, value in file_data.items():
-        if (
-            key == "snapshot_date"
-            or key == "vin"
-            or key == "change"
-            or key == "change_date"
-        ):
+    keys_to_use = set(icbc_data).intersection(set(file_data))
+    for key in keys_to_use:
+        if key == "snapshot_date":
             continue
-        if key in icbc_data:
-            icbc_value = icbc_data[key]
-            if icbc_value is None:
-                if value == "" or value in ICBC_FILE.NA_VALUES.value:
-                    continue
-                else:
-                    return True
-            # from this point forward, icbc_value may not be None
-            if key in ICBC_FILE.NUMERIC_COLUMNS.value:
-                try:
-                    if int(value) != icbc_value:
-                        return True
-                except:
-                    return True
-            elif key in ICBC_FILE.DATE_COLUMNS.value:
-                try:
-                    if (
-                        icbc_value
-                        != datetime.strptime(value, ICBC_FILE.TS_FORMAT.value).date()
-                    ):
-                        return True
-                except:
-                    return True
-            elif value.strip().upper() != icbc_value.strip().upper():
+        icbc_value = icbc_data[key]
+        file_value = file_data[key]
+        if icbc_value is None and (file_value == "" or file_value in ICBC_FILE.NA_VALUES.value):
+            continue
+        if icbc_value is None and file_value != "" and file_value not in ICBC_FILE.NA_VALUES.value:
+            return True
+        if icbc_value is not None and (file_value == "" or file_value in ICBC_FILE.NA_VALUES.value):
+            return True
+        # from this point forward, icbc_value and file_value are both not "empty"
+        if key in ICBC_FILE.NUMERIC_COLUMNS.value:
+            integer = pd.to_numeric(file_value, errors="coerce", downcast="integer")
+            if integer != icbc_value:
                 return True
+        elif key in ICBC_FILE.DATE_COLUMNS.value:
+            date = pd.to_datetime(file_value, errors="coerce").date()
+            if date != icbc_value:
+                return True
+        elif file_value.strip().upper() != icbc_value.strip().upper():
+            return True
     return False
 
 
