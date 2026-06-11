@@ -209,7 +209,7 @@ def save_lookup_vins_and_duplicates(file_response, headers):
 # returns (last encountered vin, end of table reached)
 def save_removed(last_encountered_vin, first_snapshot_date):
     last_encountered_vin_to_use = last_encountered_vin
-    filter = {}
+    filter = { "vin__isnull": False }
     if last_encountered_vin_to_use is not None:
         filter["vin__gt"] = last_encountered_vin_to_use
     icbc_records = list(
