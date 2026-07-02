@@ -11,7 +11,14 @@ def get_record(file_response, headers):
     bytes_read = len(line)
     if bytes_read == 0:
         return ()
-    decoded_line = line.decode("utf-8")
+    decoded_lines = [line.decode("utf-8")]
+    number_of_quotes = decoded_lines[0].count('"')
+    while number_of_quotes % 2 != 0:
+        next_line = file_response.readline()
+        bytes_read = bytes_read + len(next_line)
+        decoded_lines.append(next_line.decode("utf-8"))
+        number_of_quotes = number_of_quotes + decoded_lines[-1].count('"')
+    decoded_line = "".join(decoded_lines)
     record = [item.strip() for item in decoded_line.split(ICBC_FILE.DELIMITER.value)]
     vin_index = headers.index("vin")
     vin = record[vin_index]
