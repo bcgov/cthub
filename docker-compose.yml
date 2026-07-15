@@ -82,6 +82,7 @@ services:
       - DJANGO_DEBUG=True
     volumes:
       - ./django:/api
+      - files_for_processing:/files_for_processing
     depends_on:
       api:
         condition: service_healthy
@@ -103,3 +104,4 @@ services:
       - ./spring:/app
 volumes:
   postgres-data:
+  files_for_processing:

@@ -29,6 +29,7 @@ def get_service(service_name):
             return service
     return None
 
+FILE_PROCESSING_DIRECTORY = "/files_for_processing"
 
 class ICBC_FILE(Enum):
     CHUNKS_PER_ITERATION = 50
