@@ -4,18 +4,16 @@ import numpy as np
 import math
 
 
-# returns (vin (possibly an empty string), bytes_read, data (a dict of strings to strings));
+# returns (vin (possibly an empty string), data (a dict of strings to strings));
 # returns an empty tuple if end of file reached
 def get_record(file_response, headers):
     line = file_response.readline()
-    bytes_read = len(line)
-    if bytes_read == 0:
+    if not line:
         return ()
     decoded_lines = [line.decode("utf-8")]
     number_of_quotes = decoded_lines[0].count('"')
     while number_of_quotes % 2 != 0:
         next_line = file_response.readline()
-        bytes_read = bytes_read + len(next_line)
         decoded_lines.append(next_line.decode("utf-8"))
         number_of_quotes = number_of_quotes + decoded_lines[-1].count('"')
     decoded_line = "".join(decoded_lines)
@@ -26,7 +24,7 @@ def get_record(file_response, headers):
         vin = ""
     vin = vin.upper()
     record[vin_index] = vin
-    return (vin, bytes_read, dict(zip(headers, record)))
+    return (vin, dict(zip(headers, record)))
 
 
 # vins_and_data is a list of tuples (vin, dict)

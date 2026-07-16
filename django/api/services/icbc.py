@@ -12,7 +12,7 @@ from api.utilities.icbc import (
     get_created,
     get_modified,
 )
-from api.constants.decoder import ICBC_FILE
+from api.constants.decoder import ICBC_FILE, FILE_PROCESSING_DIRECTORY
 from django.db import connection
 from django.utils import timezone
 
@@ -60,10 +60,12 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
     statuses = UploadedVinsFile.FileStatus
     status = uploaded_vins_file.status
     headers = uploaded_vins_file.headers
-    bytes_read = 0
 
     try:
         if status == statuses.NEW:
+            write_to_disk(file_response, uploaded_vins_file.filename)
+            uploaded_vins_file.status = statuses.SUCCESS_WRITING_FILE_TO_DISK
+        elif status == statuses.SUCCESS_WRITING_FILE_TO_DISK:
             uploaded_vins_file.first_snapshot_date = get_first_snapshot_date(
                 file_response, headers
             )
@@ -74,9 +76,7 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
         ):
             end_of_file = False
             for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION.value):
-                result = save_lookup_vins_and_duplicates(file_response, headers)
-                bytes_read = bytes_read + result[0]
-                end_of_file = result[1]
+                end_of_file = save_lookup_vins_and_duplicates(file_response, headers)
                 if end_of_file:
                     break
             if end_of_file:
@@ -85,9 +85,7 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
                     statuses.SUCCESS_SAVING_DUPLICATES_AND_LOOKUPS
                 )
             else:
-                uploaded_vins_file.byte_offset = (
-                    uploaded_vins_file.byte_offset + bytes_read
-                )
+                uploaded_vins_file.byte_offset = file_response.tell()
                 uploaded_vins_file.status = statuses.SAVING_DUPLICATES_AND_LOOKUPS
         elif (
             status == statuses.SUCCESS_SAVING_DUPLICATES_AND_LOOKUPS
@@ -114,12 +112,10 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
         ):
             end_of_file = False
             for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION.value):
-                result = save_created_and_modified(file_response, headers)
-                bytes_read = bytes_read + result[0]
-                end_of_file = result[1]
+                end_of_file = save_created_and_modified(file_response, headers)
                 if end_of_file:
                     break
-            uploaded_vins_file.byte_offset = uploaded_vins_file.byte_offset + bytes_read
+            uploaded_vins_file.byte_offset = file_response.tell()
             if end_of_file:
                 uploaded_vins_file.status = statuses.SUCCESS
             else:
@@ -129,6 +125,8 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
     except:
         traceback.print_exc()
         if status == statuses.NEW:
+            error_status = statuses.ERROR_WRITING_FILE_TO_DISK
+        elif status == statuses.SUCCESS_WRITING_FILE_TO_DISK:
             error_status = statuses.ERROR_SAVING_FIRST_SNAPSHOT_DATE
         elif (
             status == statuses.SUCCESS_SAVING_FIRST_SNAPSHOT_DATE
@@ -153,12 +151,19 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
     uploaded_vins_file.save()
 
 
+def write_to_disk(file_response, file_name):
+    file_path = f"{FILE_PROCESSING_DIRECTORY}/{file_name}"
+    with open(file_path, "wb") as f:
+        for chunk in file_response.stream():
+            f.write(chunk)
+
+
 # returns first snapshot date
 def get_first_snapshot_date(file_response, headers):
     first_snapshot_date = None
     while first_snapshot_date is None:
         record = get_record(file_response, headers)
-        data = record[2]
+        data = record[1]
         try:
             first_snapshot_date = pd.to_datetime(data["snapshot_date"], errors="raise").date()
         except:
@@ -166,7 +171,7 @@ def get_first_snapshot_date(file_response, headers):
     return first_snapshot_date
 
 
-# returns (bytes read, eof reached)
+# returns eof reached
 def save_lookup_vins_and_duplicates(file_response, headers):
     def save_dups(dup_vins):
         records = []
@@ -185,7 +190,6 @@ def save_lookup_vins_and_duplicates(file_response, headers):
             records.append(IcbcVinLookup(vin=vin))
         IcbcVinLookup.objects.bulk_create(records, ignore_conflicts=True)
 
-    bytes_read = 0
     seen_vins = set()
     dup_vins = set()
     end_of_file = False
@@ -194,7 +198,6 @@ def save_lookup_vins_and_duplicates(file_response, headers):
         if not record:
             end_of_file = True
             break
-        bytes_read = bytes_read + record[1]
         vin = record[0]
         if vin:
             if vin in seen_vins:
@@ -203,7 +206,7 @@ def save_lookup_vins_and_duplicates(file_response, headers):
     if dup_vins:
         save_dups(dup_vins)
     save(seen_vins)
-    return (bytes_read, end_of_file)
+    return end_of_file
 
 
 # returns (last encountered vin, end of table reached)
@@ -254,7 +257,7 @@ def truncate_vin_lookups():
         cursor.execute("TRUNCATE TABLE icbc_vin_lookup RESTART IDENTITY")
 
 
-# returns (bytes read, eof reached)
+# returns eof reached
 def save_created_and_modified(file_response, headers):
     def save(vins_and_data):
         vins, _ = zip(*vins_and_data)
@@ -290,7 +293,6 @@ def save_created_and_modified(file_response, headers):
             uploaded_vin_records_to_create, ignore_conflicts=True
         )
 
-    bytes_read = 0
     vins_and_data = []
     end_of_file = False
     for _ in range(ICBC_FILE.CHUNK_SIZE.value):
@@ -298,10 +300,9 @@ def save_created_and_modified(file_response, headers):
         if not record:
             end_of_file = True
             break
-        bytes_read = bytes_read + record[1]
         vin = record[0]
-        data = record[2]
+        data = record[1]
         vins_and_data.append((vin, data))
     if vins_and_data:
         save(vins_and_data)
-    return (bytes_read, end_of_file)
+    return end_of_file
