@@ -32,7 +32,7 @@ def get_service(service_name):
 FILE_PROCESSING_DIRECTORY = "/files_for_processing"
 
 class ICBC_FILE(Enum):
-    CHUNKS_PER_ITERATION = 50
+    CHUNKS_PER_ITERATION = 100
     CHUNK_SIZE = 5000
     DELIMITER = "|"
     NA_VALUES = ["NIL", "Unknown", "unknown", "UNKNOWN"]
