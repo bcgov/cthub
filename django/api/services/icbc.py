@@ -111,7 +111,7 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
             or status == statuses.TRACKING_CREATED_AND_MODIFIED_RECORDS
         ):
             end_of_file = False
-            for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION_STRINGENT.value):
+            for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION.value):
                 end_of_file = save_created_and_modified(file_response, headers)
                 if end_of_file:
                     break
@@ -267,8 +267,9 @@ def save_created_and_modified(file_response, headers):
         untracked_df, tracked_records = get_untracked_and_tracked_records(
             vins_and_data, duplicates
         )
+        tracked_vins = list(tracked_records.keys())
         icbc = (
-            IcbcRecord.objects.filter(vin__in=tracked_records.keys())
+            IcbcRecord.objects.filter(vin__in=tracked_vins)
             .order_by("vin", "-change_date")
             .distinct("vin")
             .values()
@@ -305,8 +306,6 @@ def save_created_and_modified(file_response, headers):
         vins_and_data.append((vin, data))
     if vins_and_data:
         print("read 5000 records from file")
-        connection.queries_log.clear()
         save(vins_and_data)
-        print(connection.queries)
         print("processed 5000 records")
     return end_of_file
