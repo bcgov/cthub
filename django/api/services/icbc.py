@@ -21,7 +21,7 @@ def get_icbc_ev_records(vins):
     result = {}
     records = (
         IcbcRecord.objects.filter(vin__in=vins)
-        .order_by("vin", "-snapshot_date")
+        .order_by("vin", "-change_date")
         .distinct("vin")
         .only(
             "vin",
@@ -217,7 +217,7 @@ def save_removed(last_encountered_vin, first_snapshot_date):
         filter["vin__gt"] = last_encountered_vin_to_use
     icbc_records = list(
         IcbcRecord.objects.filter(**filter)
-        .order_by("vin", "-snapshot_date")
+        .order_by("vin", "-change_date")
         .distinct("vin")[: ICBC_FILE.CHUNK_SIZE.value]
     )
     if len(icbc_records) == 0:
@@ -269,7 +269,7 @@ def save_created_and_modified(file_response, headers):
         )
         icbc = (
             IcbcRecord.objects.filter(vin__in=tracked_records.keys())
-            .order_by("vin", "-snapshot_date")
+            .order_by("vin", "-change_date")
             .distinct("vin")
             .values()
         )
