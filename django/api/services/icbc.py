@@ -304,5 +304,9 @@ def save_created_and_modified(file_response, headers):
         data = record[1]
         vins_and_data.append((vin, data))
     if vins_and_data:
+        print("read 5000 records from file")
+        connection.queries_log.clear()
         save(vins_and_data)
+        print(connection.queries)
+        print("processed 5000 records")
     return end_of_file
