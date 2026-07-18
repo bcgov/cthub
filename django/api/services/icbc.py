@@ -111,7 +111,7 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
             or status == statuses.TRACKING_CREATED_AND_MODIFIED_RECORDS
         ):
             end_of_file = False
-            for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION.value):
+            for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION_STRINGENT.value):
                 end_of_file = save_created_and_modified(file_response, headers)
                 if end_of_file:
                     break
@@ -305,7 +305,5 @@ def save_created_and_modified(file_response, headers):
         data = record[1]
         vins_and_data.append((vin, data))
     if vins_and_data:
-        print("read 5000 records from file")
         save(vins_and_data)
-        print("processed 5000 records")
     return end_of_file
