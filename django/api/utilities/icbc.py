@@ -1,63 +1,90 @@
 from api.constants.decoder import ICBC_FILE
 import pandas as pd
-import numpy as np
-from datetime import datetime
 import math
 
 
-# returns (vin (possibly an empty string), bytes_read, data (a dict of strings to strings));
+# returns (vin (possibly None), data (a dict of strings to non-empty stripped strings, dates, integers, or None));
 # returns an empty tuple if end of file reached
 def get_record(file_response, headers):
     line = file_response.readline()
-    bytes_read = len(line)
-    if bytes_read == 0:
+    if not line:
         return ()
-    decoded_line = line.decode("utf-8")
-    record = [item.strip() for item in decoded_line.split(ICBC_FILE.DELIMITER.value)]
-    vin_index = headers.index("vin")
-    vin = record[vin_index]
-    if vin in ICBC_FILE.NA_VALUES.value:
-        vin = ""
-    vin = vin.upper()
-    record[vin_index] = vin
-    return (vin, bytes_read, dict(zip(headers, record)))
+    decoded_lines = [line.decode("utf-8")]
+    number_of_quotes = decoded_lines[0].count('"')
+    while number_of_quotes % 2 != 0:
+        next_line = file_response.readline()
+        decoded_lines.append(next_line.decode("utf-8"))
+        number_of_quotes = number_of_quotes + decoded_lines[-1].count('"')
+    decoded_line = "".join(decoded_lines)
+    record = decoded_line.split(ICBC_FILE.DELIMITER.value)
+    if len(record) != len(headers):
+        raise Exception("Headers row and record length mismatch!")
+    data = dict(zip(headers, record))
+    for col in ICBC_FILE.COLUMNS_TO_DROP.value:
+        data.pop(col, "_")
+    formatted_data = get_formatted_data(data)
+    return (formatted_data["vin"], formatted_data)
+
+
+# data should be a dict of strings to strings
+def get_formatted_data(data):
+    formatted_data = {}
+    for key, value in data.items():
+        new_value = value.strip()
+        if new_value == "" or new_value in ICBC_FILE.NA_VALUES.value:
+            new_value = None
+        elif key in ICBC_FILE.NUMERIC_COLUMNS.value:
+            new_value = pd.to_numeric(new_value, errors="coerce", downcast="integer")
+            if pd.isna(new_value):
+                new_value = None
+            elif isinstance(new_value, float):
+                new_value = math.trunc(new_value)
+        elif key in ICBC_FILE.DATE_COLUMNS.value:
+            new_value = pd.to_datetime(
+                new_value, yearfirst=True, utc=True, errors="coerce"
+            ).date()
+            if pd.isna(new_value):
+                new_value = None
+        elif key in ICBC_FILE.UPPER_COLUMNS.value:
+            new_value = new_value.upper()
+        elif key in ICBC_FILE.LOWER_COLUMNS.value:
+            new_value = new_value.lower()
+        elif key in ICBC_FILE.TITLE_COLUMNS.value:
+            new_value = new_value.title()
+        formatted_data[key] = new_value
+    return formatted_data
 
 
 # vins_and_data is a list of tuples (vin, dict)
 # duplicates is a set of vins
-# returns (df, dict) if there are untracked vins;
-# otherwise return (None, dict)
-# In either case, the 2nd element is a dict of tracked vins to dicts
+# returns (list of dicts, dict of vins to data dicts)
 def get_untracked_and_tracked_records(vins_and_data, duplicates):
-    df_rows = []
+    untracked_records = []
     tracked_records = {}
     for pair in vins_and_data:
         vin = pair[0]
-        data = pair[1]
+        data = pair[1].copy()
         if not vin:
             data["change"] = "untracked_missing_key"
             data["change_date"] = data["snapshot_date"]
-            df_rows.append(data)
+            untracked_records.append(data)
         elif vin in duplicates:
             data["change"] = "untracked_duplicate_key"
             data["change_date"] = data["snapshot_date"]
-            df_rows.append(data)
+            untracked_records.append(data)
         else:
             tracked_records[vin] = data
-    if df_rows:
-        df = pd.DataFrame(df_rows)
-        return (preprocess(df), tracked_records)
-    return (None, tracked_records)
+    return (untracked_records, tracked_records)
 
 
 # both icbc_records and file_records is a dict of vins to dicts,
-# assume each vin key of icbc_records is not untracked since it comes from the icbc table
-# each vin key of file_records should be a tracked vin
-# returns a df if there are records to create; otherwise, return None
+# each vin key of icbc_records and file_records should be a tracked vin
+# returns a dict of created records (vins to data dicts)
 def get_created(icbc_records, file_records):
     # a list of dicts
-    df_rows = []
-    for vin, data in file_records.items():
+    result = []
+    for vin, data_original in file_records.items():
+        data = data_original.copy()
         created = False
         if vin not in icbc_records:
             created = True
@@ -68,21 +95,18 @@ def get_created(icbc_records, file_records):
         if created:
             data["change"] = "created"
             data["change_date"] = data["snapshot_date"]
-            df_rows.append(data)
-    if df_rows:
-        df = pd.DataFrame(df_rows)
-        return preprocess(df)
-    return None
+            result.append(data)
+    return result
 
 
 # both icbc_records and file_records is a dict of vins to dicts,
-# assume each vin key of icbc_records is not untracked since it comes from the icbc table
-# each vin key of file_records should be a tracked vin
-# returns a df if there are records to create; otherwise, return None
+# each vin key of icbc_records and file_records should be a tracked vin
+# returns a dict of modified records (vins to data dicts)
 def get_modified(icbc_records, file_records):
     # a list of dicts
-    df_rows = []
-    for vin, data in file_records.items():
+    result = []
+    for vin, data_original in file_records.items():
+        data = data_original.copy()
         if vin in icbc_records:
             icbc_data = icbc_records[vin]
             last_change = icbc_data["change"]
@@ -90,115 +114,34 @@ def get_modified(icbc_records, file_records):
                 if records_differ(icbc_data, data):
                     data["change"] = "modified"
                     data["change_date"] = data["snapshot_date"]
-                    df_rows.append(data)
-    if df_rows:
-        df = pd.DataFrame(df_rows)
-        return preprocess(df)
-    return None
-
-
-# compares 2 dicts
-# each value in the icbc_data dict must be a non-empty string, a number, a date, or None;
-# each value in the file_data dict must be a string
-def records_differ(icbc_data, file_data):
-    for key, value in file_data.items():
-        if (
-            key == "snapshot_date"
-            or key == "vin"
-            or key == "change"
-            or key == "change_date"
-        ):
-            continue
-        if key in icbc_data:
-            icbc_value = icbc_data[key]
-            if icbc_value is None:
-                if value == "" or value in ICBC_FILE.NA_VALUES.value:
-                    continue
-                else:
-                    return True
-            # from this point forward, icbc_value may not be None
-            if key in ICBC_FILE.NUMERIC_COLUMNS.value:
-                try:
-                    if int(value) != icbc_value:
-                        return True
-                except:
-                    return True
-            elif key in ICBC_FILE.DATE_COLUMNS.value:
-                try:
-                    if (
-                        icbc_value
-                        != datetime.strptime(value, ICBC_FILE.TS_FORMAT.value).date()
-                    ):
-                        return True
-                except:
-                    return True
-            elif value.strip().upper() != icbc_value.strip().upper():
-                return True
-    return False
-
-
-def get_transformed_dict(dict):
-    result = {}
-    for key, value in dict.items():
-        if value == "" or (isinstance(value, float) and math.isnan(value)):
-            result[key] = None
-        else:
-            result[key] = value
+                    result.append(data)
     return result
 
 
-def format_case(s, case="skip"):
-    if len(s.dropna()) != 0:
-        output = (
-            s[
-                s.notna()
-            ]  # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
-            .astype(str)  # Convert to string
-            .str.strip()  # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
+# compares 2 dicts
+# each value in the icbc_data dict must be a string, an integer, a date, or None;
+# each value in the file_data dict must be a non-empty, stripped string, an integer, a date, or None;
+def records_differ(icbc_data, file_data):
+    keys_to_use = set(icbc_data).intersection(set(file_data))
+    for key in keys_to_use:
+        if key == "snapshot_date":
+            continue
+        icbc_value = icbc_data[key]
+        file_value = file_data[key]
+        icbc_value_is_empty = (icbc_value is None) or (
+            isinstance(icbc_value, str) and icbc_value.strip() == ""
         )
-        if case == "title":
-            return output.str.title()
-        elif case == "upper":
-            return output.str.upper()
-        elif case == "lower":
-            return output.str.lower()
-        elif case == "skip":
-            pass
-
-
-def format_numbers(s):
-    if len(s.dropna()) != 0:
-        output = pd.to_numeric(
-            s[
-                s.notna()
-            ]  # I am applying this function to non NaN values only. If you do not, they get converted from NaN to nan and are more annoying to work with.
-            .astype(str)  # Convert to string
-            .str.strip()
-            .str.replace(
-                ",", ""
-            )  # Strip white spaces (this dataset suffers from extra tabs, lines, etc.)
-            .str.replace(" ", "")
-        )
-        return output
-
-
-def preprocess(df):
-    df.replace(ICBC_FILE.NA_VALUES.value, np.nan, inplace=True)
-    df.columns = df.columns.str.lower()
-    df.drop(columns=ICBC_FILE.COLUMNS_TO_DROP.value, inplace=True)
-    numeric_cols = list(
-        set(ICBC_FILE.NUMERIC_COLUMNS.value).intersection(set(df.columns))
-    )
-    numeric_cols_w_strings = df[numeric_cols].select_dtypes("object").columns
-    for col in numeric_cols_w_strings:
-        df[col] = format_numbers(df[col])
-    date_cols = list(set(ICBC_FILE.DATE_COLUMNS.value).intersection(set(df.columns)))
-    for col in date_cols:
-        s = (pd.to_datetime(df[col], yearfirst=True, utc=True).dt.date).astype(str)
-        df[col] = s.where(s != "NaT")
-    for key, cols in ICBC_FILE.MODIFICATION_MAP.value.items():
-        col_subset = list(set(cols).intersection(df.columns))
-        if len(col_subset) != 0:
-            for col in col_subset:
-                df[col] = format_case(df[col], case=key)
-    return df
+        file_value_is_empty = file_value is None
+        if icbc_value_is_empty and file_value_is_empty:
+            continue
+        if icbc_value_is_empty and not file_value_is_empty:
+            return True
+        if (not icbc_value_is_empty) and file_value_is_empty:
+            return True
+        # from this point forward, icbc_value and file_value are both not "empty"
+        if key in ICBC_FILE.NUMERIC_COLUMNS.value or key in ICBC_FILE.DATE_COLUMNS.value:
+            if file_value != icbc_value:
+                return True
+        elif file_value.upper() != icbc_value.strip().upper():
+            return True
+    return False

@@ -32,6 +32,7 @@ def get_file_to_process():
     return UploadedVinsFile.objects.exclude(
         status__in=[
             statuses.ERROR,
+            statuses.ERROR_WRITING_FILE_TO_DISK,
             statuses.ERROR_SAVING_FIRST_SNAPSHOT_DATE,
             statuses.ERROR_SAVING_DUPLICATES_AND_LOOKUPS,
             statuses.ERROR_TRACKING_REMOVED_RECORDS,

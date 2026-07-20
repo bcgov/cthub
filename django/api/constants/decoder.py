@@ -30,10 +30,14 @@ def get_service(service_name):
     return None
 
 
+FILE_PROCESSING_DIRECTORY = "/files_for_processing"
+
+
 class ICBC_FILE(Enum):
-    TS_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
     CHUNKS_PER_ITERATION = 50
     CHUNK_SIZE = 5000
+    CHUNKS_PER_ITERATION_STRINGENT = 10
+    CHUNK_SIZE_STRINGENT = 2000
     DELIMITER = "|"
     NA_VALUES = ["NIL", "Unknown", "unknown", "UNKNOWN"]
     DATA_TYPES = {
@@ -77,26 +81,24 @@ class ICBC_FILE(Enum):
         "vehicle_purchase_date",
         "vehicle_registration_date",
     ]
-    MODIFICATION_MAP = {
-        "upper": [
-            "vin",
-            "make",
-            "model",
-            "postal_code",
-            "electric_vehicle_flag",
-            "fleet_flag",
-            "hybrid_vehicle_flag",
-        ],
-        "lower": [
-            "body_style",
-            "fuel_type",
-            "owner_giver_relationship",
-            "personal_or_commercial",
-            "policy_type",
-            "rate_class_group",
-            "vehicle_type",
-            "vin_error_code",
-            "vin_error_code_description",
-        ],
-        "title": ["city", "use_category"],
-    }
+    UPPER_COLUMNS = [
+        "vin",
+        "make",
+        "model",
+        "postal_code",
+        "electric_vehicle_flag",
+        "fleet_flag",
+        "hybrid_vehicle_flag",
+    ]
+    LOWER_COLUMNS = [
+        "body_style",
+        "fuel_type",
+        "owner_giver_relationship",
+        "personal_or_commercial",
+        "policy_type",
+        "rate_class_group",
+        "vehicle_type",
+        "vin_error_code",
+        "vin_error_code_description",
+    ]
+    TITLE_COLUMNS = ["city", "use_category"]

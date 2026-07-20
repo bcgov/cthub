@@ -1,10 +1,10 @@
 ## For each release, the value of workflow name, branches and VERSION need to be adjusted accordingly
 
-name: CTHUB 0.5.0 Dev CI
+name: CTHUB 0.6.0 Dev CI
 
 on:
   push:
-    branches: [release-0.5.0]
+    branches: [release-0.6.0]
     # paths:
     #   - frontend/**
     #   - backend/**
@@ -14,7 +14,6 @@ env:
   GIT_URL: https://github.com/bcgov/cthub.git
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: read
@@ -100,12 +99,9 @@ jobs:
           key: oc-cli-${{ runner.os }}
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.TOOLS_NAMESPACE }}
+        run: |
+          oc login --server="${{ secrets.OPENSHIFT_SERVER }}" --token="${{ secrets.OPENSHIFT_TOKEN }}" --insecure-skip-tls-verify=true
+          oc project "${{ env.TOOLS_NAMESPACE }}"
 
       - name: Build CTHUB Backend
         run: |
