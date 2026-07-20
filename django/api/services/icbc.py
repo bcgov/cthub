@@ -114,7 +114,7 @@ def icbc_parse_and_save(uploaded_vins_file, file_response):
             or status == statuses.TRACKING_CREATED_AND_MODIFIED_RECORDS
         ):
             end_of_file = False
-            for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION.value):
+            for _ in range(ICBC_FILE.CHUNKS_PER_ITERATION_STRINGENT.value):
                 print(
                     f"started processing a chunk at {(datetime.now()).strftime("%Y-%m-%d %H:%M:%S")}"
                 )
@@ -275,14 +275,13 @@ def save_created_and_modified(file_response, headers):
         )
         tracked_vins = list(tracked_records_dict.keys())
         print(
-            f"length of tracked vins: {len(tracked_vins)}; first 25 tracked vins: {tracked_vins[:25]}"
+            f"length of tracked vins: {len(tracked_vins)}"
         )
         print(
             f"beginning read icbc records at {(datetime.now()).strftime("%Y-%m-%d %H:%M:%S")}"
         )
         icbc_records = list(
-            IcbcRecord.objects.using("other")
-            .filter(vin__in=tracked_vins)
+            IcbcRecord.objects.filter(vin__in=tracked_vins)
             .order_by("vin", "-change_date")
             .distinct("vin")
             .values()
@@ -310,7 +309,7 @@ def save_created_and_modified(file_response, headers):
 
     vins_and_data = []
     end_of_file = False
-    for _ in range(ICBC_FILE.CHUNK_SIZE.value):
+    for _ in range(ICBC_FILE.CHUNK_SIZE_STRINGENT.value):
         record = get_record(file_response, headers)
         if not record:
             end_of_file = True

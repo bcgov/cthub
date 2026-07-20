@@ -36,6 +36,8 @@ FILE_PROCESSING_DIRECTORY = "/files_for_processing"
 class ICBC_FILE(Enum):
     CHUNKS_PER_ITERATION = 50
     CHUNK_SIZE = 5000
+    CHUNKS_PER_ITERATION_STRINGENT = 10
+    CHUNK_SIZE_STRINGENT = 2000
     DELIMITER = "|"
     NA_VALUES = ["NIL", "Unknown", "unknown", "UNKNOWN"]
     DATA_TYPES = {
