@@ -14,51 +14,6 @@ from api.constants.decoder import ICBC_FILE, FILE_PROCESSING_DIRECTORY
 from django.db import connection
 from django.utils import timezone
 from datetime import datetime
-from django.db import transaction
-
-
-@transaction.atomic
-def temp1(vins):
-    print("in temp1")
-    print(f"number of vins received: {len(vins)}")
-    result = list(
-        IcbcRecord.objects.filter(vin__in=vins)
-        .order_by("vin", "-change_date")
-        .distinct("vin")
-        .values()
-    )
-    print(f"result length: {len(result)}")
-    return result
-
-
-def temp2(vins):
-    print("in temp2")
-    print(f"number of vins received: {len(vins)}")
-    result = list(
-        IcbcRecord.objects.filter(vin__in=vins)
-        .order_by("vin", "-change_date")
-        .distinct("vin")
-        .values()[:5000]
-    )
-    print(f"result length: {len(result)}")
-    return result
-
-
-def temp3(vins):
-    print("in temp3")
-    print(f"number of vins received: {len(vins)}")
-    my_dict = {}
-    for vin in vins:
-        my_dict[vin] = None
-    keys = list(my_dict.keys())
-    result = list(
-        IcbcRecord.objects.filter(vin__in=keys)
-        .order_by("vin", "-change_date")
-        .distinct("vin")
-        .values()
-    )
-    print(f"result length: {len(result)}")
-    return result
 
 
 def get_icbc_ev_records(vins):
@@ -319,12 +274,15 @@ def save_created_and_modified(file_response, headers):
             vins_and_data, duplicates
         )
         tracked_vins = list(tracked_records_dict.keys())
-        print(f"first 25 tracked vins: {tracked_vins[:25]}")
+        print(
+            f"length of tracked vins: {len(tracked_vins)}; first 25 tracked vins: {tracked_vins[:25]}"
+        )
         print(
             f"beginning read icbc records at {(datetime.now()).strftime("%Y-%m-%d %H:%M:%S")}"
         )
         icbc_records = list(
-            IcbcRecord.objects.filter(vin__in=tracked_vins)
+            IcbcRecord.objects.using("other")
+            .filter(vin__in=tracked_vins)
             .order_by("vin", "-change_date")
             .distinct("vin")
             .values()
