@@ -14,8 +14,10 @@ from api.constants.decoder import ICBC_FILE, FILE_PROCESSING_DIRECTORY
 from django.db import connection
 from django.utils import timezone
 from datetime import datetime
+from django.db import transaction
 
 
+@transaction.atomic
 def temp1(vins):
     print("in temp1")
     print(f"number of vins received: {len(vins)}")
