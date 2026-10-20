@@ -11,10 +11,12 @@ coverage==7.13.5
 pycodestyle==2.14.0
 whitenoise==6.12.0
 gunicorn==25.3.0
-numpy==2.4.4
+numpy==2.3.0
 python-keycloak==7.1.1
 python-dotenv==1.2.2
-pandas==3.0.2
+pandas==2.3.0
+pytest==8.3.4
+pytest-check==2.5.0
 openpyxl==3.1.5
 minio==7.2.20
 xlsxwriter==3.2.0
