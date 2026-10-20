@@ -29,6 +29,8 @@ class UploadedVinsFile(Auditable):
     class FileStatus(models.TextChoices):
         # used by all files
         NEW = "NEW"
+        SUCCESS_WRITING_FILE_TO_DISK = "SUCCESS_WRITING_FILE_TO_DISK"
+        ERROR_WRITING_FILE_TO_DISK = "ERROR_WRITING_FILE_TO_DISK"
         SUCCESS = "SUCCESS"
 
         # used by non-icbc files
