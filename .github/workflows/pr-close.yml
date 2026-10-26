@@ -1,0 +1,38 @@
+name: PR Closed
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency:
+  group: ${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  cleanup:
+    name: PR Cleanup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bcgov/actions-openshift/cleanup-pr@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
+        with:
+          cleanup: label
+          cleanup_name: cthub-pr-${{ github.event.number }}
+          target: pr-${{ github.event.number }}
+          oc_namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+          oc_server: ${{ secrets.OPENSHIFT_SERVER }}
+          oc_token: ${{ secrets.OPENSHIFT_TOKEN }}
+
+  results:
+    name: Cleanup Results
+    needs: [cleanup]
+    if: always()
+    runs-on: ubuntu-slim
+    timeout-minutes: 1
+    steps:
+      - uses: bcgov/actions/workflow-results@77e7b21eda7c99a2230a6dfb4db3b33947678307 # v0.11.0
+        with:
+          needs: ${{ toJson(needs) }}
