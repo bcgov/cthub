@@ -110,7 +110,18 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bcgov/actions/diff-triggers@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+        id: triggers
+        with:
+          triggers: |
+            django/
+            frontend/
+            spring/
+            openshift/
+            .github/workflows/pr-open.yml
       - name: Wait for backend healthcheck
+        if: steps.triggers.outputs.triggered == 'true'
         run: |
           URL="https://cthub-pr-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca/api/healthcheck"
           echo "Waiting for backend healthcheck at $URL..."
@@ -133,7 +144,18 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bcgov/actions/diff-triggers@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+        id: triggers
+        with:
+          triggers: |
+            django/
+            frontend/
+            spring/
+            openshift/
+            .github/workflows/pr-open.yml
       - name: Post Deploy Links
+        if: steps.triggers.outputs.triggered == 'true'
         uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         with:
           header: pr-deployment-links
