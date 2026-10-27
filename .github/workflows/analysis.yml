@@ -80,21 +80,7 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.13"
-          cache: "pip"
-          cache-dependency-path: django/requirements.txt
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq build-essential libpq-dev
-          pip install --upgrade pip
-          pip install -r django/requirements.txt
-
-      - name: Run Django Tests
+      - uses: bcgov/actions/test-and-analyse@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
         env:
           DB_HOST: localhost
           DB_PORT: "5432"
@@ -103,9 +89,18 @@ jobs:
           DB_PASSWORD: postgres
           DJANGO_SECRET_KEY: test-secret-key-for-unit-tests
           KEYCLOAK_TESTING: "True"
-        run: |
-          cd django
-          python manage.py test api --noinput
+        with:
+          language: python
+          python_version: "3.13"
+          working_directory: django
+          commands: |
+            sudo apt-get update -qq && sudo apt-get install -y -qq build-essential libpq-dev
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            python manage.py test api --noinput
+          triggers: |
+            django/
+            .github/workflows/analysis.yml
 
   results:
     name: Analysis Results
