@@ -13,10 +13,17 @@ const KeycloakProvider = ({
 
   useEffect(() => {
     if (ENABLE_KEYCLOAK) {
-      authClient.init(initOptions).then(() => {
-        setKeycloak(authClient);
-        setLoading(false);
-      });
+      authClient
+        .init(initOptions)
+        .then(() => {
+          setKeycloak(authClient);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Keycloak initialization failed:", error);
+          setKeycloak(authClient);
+          setLoading(false);
+        });
     }
   }, [authClient, initOptions]);
 

@@ -25,6 +25,9 @@ parameters:
   - name: DOMAIN
     description: OpenShift application cluster domain
     value: apps.silver.devops.gov.bc.ca
+  - name: ENABLE_KEYCLOAK
+    description: Enable Keycloak authentication
+    value: "true"
   - name: KEYCLOAK_CLIENT_ID
     value: cthub-on-gold-cluster-3974
   - name: KEYCLOAK_REALM
@@ -49,7 +52,7 @@ objects:
       features.js: |
         window.cthub_config = {
           'REACT_APP_API_BASE': "https://${NAME}-${ZONE}-backend.${DOMAIN}",
-          'REACT_APP_ENABLE_KEYCLOAK': "true",
+          'REACT_APP_ENABLE_KEYCLOAK': "${ENABLE_KEYCLOAK}",
           'REACT_APP_KEYCLOAK_CLIENT_ID': "${KEYCLOAK_CLIENT_ID}",
           'REACT_APP_KEYCLOAK_REALM': "${KEYCLOAK_REALM}",
           'REACT_APP_KEYCLOAK_URL': "${KEYCLOAK_URL}"

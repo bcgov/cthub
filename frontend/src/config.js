@@ -1,6 +1,9 @@
-export const ENABLE_KEYCLOAK = window.cthub_config
+const rawEnableKeycloak = window.cthub_config
   ? window.cthub_config.REACT_APP_ENABLE_KEYCLOAK
   : process.env.REACT_APP_ENABLE_KEYCLOAK;
+
+export const ENABLE_KEYCLOAK =
+  rawEnableKeycloak === true || rawEnableKeycloak === "true";
 
 export const API_BASE = window.cthub_config
   ? window.cthub_config.REACT_APP_API_BASE
