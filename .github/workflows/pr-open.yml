@@ -17,7 +17,7 @@ jobs:
       id-token: write
       attestations: write
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     strategy:
       matrix:
@@ -73,7 +73,7 @@ jobs:
   deploys:
     name: Deploys (${{ matrix.name }})
     needs: [builds]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       matrix:
@@ -107,7 +107,7 @@ jobs:
   tests:
     name: Health Check
     needs: [deploys]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -140,7 +140,7 @@ jobs:
   comment:
     name: Deployment Links
     needs: [deploys, tests]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       pull-requests: write
     steps:
