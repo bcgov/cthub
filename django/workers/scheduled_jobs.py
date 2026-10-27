@@ -53,3 +53,12 @@ def schedule_remove_cleaned_datasets():
         )
     except IntegrityError:
         pass
+
+
+def cleanup_obsolete_schedules():
+    try:
+        from django_q.models import Schedule
+
+        Schedule.objects.filter(name="vinpower_batch_decode_vins").delete()
+    except Exception:
+        pass

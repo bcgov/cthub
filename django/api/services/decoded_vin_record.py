@@ -70,6 +70,7 @@ def get_vinpower_decoded_ev_vins(vins):
             or "fuel cell" in fuel
             or "bev" in elec
             or "phev" in elec
+            or "hev" in elec
         )
         if is_ev:
             result[record.get("vin")] = {
