@@ -118,7 +118,7 @@ jobs:
           message: |
             ### 🚀 Deployments Available (PR #${{ github.event.number }})
             - [Frontend](https://cthub-pr-${{ github.event.number }}.apps.silver.devops.gov.bc.ca)
-            - [Backend Health](https://cthub-pr-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca/api/healthcheck)
+            - [Backend](https://cthub-pr-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca)
 
   results:
     name: PR Results

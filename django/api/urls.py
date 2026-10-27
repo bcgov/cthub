@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework import routers
 
 from api.viewsets.icbc import IcbcRecordViewset
@@ -24,6 +25,10 @@ from api.viewsets.upload import UploadViewset
 from api.viewsets.user import UserViewSet
 from api.viewsets.healthcheck import HealthCheckViewset
 from api.viewsets.decoded_vin_record import DecodedVinRecordViewset
+
+
+def health_response(request):
+    return JsonResponse({"status": "ok", "app": "cthub", "version": "0.6.0"})
 
 
 ROUTER = routers.SimpleRouter(trailing_slash=False)
@@ -36,6 +41,8 @@ ROUTER.register(r"healthcheck", HealthCheckViewset, basename="healthcheck")
 ROUTER.register(r"decoded-vin-records", DecodedVinRecordViewset)
 
 urlpatterns = [
+    path("", health_response),
+    path("api", health_response),
     path("admin/", admin.site.urls),
     path("api/", include(ROUTER.urls)),
 ]

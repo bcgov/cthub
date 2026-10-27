@@ -228,7 +228,6 @@ objects:
         haproxy.router.openshift.io/timeout: 300s
     spec:
       host: ${NAME}-${ZONE}-backend.${DOMAIN}
-      path: /api
       port:
         targetPort: api
       tls:

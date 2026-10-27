@@ -27,7 +27,7 @@ parameters:
     value: apps.silver.devops.gov.bc.ca
   - name: ENABLE_KEYCLOAK
     description: Enable Keycloak authentication
-    value: "true"
+    value: "false"
   - name: KEYCLOAK_CLIENT_ID
     value: cthub-on-gold-cluster-3974
   - name: KEYCLOAK_REALM
