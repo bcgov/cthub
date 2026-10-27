@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:20-bookworm-slim AS builder
+FROM node:20-bookworm-slim AS builder
 
 WORKDIR /usr/src/app
 
@@ -15,7 +15,7 @@ COPY . .
 ENV CI=false
 RUN npm run build
 
-FROM artifacts.developer.gov.bc.ca/docker-remote/nginx:1.29.6
+FROM nginx:1.29.6
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html

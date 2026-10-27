@@ -17,7 +17,7 @@ jobs:
       id-token: write
       attestations: write
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     strategy:
       matrix:
@@ -49,16 +49,6 @@ jobs:
           #     spring/
           #     .github/workflows/pr-open.yml
     steps:
-      - name: Log in to Artifactory (remote proxy)
-        env:
-          ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
-        if: env.ARTIFACTORY_API_KEY != ''
-        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
-        with:
-          registry: ${{ secrets.ARTIFACTORY_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_API_KEY }}
-
       - uses: bcgov/actions/builder@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
         with:
           package: ${{ matrix.package }}
@@ -73,7 +63,7 @@ jobs:
   deploys:
     name: Deploys (${{ matrix.name }})
     needs: [builds]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       matrix:
@@ -107,7 +97,7 @@ jobs:
   tests:
     name: Health Check
     needs: [deploys]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -140,7 +130,7 @@ jobs:
   comment:
     name: Deployment Links
     needs: [deploys, tests]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       pull-requests: write
     steps:

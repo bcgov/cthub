@@ -23,7 +23,7 @@ jobs:
       pull-requests: read
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - id: pr
         uses: bcgov/action-get-pr@28b0adf8e4d40720d41f9c87356ce24b0a4bd6af # v0.3.1
@@ -32,7 +32,7 @@ jobs:
     name: TEST Deploys (${{ matrix.name }})
     needs: [init]
     environment: test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       matrix:
