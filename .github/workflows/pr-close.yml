@@ -33,6 +33,6 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 1
     steps:
-      - uses: bcgov/actions/workflow-results@77e7b21eda7c99a2230a6dfb4db3b33947678307 # v0.11.0
+      - uses: bcgov/actions/workflow-results@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
         with:
           needs: ${{ toJson(needs) }}
