@@ -1,0 +1,117 @@
+name: Release
+
+# Publishing a GitHub release deploys that release to PROD. It reuses the
+# images merge.yml deployed for the release's commit (tagged with the merged
+# PR number by pr-open.yml) and does not rebuild anything.
+
+on:
+  release:
+    types: [published]
+
+# Same group as merge.yml (its workflow name), so the two never deploy PROD at once
+concurrency:
+  group: Merge
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  init:
+    name: Initialize
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # PR number for the release's commit (a squash merge to main)
+      - id: pr
+        uses: bcgov/action-get-pr@28b0adf8e4d40720d41f9c87356ce24b0a4bd6af # v0.3.1
+
+      - name: Check images
+        env:
+          PR: ${{ steps.pr.outputs.pr }}
+          REPO: ${{ github.repository }}
+          RELEASE: ${{ github.event.release.tag_name }}
+        run: |
+          if [ -z "${PR}" ]; then
+            echo "::error::No merged PR found for ${RELEASE} (${GITHUB_SHA}). Release from a commit on main that came from a PR."
+            exit 1
+          fi
+          for package in backend task-queue frontend; do
+            image="ghcr.io/${REPO}/${package}:${PR}"
+            if ! digest=$(docker buildx imagetools inspect "${image}" --format '{{.Manifest.Digest}}'); then
+              echo "::error::Image ${image} not found. Packages must be public, and the release's commit must come from a PR that built images."
+              exit 1
+            fi
+            echo "${RELEASE}: ${image} (${digest})" | tee -a "${GITHUB_STEP_SUMMARY}"
+          done
+
+  deploys:
+    name: PROD Deploys (${{ matrix.name }})
+    needs: [init]
+    environment: prod
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        name: [backend, task-queue, frontend]
+        include:
+          - name: backend
+            file: openshift/backend.deploy.yml
+            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p MINIO_BUCKET_NAME="zevapp" -p ENABLE_KEYCLOAK="true"
+          - name: task-queue
+            file: openshift/task-queue.deploy.yml
+            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p MINIO_BUCKET_NAME="zevapp"
+          - name: frontend
+            file: openshift/frontend.deploy.yml
+            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p ENABLE_KEYCLOAK="true" -p KEYCLOAK_URL="https://loginproxy.gov.bc.ca/auth/"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bcgov/actions-openshift/deployer@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          parameters: ${{ matrix.parameters }}
+
+  promote:
+    name: Promote Images
+    needs: [init, deploys]
+    runs-on: ubuntu-slim
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend, task-queue, frontend]
+    timeout-minutes: 1
+    steps:
+      - uses: shrink/actions-docker-registry-tag@e6aaef25c595b6e0edd18bf4c7dbfea3abd43299 # v5.0.0
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ needs.init.outputs.pr }}
+          tags: prod
+
+  results:
+    name: Release Results
+    needs: [init, deploys, promote]
+    if: always()
+    runs-on: ubuntu-slim
+    timeout-minutes: 1
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+    steps:
+      - uses: bcgov/actions/workflow-results@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+        with:
+          needs: ${{ toJson(needs) }}
+          title: Release Results
+
+      - name: Notify on Failure
+        if: failure()
+        uses: bcgov/actions/workflow-notifier@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
