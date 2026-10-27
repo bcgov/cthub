@@ -45,20 +45,26 @@ const UploadContainer = () => {
 
   const refreshList = () => {
     setRefresh(true);
-    axios.get(ROUTES_UPLOAD.LIST).then((response) => {
-      setDatasetList(response.data);
-      setRefresh(false);
-      axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
-        if (
-          currentUserResp.data &&
-          currentUserResp.data.userPermissions &&
-          currentUserResp.data.userPermissions.admin === true
-        ) {
-          setAdminUser(true);
-          setCurrentUser(currentUserResp.data.idir);
-        }
+    axios
+      .get(ROUTES_UPLOAD.LIST)
+      .then((response) => {
+        setDatasetList(response.data);
+        setRefresh(false);
+        axios.get(ROUTES_USERS.CURRENT).then((currentUserResp) => {
+          if (
+            currentUserResp.data &&
+            currentUserResp.data.userPermissions &&
+            currentUserResp.data.userPermissions.admin === true
+          ) {
+            setAdminUser(true);
+            setCurrentUser(currentUserResp.data.idir);
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to fetch dataset list:", error);
+        setRefresh(false);
       });
-    });
   };
 
   const groupAndCountRows = (issueArray) => {

@@ -25,6 +25,9 @@ parameters:
   - name: DOMAIN
     description: OpenShift application cluster domain
     value: apps.silver.devops.gov.bc.ca
+  - name: ENABLE_KEYCLOAK
+    description: Enable Keycloak authentication
+    value: "false"
   - name: CPU_REQUEST
     value: "100m"
   - name: MEMORY_REQUEST
@@ -126,6 +129,8 @@ objects:
               env:
                 - name: ALLOWED_HOSTS
                   value: ${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: ENABLE_KEYCLOAK
+                  value: "${ENABLE_KEYCLOAK}"
                 - name: CORS_ORIGIN_ALLOW_ALL
                   value: "false"
                 - name: CORS_ORIGIN_WHITELIST
