@@ -28,6 +28,12 @@ parameters:
   - name: ENABLE_KEYCLOAK
     description: Enable Keycloak authentication
     value: "false"
+  - name: CRUNCHY_SECRET_NAME
+    description: Secret containing host and port for Crunchy PostgreSQL
+    value: cthub-dev-crunchy-pguser-postgres
+  - name: MINIO_BUCKET_NAME
+    description: MinIO bucket name
+    value: zevadv
   - name: CPU_REQUEST
     value: "100m"
   - name: MEMORY_REQUEST
@@ -85,12 +91,12 @@ objects:
                 - name: DB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-dev-crunchy-pguser-postgres
+                      name: ${CRUNCHY_SECRET_NAME}
                       key: host
                 - name: DB_PORT
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-dev-crunchy-pguser-postgres
+                      name: ${CRUNCHY_SECRET_NAME}
                       key: port
                 - name: DB_NAME
                   valueFrom:
@@ -140,12 +146,12 @@ objects:
                 - name: DB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-dev-crunchy-pguser-postgres
+                      name: ${CRUNCHY_SECRET_NAME}
                       key: host
                 - name: DB_PORT
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-dev-crunchy-pguser-postgres
+                      name: ${CRUNCHY_SECRET_NAME}
                       key: port
                 - name: DB_NAME
                   valueFrom:
@@ -197,7 +203,7 @@ objects:
                       name: cthub-db-backup-s3
                       key: AWS_SECRET_ACCESS_KEY
                 - name: MINIO_BUCKET_NAME
-                  value: zevadv
+                  value: ${MINIO_BUCKET_NAME}
                 - name: MINIO_PREFIX
                   value: cthub-docs
                 - name: DJANGO_SECRET_KEY
