@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        package: [backend, frontend, task-queue, vinpower]
+        package: [backend, frontend, task-queue]
         include:
           - package: backend
             context: django
@@ -41,12 +41,13 @@ jobs:
             triggers: |
               django/
               .github/workflows/pr-open.yml
-          - package: vinpower
-            context: spring
-            file: spring/Dockerfile-Openshift
-            triggers: |
-              spring/
-              .github/workflows/pr-open.yml
+          # vinpower pending ARTIFACTORY_URL secret access
+          # - package: vinpower
+          #   context: spring
+          #   file: spring/Dockerfile-Openshift
+          #   triggers: |
+          #     spring/
+          #     .github/workflows/pr-open.yml
     steps:
       - name: Log in to Artifactory (remote proxy)
         env:
@@ -76,10 +77,11 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        name: [vinpower, backend, task-queue, frontend]
+        name: [backend, task-queue, frontend]
         include:
-          - name: vinpower
-            file: openshift/vinpower.deploy.yml
+          # vinpower pending ARTIFACTORY_URL secret access
+          # - name: vinpower
+          #   file: openshift/vinpower.deploy.yml
           - name: backend
             file: openshift/backend.deploy.yml
           - name: task-queue
