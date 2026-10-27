@@ -6,6 +6,12 @@ from api.models.user import User
 
 class KeycloakAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
+        if not getattr(settings, "ENABLE_KEYCLOAK", True):
+            user = User.objects.first()
+            if user:
+                return user.idir, None
+            return ("dev_user", None)
+
         auth = request.headers.get("Authorization", None)
         if settings.KEYCLOAK_TESTING:
             try:

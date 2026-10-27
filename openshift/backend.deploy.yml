@@ -1,0 +1,244 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: cthub-backend
+parameters:
+  - name: NAME
+    description: Module name
+    value: cthub
+    required: true
+  - name: COMPONENT
+    description: Component name
+    value: backend
+  - name: ZONE
+    description: Deployment zone, e.g. pr-123, dev, test, prod
+    required: true
+  - name: IMAGE_TAG
+    description: Container image tag or digest
+    required: true
+  - name: REGISTRY
+    description: Container registry
+    value: ghcr.io
+  - name: ORG_NAME
+    description: Organization or owner name
+    value: bcgov
+  - name: DOMAIN
+    description: OpenShift application cluster domain
+    value: apps.silver.devops.gov.bc.ca
+  - name: ENABLE_KEYCLOAK
+    description: Enable Keycloak authentication
+    value: "false"
+  - name: CPU_REQUEST
+    value: "100m"
+  - name: MEMORY_REQUEST
+    value: "300Mi"
+  - name: MEMORY_LIMIT
+    value: "1Gi"
+objects:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+          maxSurge: 1
+      template:
+        metadata:
+          labels:
+            app: ${NAME}-${ZONE}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
+        spec:
+          terminationGracePeriodSeconds: 30
+          initContainers:
+            - name: dbmigration
+              image: ${REGISTRY}/${ORG_NAME}/${NAME}/backend:${IMAGE_TAG}
+              imagePullPolicy: Always
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Running database migrations..."
+                  python manage.py migrate --noinput
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  memory: 512Mi
+              env:
+                - name: DJANGO_DEBUG
+                  value: "False"
+                - name: CORS_ORIGIN_ALLOW_ALL
+                  value: "false"
+                - name: DB_ENGINE
+                  value: django.db.backends.postgresql
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-dev-crunchy-pguser-postgres
+                      key: host
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-dev-crunchy-pguser-postgres
+                      key: port
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-name
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-password
+                - name: DJANGO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-django
+                      key: DJANGO_SECRET_KEY
+          containers:
+            - name: backend
+              image: ${REGISTRY}/${ORG_NAME}/${NAME}/backend:${IMAGE_TAG}
+              imagePullPolicy: Always
+              ports:
+                - name: api
+                  containerPort: 8080
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              env:
+                - name: ALLOWED_HOSTS
+                  value: ${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: ENABLE_KEYCLOAK
+                  value: "${ENABLE_KEYCLOAK}"
+                - name: CORS_ORIGIN_ALLOW_ALL
+                  value: "false"
+                - name: CORS_ORIGIN_WHITELIST
+                  value: https://${NAME}-${ZONE}.${DOMAIN}
+                - name: DB_ENGINE
+                  value: django.db.backends.postgresql
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-dev-crunchy-pguser-postgres
+                      key: host
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-dev-crunchy-pguser-postgres
+                      key: port
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-name
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-password
+                - name: KEYCLOAK_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_CLIENT_ID
+                - name: KEYCLOAK_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_REALM
+                - name: KEYCLOAK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-keycloak
+                      key: KEYCLOAK_URL
+                - name: LOCAL_DEV
+                  value: "false"
+                - name: MINIO_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-db-backup-s3
+                      key: AWS_ENDPOINT
+                - name: MINIO_USE_SSL
+                  value: "true"
+                - name: MINIO_ROOT_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-db-backup-s3
+                      key: AWS_ACCESS_KEY_ID
+                - name: MINIO_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-db-backup-s3
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: MINIO_BUCKET_NAME
+                  value: zevadv
+                - name: MINIO_PREFIX
+                  value: cthub-docs
+                - name: DJANGO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-django
+                      key: DJANGO_SECRET_KEY
+                - name: APP_CONFIG
+                  value: /opt/app-root/src/gunicorn.cfg.py
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      ports:
+        - name: api
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        haproxy.router.openshift.io/timeout: 300s
+    spec:
+      host: ${NAME}-${ZONE}-backend.${DOMAIN}
+      port:
+        targetPort: api
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      to:
+        kind: Service
+        name: ${NAME}-${ZONE}-${COMPONENT}
+        weight: 100

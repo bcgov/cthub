@@ -78,7 +78,7 @@ jobs:
 
       - id: set-pre-release
         run: |
-          echo "PRE_RELEASE=$(oc -n ${{ env.TEST_NAMESPACE }} describe deployment/cthub-test-frontend | grep Image | awk -F '-' '{print $NF}')" >> $GITHUB_OUTPUT
+          echo "PRE_RELEASE=$(oc -n ${{ env.TEST_NAMESPACE }} describe deployment/cthub-test-frontend | grep Image | awk -F '-' '{print $NF}')" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy CTHUB on Prod

@@ -1,0 +1,138 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: cthub-frontend
+parameters:
+  - name: NAME
+    description: Module name
+    value: cthub
+    required: true
+  - name: COMPONENT
+    description: Component name
+    value: frontend
+  - name: ZONE
+    description: Deployment zone, e.g. pr-123, dev, test, prod
+    required: true
+  - name: IMAGE_TAG
+    description: Container image tag or digest
+    required: true
+  - name: REGISTRY
+    description: Container registry
+    value: ghcr.io
+  - name: ORG_NAME
+    description: Organization or owner name
+    value: bcgov
+  - name: DOMAIN
+    description: OpenShift application cluster domain
+    value: apps.silver.devops.gov.bc.ca
+  - name: ENABLE_KEYCLOAK
+    description: Enable Keycloak authentication
+    value: "false"
+  - name: KEYCLOAK_CLIENT_ID
+    value: cthub-on-gold-cluster-3974
+  - name: KEYCLOAK_REALM
+    value: standard
+  - name: KEYCLOAK_URL
+    value: https://dev.loginproxy.gov.bc.ca/auth/
+  - name: CPU_REQUEST
+    value: "10m"
+  - name: MEMORY_REQUEST
+    value: "50Mi"
+  - name: MEMORY_LIMIT
+    value: "256Mi"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}-config
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    data:
+      features.js: |
+        window.cthub_config = {
+          'REACT_APP_API_BASE': "https://${NAME}-${ZONE}-backend.${DOMAIN}",
+          'REACT_APP_ENABLE_KEYCLOAK': "${ENABLE_KEYCLOAK}",
+          'REACT_APP_KEYCLOAK_CLIENT_ID': "${KEYCLOAK_CLIENT_ID}",
+          'REACT_APP_KEYCLOAK_REALM': "${KEYCLOAK_REALM}",
+          'REACT_APP_KEYCLOAK_URL': "${KEYCLOAK_URL}"
+        };
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+          maxSurge: 1
+      template:
+        metadata:
+          labels:
+            app: ${NAME}-${ZONE}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
+        spec:
+          terminationGracePeriodSeconds: 30
+          containers:
+            - name: frontend
+              image: ${REGISTRY}/${ORG_NAME}/${NAME}/frontend:${IMAGE_TAG}
+              imagePullPolicy: Always
+              ports:
+                - name: http
+                  containerPort: 8080
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              volumeMounts:
+                - name: config
+                  mountPath: /app/static/js/config
+          volumes:
+            - name: config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}-config
+                defaultMode: 420
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      ports:
+        - name: http
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      host: ${NAME}-${ZONE}.${DOMAIN}
+      port:
+        targetPort: http
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      to:
+        kind: Service
+        name: ${NAME}-${ZONE}-${COMPONENT}
+        weight: 100
