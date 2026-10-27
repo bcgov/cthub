@@ -126,14 +126,6 @@ jobs:
           oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-task-queue-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
           oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/cthub-task-queue:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
-      - name: Build CTHUB Vinpower
-        run: |
-          cd openshift/templates/vinpower
-          oc process -f ./vinpower-bc.yaml NAME=cthub SUFFIX=-${{ env.VERSION }}-${{ env.PRE_RELEASE }} VERSION=${{ env.VERSION }}-${{ env.PRE_RELEASE }} GIT_URL=${{ env.GIT_URL }} GIT_REF=release-${{ env.VERSION }} | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
-          sleep 5s
-          oc -n ${{ env.TOOLS_NAMESPACE }} wait --for=condition=Complete --timeout=900s build/cthub-vinpower-${{ env.VERSION }}-${{ env.PRE_RELEASE }}-1
-          oc tag ${{ env.TOOLS_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.DEV_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
-
   deploy:
     name: Deploy CTHUB on Dev
     runs-on: ubuntu-latest
@@ -159,7 +151,6 @@ jobs:
             yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
             yq -i '.backend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
             yq -i '.task-queue.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
-            yq -i '.vinpower.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-dev.yaml
 
       - name: GitHub Commit & Push
         run: |

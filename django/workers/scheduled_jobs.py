@@ -42,21 +42,6 @@ def schedule_batch_decode_vins_vpic():
         pass
 
 
-def schedule_batch_decode_vins_vinpower():
-    try:
-        schedule(
-            "workers.tasks.batch_decode_vins",
-            "vinpower",
-            500,
-            name="vinpower_batch_decode_vins",
-            schedule_type="C",
-            cron="*/2 * * * *",
-            q_options={"timeout": 105, "ack_failure": True},
-        )
-    except IntegrityError:
-        pass
-
-
 def schedule_remove_cleaned_datasets():
     try:
         schedule(

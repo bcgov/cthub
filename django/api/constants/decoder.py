@@ -1,7 +1,6 @@
 from enum import Enum, member
-from api.models.decoded_vin_record import VpicDecodedVinRecord, VinpowerDecodedVinRecord
+from api.models.decoded_vin_record import VpicDecodedVinRecord
 from workers.external_apis.vpic import batch_decode as vpic_batch_decode
-from workers.external_apis.vinpower import batch_decode as vinpower_batch_decode
 
 
 class VPIC(Enum):
@@ -12,15 +11,7 @@ class VPIC(Enum):
     BATCH_DECODER = member(vpic_batch_decode)
 
 
-class VINPOWER(Enum):
-    NAME = "vinpower"
-    DECODE_SUCCESSFUL = "vinpower_decode_successful"
-    NUMBER_OF_DECODE_ATTEMPTS = "vinpower_number_of_decode_attempts"
-    MODEL = VinpowerDecodedVinRecord
-    BATCH_DECODER = member(vinpower_batch_decode)
-
-
-SERVICES = [VPIC, VINPOWER]
+SERVICES = [VPIC]
 
 
 def get_service(service_name):

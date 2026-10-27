@@ -211,8 +211,6 @@ VPIC_VIN_KEY = os.getenv("VPIC_VIN_KEY", "VIN")
 VPIC_ERROR_CODE_NAME = os.getenv("VPIC_ERROR_CODE_NAME", "ErrorCode")
 VPIC_SUCCESS_ERROR_CODE = os.getenv("VPIC_SUCCESS_ERROR_CODE", "0")
 
-VINPOWER_ENDPOINT = os.getenv("VINPOWER_ENDPOINT", "http://spring:8080")
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
