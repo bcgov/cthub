@@ -104,9 +104,31 @@ jobs:
             openshift/
             .github/workflows/pr-open.yml
 
+  tests:
+    name: Health Check
+    needs: [deploys]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Wait for backend healthcheck
+        run: |
+          URL="https://cthub-pr-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca/api/healthcheck"
+          echo "Waiting for backend healthcheck at $URL..."
+          for i in {1..30}; do
+            status=$(curl -k --connect-timeout 5 --max-time 10 -s -o /dev/null -w "%{http_code}" "$URL" || true)
+            if [ "$status" -eq 200 ]; then
+              echo "Backend is healthy (HTTP 200)!"
+              exit 0
+            fi
+            echo "Waiting for healthcheck (HTTP $status), retrying in 10s... ($i/30)"
+            sleep 10
+          done
+          echo "ERROR: Backend did not become healthy within 5 minutes."
+          exit 1
+
   comment:
     name: Deployment Links
-    needs: [deploys]
+    needs: [deploys, tests]
     runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
@@ -122,7 +144,7 @@ jobs:
 
   results:
     name: PR Results
-    needs: [builds, deploys, comment]
+    needs: [builds, deploys, tests, comment]
     if: always()
     runs-on: ubuntu-slim
     timeout-minutes: 1
