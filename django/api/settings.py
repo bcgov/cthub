@@ -172,6 +172,7 @@ REST_FRAMEWORK = {
 }
 
 
+ENABLE_KEYCLOAK = os.getenv("ENABLE_KEYCLOAK", "true").lower() == "true"
 KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
 KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")

@@ -1,0 +1,33 @@
+name: PR Validate
+
+on:
+  pull_request:
+    types: [edited, opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-edit-${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  validate:
+    name: Validate PR
+    if: (! github.event.pull_request.draft)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: bcgov/actions/pr-validate@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+
+  results:
+    name: Validate Results
+    needs: [validate]
+    if: always()
+    runs-on: ubuntu-slim
+    timeout-minutes: 1
+    steps:
+      - uses: bcgov/actions/workflow-results@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+        with:
+          needs: ${{ toJson(needs) }}

@@ -16,6 +16,7 @@ const keycloak = new Keycloak({
 });
 const keycloakInitOptions = {
   onLoad: "check-sso",
+  checkLoginIframe: false,
   pkceMethod: "S256",
 };
 

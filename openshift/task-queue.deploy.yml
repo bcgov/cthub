@@ -1,0 +1,128 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: cthub-task-queue
+parameters:
+  - name: NAME
+    description: Module name
+    value: cthub
+    required: true
+  - name: COMPONENT
+    description: Component name
+    value: task-queue
+    required: true
+  - name: ZONE
+    description: Deployment zone, e.g. pr-123, dev, test, prod
+    required: true
+  - name: IMAGE_TAG
+    description: Container image tag or digest
+    required: true
+  - name: REGISTRY
+    description: Container registry
+    value: ghcr.io
+  - name: ORG_NAME
+    description: Organization or owner name
+    value: bcgov
+  - name: CPU_REQUEST
+    value: "60m"
+  - name: MEMORY_REQUEST
+    value: "450Mi"
+  - name: MEMORY_LIMIT
+    value: "1Gi"
+objects:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      replicas: 1
+      strategy:
+        type: Recreate
+      selector:
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
+      template:
+        metadata:
+          labels:
+            app: ${NAME}-${ZONE}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
+        spec:
+          terminationGracePeriodSeconds: 30
+          containers:
+            - name: task-queue
+              image: ${REGISTRY}/${ORG_NAME}/${NAME}/task-queue:${IMAGE_TAG}
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              env:
+                - name: DJANGO_DEBUG
+                  value: "False"
+                - name: DB_ENGINE
+                  value: django.db.backends.postgresql
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-dev-crunchy-pguser-postgres
+                      key: host
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-dev-crunchy-pguser-postgres
+                      key: port
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-name
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-patroni-app
+                      key: app-db-password
+                - name: DJANGO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-django
+                      key: DJANGO_SECRET_KEY
+                - name: MINIO_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-db-backup-s3
+                      key: AWS_ENDPOINT
+                - name: MINIO_USE_SSL
+                  value: "true"
+                - name: MINIO_ROOT_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-db-backup-s3
+                      key: AWS_ACCESS_KEY_ID
+                - name: MINIO_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: cthub-db-backup-s3
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: MINIO_BUCKET_NAME
+                  value: zevadv
+                - name: MINIO_PREFIX
+                  value: cthub-docs
+                - name: VINPOWER_ENDPOINT
+                  value: http://${NAME}-${ZONE}-vinpower:8080
+              volumeMounts:
+                - name: files
+                  mountPath: /files_for_processing
+          volumes:
+            - name: files
+              emptyDir:
+                sizeLimit: 1Gi
