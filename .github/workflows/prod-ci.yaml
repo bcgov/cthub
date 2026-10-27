@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: Ask for approval for CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} PRODUCTION deployment
-        uses: trstringer/manual-approval@v1.6.0
+        uses: trstringer/manual-approval@v1.13.1
         with:
           secret: ${{ github.TOKEN }}
           approvers: emi-hi,kuanfandevops,tim738745,JulianForeman
@@ -124,7 +124,7 @@ jobs:
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
       - name: Update frontend tag
-        uses: mikefarah/yq@v4.40.5
+        uses: mikefarah/yq@v4.54.1
         with:
           cmd: |
             yq -i '.frontend.image.tag = "${{ env.VERSION }}-${{ env.PRE_RELEASE }}"' cthub/values-prod.yaml
