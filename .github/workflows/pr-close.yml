@@ -22,9 +22,9 @@ jobs:
           cleanup: label
           cleanup_name: cthub-pr-${{ github.event.number }}
           target: pr-${{ github.event.number }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
+          oc_server: ${{ secrets.OPENSHIFT_SERVER }}
+          oc_token: ${{ secrets.OPENSHIFT_TOKEN }}
 
   results:
     name: Cleanup Results
