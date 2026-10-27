@@ -36,11 +36,11 @@ jobs:
       cache-hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.1.0
+        uses: actions/checkout@v7.0.1
 
       - name: Set up cache for OpenShift CLI
         id: cache
-        uses: actions/cache@v5.1.0
+        uses: actions/cache@v6.1.0
         with:
           path: /usr/local/bin/oc # Path where the `oc` binary will be installed
           key: oc-cli-${{ runner.os }}
@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Restore oc command from Cache
-        uses: actions/cache@v5.1.0
+        uses: actions/cache@v6.1.0
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
@@ -99,7 +99,7 @@ jobs:
           issue-title: "CTHUB release-${{ env.VERSION }}-${{ env.PRE_RELEASE }} PRODUCTION Deployment"
 
       - name: Restore oc command from Cache
-        uses: actions/cache@v5.1.0
+        uses: actions/cache@v6.1.0
         with:
           path: /usr/local/bin/oc
           key: oc-cli-${{ runner.os }}
@@ -117,7 +117,7 @@ jobs:
           oc tag ${{ env.TEST_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }} ${{ env.PROD_NAMESPACE }}/cthub-vinpower:${{ env.VERSION }}-${{ env.PRE_RELEASE }}
 
       - name: Checkout Manifest repository
-        uses: actions/checkout@v6.1.0
+        uses: actions/checkout@v7.0.1
         with:
           repository: bcgov-c/tenant-gitops-30b186
           ref: main
