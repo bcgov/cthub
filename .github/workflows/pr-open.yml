@@ -93,9 +93,9 @@ jobs:
       - uses: bcgov/actions-openshift/deployer@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
         with:
           file: ${{ matrix.file }}
-          oc_namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
-          oc_server: ${{ secrets.OPENSHIFT_SERVER }}
-          oc_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
           parameters: -p ZONE="pr-${{ github.event.number }}" -p NAME="cthub" -p IMAGE_TAG="${{ github.event.pull_request.head.sha }}"
           triggers: |
             django/
