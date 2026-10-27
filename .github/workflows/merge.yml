@@ -56,11 +56,6 @@ jobs:
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           parameters: ${{ matrix.parameters }}
-          triggers: |
-            django/
-            frontend/
-            openshift/
-            .github/workflows/merge.yml
 
   results:
     name: Merge Results
