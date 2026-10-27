@@ -1,4 +1,4 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 import io
 import uuid
 import pandas as pd
@@ -33,7 +33,7 @@ def trim_all_columns(df):
 
 def extract_data(excel_file, sheet_name, header_row):
     try:
-        file_wrapper = io.BytesIO(excel_file)
+        file_wrapper = io.BytesIO(excel_file) if isinstance(excel_file, (bytes, bytearray)) else excel_file
         df = pd.read_excel(file_wrapper, sheet_name, header=header_row)
         df = trim_all_columns(df)
         return df
@@ -131,7 +131,7 @@ def transform_data(
                             if value != converted_value:
                                 file_adjusted = True
                                 row_dict[column] = converted_value
-                        except (ValueError, TypeError):
+                        except (ValueError, TypeError, InvalidOperation):
                             if column not in errors_and_warnings:
                                 errors_and_warnings[column] = {}
                             if "incorrect_type" not in errors_and_warnings[column]:
@@ -221,7 +221,7 @@ def import_from_xls(
     field_types,
     replace_data,
     user,
-    temp_cleaned_dataset,
+    temp_cleaned_dataset=None,
     preparation_functions=[],
     validation_functions=[],
     check_for_warnings=True,
