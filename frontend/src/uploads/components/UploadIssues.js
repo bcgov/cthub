@@ -12,7 +12,7 @@ import UploadIssuesDetail from "./UploadIssuesDetail";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DownloadIcon from "@mui/icons-material/Download";
 import getSpreadsheetRows from "../utilities/downloadIssues";
-import { writeFile, utils } from "xlsx";
+import { writeFile, utils } from "@e965/xlsx";
 
 const UploadIssues = ({
   confirmUpload,
