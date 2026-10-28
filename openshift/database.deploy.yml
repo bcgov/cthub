@@ -16,7 +16,7 @@ parameters:
     value: postgres
   - name: PG_VERSION
     description: Tag for DB_IMAGE
-    value: "15"
+    value: "17"
   - name: DB_PVC_SIZE
     description: Volume space available for data
     value: 256Mi
