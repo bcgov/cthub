@@ -61,10 +61,10 @@ jobs:
         include:
           - name: backend
             file: openshift/backend.deploy.yml
-            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p MINIO_BUCKET_NAME="zevapp" -p ENABLE_KEYCLOAK="true"
+            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p DB_HOST_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p MINIO_BUCKET_NAME="zevapp" -p ENABLE_KEYCLOAK="true"
           - name: task-queue
             file: openshift/task-queue.deploy.yml
-            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p MINIO_BUCKET_NAME="zevapp"
+            parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p DB_HOST_SECRET_NAME="cthub-prod-crunchy-pguser-postgres" -p MINIO_BUCKET_NAME="zevapp"
           - name: frontend
             file: openshift/frontend.deploy.yml
             parameters: -p ZONE="prod" -p NAME="cthub" -p IMAGE_TAG="${{ needs.init.outputs.pr }}" -p ENABLE_KEYCLOAK="true" -p KEYCLOAK_URL="https://loginproxy.gov.bc.ca/auth/"
