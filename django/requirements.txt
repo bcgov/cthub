@@ -21,6 +21,6 @@ openpyxl==3.1.5
 minio==7.2.20
 xlsxwriter==3.2.9
 xmltodict==1.0.4
-dnspython==2.8.0
+dnspython==2.9.0
 email-validator==2.3.0
 djangorestframework-camel-case==1.4.2
