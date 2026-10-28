@@ -2,7 +2,7 @@ black==26.10.1
 croniter==6.2.4
 Django==6.0.8
 psycopg==3.3.6
-djangorestframework==3.17.1
+djangorestframework==3.18.2
 django-filter==25.2
 django-cors-headers==4.9.0
 django-picklefield==3.4.0
