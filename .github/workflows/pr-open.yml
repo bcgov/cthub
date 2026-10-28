@@ -68,13 +68,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: bcgov/actions-openshift/deployer@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         with:
           file: openshift/database.deploy.yml
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: "false"
-          parameters: -p ZONE="pr-${{ github.event.number }}" -p NAME="cthub"
+          parameters: -p ZONE="pr-${{ github.event.number }}" -p NAME="cthub" -p DB_PASSWORD="$DB_PASSWORD"
           triggers: |
             django/
             frontend/
