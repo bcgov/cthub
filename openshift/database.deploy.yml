@@ -1,0 +1,161 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+parameters:
+  - name: NAME
+    description: Product name
+    value: cthub
+    required: true
+  - name: COMPONENT
+    description: Component name
+    value: database
+  - name: ZONE
+    description: Deployment zone, e.g. pr-### or prod
+    required: true
+  - name: DB_IMAGE
+    description: Database image repository
+    value: postgres
+  - name: PG_VERSION
+    description: Tag for DB_IMAGE
+    value: "15"
+  - name: DB_PVC_SIZE
+    description: Volume space available for data
+    value: 256Mi
+  - name: DB_PASSWORD
+    description: Password for the PostgreSQL connection user.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+  - name: MEMORY_LIMIT
+    description: Memory limit for the database container.
+    value: 1Gi
+
+objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${NAME}-${ZONE}-database
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      database-name: ${NAME}
+      database-password: ${DB_PASSWORD}
+      database-user: ${NAME}
+      database-host: ${NAME}-${ZONE}-${COMPONENT}
+      database-port: "5432"
+
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      serviceName: ${NAME}-${ZONE}-${COMPONENT}
+      replicas: 1
+      selector:
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
+      template:
+        metadata:
+          labels:
+            app: ${NAME}-${ZONE}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
+        spec:
+          terminationGracePeriodSeconds: 60
+          containers:
+            - name: ${NAME}-${ZONE}
+              image: ${DB_IMAGE}:${PG_VERSION}
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 5432
+              env:
+                - name: PGDATA
+                  value: /var/lib/postgresql/data/pgdata
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-database
+                      key: database-name
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-database
+                      key: database-password
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-database
+                      key: database-user
+
+              volumeMounts:
+                - name: data
+                  mountPath: /var/lib/postgresql/data
+                - name: socket-dir
+                  mountPath: /var/run/postgresql
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 256Mi
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+              readinessProbe:
+                exec:
+                  command:
+                    - pg_isready
+                    - -d
+                    - $(POSTGRES_DB)
+                    - -U
+                    - $(POSTGRES_USER)
+                successThreshold: 1
+                failureThreshold: 5
+                initialDelaySeconds: 15
+                periodSeconds: 15
+                timeoutSeconds: 10
+              livenessProbe:
+                exec:
+                  command:
+                    - pg_isready
+                    - -d
+                    - $(POSTGRES_DB)
+                    - -U
+                    - $(POSTGRES_USER)
+                successThreshold: 1
+                failureThreshold: 5
+                initialDelaySeconds: 30
+                periodSeconds: 15
+                timeoutSeconds: 10
+          volumes:
+            - name: socket-dir
+              emptyDir: {}
+      volumeClaimTemplates:
+        - metadata:
+            labels:
+              app: ${NAME}-${ZONE}
+            name: data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: netapp-block-standard
+            resources:
+              requests:
+                storage: ${DB_PVC_SIZE}
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      ports:
+        - name: postgresql
+          port: 5432
+          targetPort: 5432
+      selector:
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
