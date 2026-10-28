@@ -1,4 +1,4 @@
-black==26.3.1
+black==26.10.1
 croniter==6.2.4
 Django==6.0.8
 psycopg==3.3.6
