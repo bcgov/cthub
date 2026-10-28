@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: postgres:17.0
+    image: postgres:17.10
     environment:
       - POSTGRES_DB=cthub
       - POSTGRES_USER=postgres
