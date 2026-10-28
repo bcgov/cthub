@@ -72,9 +72,8 @@ class UploadTests(TestCase):
             preparation_functions=[prepare_scrap_it]
         )
 
-        self.assertFalse(response['success'])
-        self.assertIn("Row 1: Incorrect type for 'vin'", response['errors'][0])
-        self.assertIn("Row 1: Incorrect type for 'application_city_fuel'", response['errors'][1])
+        self.assertTrue(response['warning'])
+        self.assertIn('App City Fuel', response['errors_and_warnings'])
 
     def test_missing_columns(self):
 
@@ -121,9 +120,9 @@ class UploadTests(TestCase):
             preparation_functions=[prepare_scrap_it]
         )
 
-        self.assertFalse(response["success"])
-
-        self.assertIn("Missing columns: VIN, App City Fuel", response["errors"][0])
+        self.assertTrue(response["warning"])
+        self.assertIn("Headers", response["errors_and_warnings"])
+        self.assertIn("Missing Headers", response["errors_and_warnings"]["Headers"])
 
     def test_missing_worksheet(self):
 
@@ -174,8 +173,9 @@ class UploadTests(TestCase):
             preparation_functions=[prepare_scrap_it]
         )
 
-        self.assertFalse(response["success"])
-        self.assertIn("Worksheet named 'TOP OTHER TRANSACTIONS' not found", response["errors"][0])
+        self.assertTrue(response["warning"])
+        self.assertIn("Spreadsheet", response["errors_and_warnings"])
+        self.assertIn("Missing Worksheet", response["errors_and_warnings"]["Spreadsheet"])
 
     def test_successful_upload(self):
 
@@ -223,7 +223,8 @@ class UploadTests(TestCase):
             field_types=self.field_types,
             replace_data=False,
             user='Tester',
-            preparation_functions=[prepare_scrap_it]
+            preparation_functions=[prepare_scrap_it],
+            check_for_warnings=False,
         )
 
         self.assertTrue(response["success"])
