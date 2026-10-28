@@ -27,21 +27,6 @@ def schedule_read_uploaded_vins_file():
         pass
 
 
-def schedule_batch_decode_vins_vpic():
-    try:
-        schedule(
-            "workers.tasks.batch_decode_vins",
-            "vpic",
-            50,
-            name="vpic_batch_decode_vins",
-            schedule_type="C",
-            cron="*/2 * * * *",
-            q_options={"timeout": 105, "ack_failure": True},
-        )
-    except IntegrityError:
-        pass
-
-
 def schedule_remove_cleaned_datasets():
     try:
         schedule(
@@ -59,6 +44,8 @@ def cleanup_obsolete_schedules():
     try:
         from django_q.models import Schedule
 
-        Schedule.objects.filter(name="vinpower_batch_decode_vins").delete()
+        Schedule.objects.filter(
+            name__in=["vinpower_batch_decode_vins", "vpic_batch_decode_vins"]
+        ).delete()
     except Exception:
         pass

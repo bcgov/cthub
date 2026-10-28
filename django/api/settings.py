@@ -202,16 +202,6 @@ Q_CLUSTER = {
     "max_rss": 300000,
 }
 
-MAX_DECODE_ATTEMPTS = os.getenv("MAX_DECODE_ATTEMPTS", 5)
-
-VPIC_ENDPOINT = os.getenv(
-    "VPIC_ENDPOINT",
-    "https://vpic.nhtsa.dot.gov/api/vehicles",
-)
-VPIC_VIN_KEY = os.getenv("VPIC_VIN_KEY", "VIN")
-VPIC_ERROR_CODE_NAME = os.getenv("VPIC_ERROR_CODE_NAME", "ErrorCode")
-VPIC_SUCCESS_ERROR_CODE = os.getenv("VPIC_SUCCESS_ERROR_CODE", "0")
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
