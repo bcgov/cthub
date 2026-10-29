@@ -32,7 +32,6 @@
     "@e965/xlsx": "^0.20.3"
   },
   "devDependencies": {
-    "css-loader": "^5.2.7",
     "prettier": "3.9.10",
     "sass": "^1.43.4",
     "sass-loader": "^11.1.1",
