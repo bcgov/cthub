@@ -8,7 +8,7 @@
     "@mui/icons-material": "^5.2.0",
     "@mui/material": "^5.2.2",
     "@mui/styles": "^5.2.2",
-    "axios": "^0.24.0",
+    "axios": "^0.34.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "immer": "^10.0.4",
