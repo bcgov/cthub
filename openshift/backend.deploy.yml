@@ -31,6 +31,27 @@ parameters:
   - name: CRUNCHY_SECRET_NAME
     description: Secret containing host and port for Crunchy PostgreSQL
     value: cthub-dev-crunchy-pguser-postgres
+  - name: DB_HOST_SECRET_NAME
+    description: Secret containing the database host and port
+    value: cthub-dev-crunchy-pguser-postgres
+  - name: DB_HOST_KEY
+    description: Key within DB_HOST_SECRET_NAME for the database host
+    value: host
+  - name: DB_PORT_KEY
+    description: Key within DB_HOST_SECRET_NAME for the database port
+    value: port
+  - name: DB_NAME_SECRET_NAME
+    description: Secret containing the database name, username, and password
+    value: cthub-patroni-app
+  - name: DB_NAME_KEY
+    description: Key within DB_NAME_SECRET_NAME for the database name
+    value: app-db-name
+  - name: DB_USER_KEY
+    description: Key within DB_NAME_SECRET_NAME for the database username
+    value: app-db-username
+  - name: DB_PASSWORD_KEY
+    description: Key within DB_NAME_SECRET_NAME for the database password
+    value: app-db-password
   - name: MINIO_BUCKET_NAME
     description: MinIO bucket name
     value: zevadv
@@ -91,28 +112,28 @@ objects:
                 - name: DB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: ${CRUNCHY_SECRET_NAME}
-                      key: host
+                      name: ${DB_HOST_SECRET_NAME}
+                      key: ${DB_HOST_KEY}
                 - name: DB_PORT
                   valueFrom:
                     secretKeyRef:
-                      name: ${CRUNCHY_SECRET_NAME}
-                      key: port
+                      name: ${DB_HOST_SECRET_NAME}
+                      key: ${DB_PORT_KEY}
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-patroni-app
-                      key: app-db-name
+                      name: ${DB_NAME_SECRET_NAME}
+                      key: ${DB_NAME_KEY}
                 - name: DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-patroni-app
-                      key: app-db-username
+                      name: ${DB_NAME_SECRET_NAME}
+                      key: ${DB_USER_KEY}
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-patroni-app
-                      key: app-db-password
+                      name: ${DB_NAME_SECRET_NAME}
+                      key: ${DB_PASSWORD_KEY}
                 - name: DJANGO_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
@@ -146,28 +167,28 @@ objects:
                 - name: DB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: ${CRUNCHY_SECRET_NAME}
-                      key: host
+                      name: ${DB_HOST_SECRET_NAME}
+                      key: ${DB_HOST_KEY}
                 - name: DB_PORT
                   valueFrom:
                     secretKeyRef:
-                      name: ${CRUNCHY_SECRET_NAME}
-                      key: port
+                      name: ${DB_HOST_SECRET_NAME}
+                      key: ${DB_PORT_KEY}
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-patroni-app
-                      key: app-db-name
+                      name: ${DB_NAME_SECRET_NAME}
+                      key: ${DB_NAME_KEY}
                 - name: DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-patroni-app
-                      key: app-db-username
+                      name: ${DB_NAME_SECRET_NAME}
+                      key: ${DB_USER_KEY}
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: cthub-patroni-app
-                      key: app-db-password
+                      name: ${DB_NAME_SECRET_NAME}
+                      key: ${DB_PASSWORD_KEY}
                 - name: KEYCLOAK_CLIENT_ID
                   valueFrom:
                     secretKeyRef:

@@ -53,9 +53,33 @@ jobs:
             ${{ github.event.pull_request.head.sha }}
           tag_fallback: latest
 
+  deploy-database:
+    name: Deploy Database
+    needs: [builds]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bcgov/actions-openshift/deployer@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        with:
+          file: openshift/database.deploy.yml
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: "false"
+          parameters: -p ZONE="pr-${{ github.event.number }}" -p NAME="cthub" -p DB_PASSWORD="$DB_PASSWORD"
+          triggers: |
+            django/
+            frontend/
+            spring/
+            openshift/
+            .github/workflows/pr-open.yml
+
   deploys:
     name: Deploys (${{ matrix.name }})
-    needs: [builds]
+    needs: [builds, deploy-database]
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
@@ -64,10 +88,27 @@ jobs:
         include:
           - name: backend
             file: openshift/backend.deploy.yml
+            parameters: >-
+              -p DB_HOST_SECRET_NAME="cthub-pr-${{ github.event.number }}-database"
+              -p DB_HOST_KEY="database-host"
+              -p DB_PORT_KEY="database-port"
+              -p DB_NAME_SECRET_NAME="cthub-pr-${{ github.event.number }}-database"
+              -p DB_NAME_KEY="database-name"
+              -p DB_USER_KEY="database-user"
+              -p DB_PASSWORD_KEY="database-password"
           - name: task-queue
             file: openshift/task-queue.deploy.yml
+            parameters: >-
+              -p DB_HOST_SECRET_NAME="cthub-pr-${{ github.event.number }}-database"
+              -p DB_HOST_KEY="database-host"
+              -p DB_PORT_KEY="database-port"
+              -p DB_NAME_SECRET_NAME="cthub-pr-${{ github.event.number }}-database"
+              -p DB_NAME_KEY="database-name"
+              -p DB_USER_KEY="database-user"
+              -p DB_PASSWORD_KEY="database-password"
           - name: frontend
             file: openshift/frontend.deploy.yml
+            parameters: ""
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: bcgov/actions-openshift/deployer@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
@@ -76,7 +117,7 @@ jobs:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          parameters: -p ZONE="pr-${{ github.event.number }}" -p NAME="cthub" -p IMAGE_TAG="${{ github.event.pull_request.head.sha }}"
+          parameters: -p ZONE="pr-${{ github.event.number }}" -p NAME="cthub" -p IMAGE_TAG="${{ github.event.pull_request.head.sha }}" ${{ matrix.parameters }}
           triggers: |
             django/
             frontend/
@@ -143,7 +184,7 @@ jobs:
 
   results:
     name: PR Results
-    needs: [builds, deploys, tests, comment]
+    needs: [builds, deploy-database, deploys, tests, comment]
     if: always()
     runs-on: ubuntu-slim
     timeout-minutes: 1
