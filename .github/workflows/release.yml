@@ -78,9 +78,38 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           parameters: ${{ matrix.parameters }}
 
+  # Disaster-recovery database backups and restore CronJobs for PROD environments.
+  # Deployed with overwrite: true so S3 credential rotation and schedule changes
+  # update in-cluster immediately without touching the core database StatefulSet.
+  backup:
+    name: Deploy (backup)
+    environment: prod
+    needs: [init]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bcgov/actions-openshift/deployer@46f2614322f7ba1a5ad88a7e4e1b98569c80dcf7 # v0.6.0
+        env:
+          S3_USER: ${{ secrets.S3_USER }}
+          S3_PASSWORD: ${{ secrets.S3_PASSWORD }}
+        with:
+          file: openshift/backup.deploy.yml
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: "true"
+          parameters: >-
+            -p S3_BUCKET="${{ vars.S3_BUCKET }}"
+            -p S3_ENDPOINT="${{ vars.S3_ENDPOINT }}"
+            -p S3_USER="$S3_USER"
+            -p S3_PASSWORD="$S3_PASSWORD"
+            -p ZONE="prod"
+            -p NAME="cthub"
+
   promote:
     name: Promote Images
-    needs: [init, deploys]
+    needs: [init, deploys, backup]
     runs-on: ubuntu-slim
     permissions:
       packages: write
@@ -98,7 +127,7 @@ jobs:
 
   results:
     name: Release Results
-    needs: [init, deploys, promote]
+    needs: [init, deploys, backup, promote]
     if: always()
     runs-on: ubuntu-slim
     timeout-minutes: 1
