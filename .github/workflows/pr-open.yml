@@ -41,13 +41,6 @@ jobs:
             triggers: |
               django/
               .github/workflows/pr-open.yml
-          # vinpower pending ARTIFACTORY_URL secret access
-          # - package: vinpower
-          #   context: spring
-          #   file: spring/Dockerfile-Openshift
-          #   triggers: |
-          #     spring/
-          #     .github/workflows/pr-open.yml
     steps:
       - uses: bcgov/actions/builder@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
         with:
@@ -93,9 +86,6 @@ jobs:
       matrix:
         name: [backend, task-queue, frontend]
         include:
-          # vinpower pending ARTIFACTORY_URL secret access
-          # - name: vinpower
-          #   file: openshift/vinpower.deploy.yml
           - name: backend
             file: openshift/backend.deploy.yml
             parameters: >-
@@ -131,7 +121,6 @@ jobs:
           triggers: |
             django/
             frontend/
-            spring/
             openshift/
             .github/workflows/pr-open.yml
 
@@ -148,7 +137,6 @@ jobs:
           triggers: |
             django/
             frontend/
-            spring/
             openshift/
             .github/workflows/pr-open.yml
       - name: Wait for backend healthcheck
@@ -182,7 +170,6 @@ jobs:
           triggers: |
             django/
             frontend/
-            spring/
             openshift/
             .github/workflows/pr-open.yml
       - name: Post Deploy Links

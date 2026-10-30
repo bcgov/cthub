@@ -144,8 +144,6 @@ objects:
                   value: ${MINIO_BUCKET_NAME}
                 - name: MINIO_PREFIX
                   value: cthub-docs
-                - name: VINPOWER_ENDPOINT
-                  value: http://${NAME}-${ZONE}-vinpower:8080
               volumeMounts:
                 - name: files
                   mountPath: /files_for_processing

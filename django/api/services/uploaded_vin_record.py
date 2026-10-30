@@ -3,7 +3,7 @@ from api.models.uploaded_vins_file import UploadedVinsFile
 from api.models.uploaded_vin_record import UploadedVinRecord
 from api.utilities.icbc import get_record
 from api.services.icbc import write_to_disk
-from api.constants.decoder import get_service, ICBC_FILE
+from api.constants.decoder import ICBC_FILE
 from django.utils import timezone
 
 
@@ -53,27 +53,3 @@ def save_vins(file_response, headers):
             uploaded_vin_records_to_create, ignore_conflicts=True
         )
     return end_of_file
-
-
-def get_decode_successful(service_name, uploaded_record):
-    service = get_service(service_name)
-    if service:
-        return getattr(uploaded_record, service.DECODE_SUCCESSFUL.value)
-
-
-def set_decode_successful(service_name, uploaded_record, value):
-    service = get_service(service_name)
-    if service:
-        setattr(uploaded_record, service.DECODE_SUCCESSFUL.value, value)
-
-
-def get_number_of_decode_attempts(service_name, uploaded_record):
-    service = get_service(service_name)
-    if service:
-        return getattr(uploaded_record, service.NUMBER_OF_DECODE_ATTEMPTS.value)
-
-
-def set_number_of_decode_attempts(service_name, uploaded_record, value):
-    service = get_service(service_name)
-    if service:
-        setattr(uploaded_record, service.NUMBER_OF_DECODE_ATTEMPTS.value, value)

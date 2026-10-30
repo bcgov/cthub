@@ -1,10 +1,7 @@
 from django.conf import settings
 from api.services.minio import get_minio_client, get_minio_object
 from api.models.uploaded_vins_file import UploadedVinsFile
-from api.models.uploaded_vin_record import UploadedVinRecord
-from api.constants.decoder import get_service
 from api.services.uploaded_vins_file import get_file_to_process
-from api.services.decoded_vin_record import save_decoded_data
 from api.services.uploaded_vin_record import parse_and_save
 from api.services.icbc import icbc_parse_and_save
 from api.constants.decoder import FILE_PROCESSING_DIRECTORY
@@ -46,34 +43,6 @@ def read_uploaded_vins_file():
             icbc_parse_and_save(vins_file, file_response)
         else:
             parse_and_save(vins_file, file_response)
-        
-
-
-def batch_decode_vins(service_name, batch_size=50):
-    max_decode_attempts = settings.MAX_DECODE_ATTEMPTS
-    service = get_service(service_name)
-    if service:
-        filters = {
-            service.DECODE_SUCCESSFUL.value: False,
-            service.NUMBER_OF_DECODE_ATTEMPTS.value + "__lt": max_decode_attempts,
-        }
-        order_by = [
-            service.NUMBER_OF_DECODE_ATTEMPTS.value,
-            "create_timestamp",
-        ]
-        uploaded_vin_records = (
-            UploadedVinRecord.objects.only("vin")
-            .filter(**filters)
-            .order_by(*order_by)[:batch_size]
-        )
-        decoder = service.BATCH_DECODER.value
-        decoded_data = decoder(uploaded_vin_records)
-        with transaction.atomic():
-            save_decoded_data(
-                uploaded_vin_records,
-                service_name,
-                decoded_data,
-            )
 
 
 def remove_cleaned_datasets():
