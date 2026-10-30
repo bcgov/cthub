@@ -23,7 +23,7 @@ jobs:
       pull-requests: read
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       # PR number for the release's commit (a squash merge to main)
@@ -53,7 +53,7 @@ jobs:
     name: PROD Deploys (${{ matrix.name }})
     needs: [init]
     environment: prod
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       matrix:
