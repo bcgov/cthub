@@ -5,9 +5,9 @@
   "dependencies": {
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
-    "@mui/icons-material": "^5.2.0",
-    "@mui/material": "^5.2.2",
-    "@mui/styles": "^5.2.2",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.0",
+    "@mui/styles": "^6.0.0",
     "axios": "^1.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
