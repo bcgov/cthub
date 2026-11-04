@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM eclipse-temurin:25-jdk-jammy AS builder
 
 ARG ARTIFACTORY_URL
 ARG ARTIFACTORY_USER
@@ -23,7 +23,7 @@ RUN ./mvnw dependency:resolve
 
 COPY src ./src
 
-FROM eclipse-temurin:17-jdk-jammy
+FROM eclipse-temurin:25-jdk-jammy
 
 WORKDIR /app
 ENV HOME=/tmp
