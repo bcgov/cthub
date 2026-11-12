@@ -80,7 +80,7 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: bcgov/actions/test-and-analyse@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+      - uses: bcgov/actions/test-and-analyse@d209bb08aabe15e5e69aca53b24d338a7b2843d5 # v0.12.0
         env:
           DB_HOST: localhost
           DB_PORT: "5432"
@@ -109,6 +109,6 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 1
     steps:
-      - uses: bcgov/actions/workflow-results@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+      - uses: bcgov/actions/workflow-results@d209bb08aabe15e5e69aca53b24d338a7b2843d5 # v0.12.0
         with:
           needs: ${{ toJson(needs) }}
