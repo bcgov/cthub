@@ -1,12 +1,11 @@
 import React, { useCallback, useRef, useState } from "react";
-import { withRouter } from "react-router-dom";
 
 import { getFilters, getOrderBy } from "../app/utilities/reactTable";
 import IcbcDataTable from "./components/IcbcDataTable";
 import ROUTES from "./routes";
 import useAxios from "../app/utilities/useAxios";
 
-const IcbcDataContainer = () => {
+export const IcbcDataContainer = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(-1);
@@ -55,5 +54,3 @@ const IcbcDataContainer = () => {
     </div>
   );
 };
-
-export default withRouter(IcbcDataContainer);

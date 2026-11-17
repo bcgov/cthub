@@ -1,4 +1,3 @@
-import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Alert } from "@mui/material";
 import React, { useState, useEffect, useCallback } from "react";
@@ -9,7 +8,7 @@ import useAxios from "../app/utilities/useAxios";
 import AlertDialog from "../app/components/AlertDialog";
 import Loading from "../app/components/Loading";
 
-const UsersContainer = (props) => {
+export const UsersContainer = (props) => {
   const { currentUser } = props;
 
   const [loading, setLoading] = useState(false);
@@ -149,4 +148,3 @@ const UsersContainer = (props) => {
 UsersContainer.propTypes = {
   currentUser: PropTypes.string.isRequired,
 };
-export default withRouter(UsersContainer);

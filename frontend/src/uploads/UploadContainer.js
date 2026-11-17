@@ -1,17 +1,15 @@
-import { withRouter } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Paper, Alert, Stack } from "@mui/material";
 import ROUTES_UPLOAD from "./routes";
 import ROUTES_USERS from "../users/routes";
 import UploadPage from "./components/UploadPage";
 import AlertDialog from "../app/components/AlertDialog";
-import UsersContainer from "../users/UsersContainer";
 import Loading from "../app/components/Loading";
 import useAxios from "../app/utilities/useAxios";
-import WarningsList from "./components/WarningsList";
 import UploadIssues from "./components/UploadIssues";
+import { UsersContainer } from "../users/UsersContainer";
 
-const UploadContainer = () => {
+export const UploadContainer = () => {
   const [uploadFiles, setUploadFiles] = useState([]); // array of objects for files to be uploaded
   const [datasetList, setDatasetList] = useState([{}]); // holds the array of names of datasets
   const [loading, setLoading] = useState(false);
@@ -457,5 +455,3 @@ const UploadContainer = () => {
     </div>
   );
 };
-
-export default withRouter(UploadContainer);
