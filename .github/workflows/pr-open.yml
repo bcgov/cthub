@@ -106,6 +106,7 @@ jobs:
               -p DB_NAME_KEY="database-name"
               -p DB_USER_KEY="database-user"
               -p DB_PASSWORD_KEY="database-password"
+              -p ENABLE_KEYCLOAK="false"
           - name: task-queue
             file: openshift/task-queue.deploy.yml
             parameters: >-
@@ -118,7 +119,8 @@ jobs:
               -p DB_PASSWORD_KEY="database-password"
           - name: frontend
             file: openshift/frontend.deploy.yml
-            parameters: ""
+            parameters: >-
+              -p ENABLE_KEYCLOAK="false"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: bcgov/actions-openshift/deployer@a7a039ba45f9635c0bdbcc6b4cdbd2555811e100 # v0.8.0
