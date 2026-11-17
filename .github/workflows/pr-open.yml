@@ -28,26 +28,26 @@ jobs:
             file: django/Dockerfile-Openshift
             triggers: |
               django/
-              .github/workflows/pr-open.yml
+              .github/workflows/*.yml
           - package: frontend
             context: frontend
             file: frontend/Dockerfile-Openshift
             triggers: |
               frontend/
-              .github/workflows/pr-open.yml
+              .github/workflows/*.yml
           - package: task-queue
             context: django
             file: django/Dockerfile.taskq.Openshift
             triggers: |
               django/
-              .github/workflows/pr-open.yml
+              .github/workflows/*.yml
           # vinpower pending ARTIFACTORY_URL secret access
           # - package: vinpower
           #   context: spring
           #   file: spring/Dockerfile-Openshift
           #   triggers: |
           #     spring/
-          #     .github/workflows/pr-open.yml
+          #     .github/workflows/*.yml
     steps:
       - uses: bcgov/actions/builder@d209bb08aabe15e5e69aca53b24d338a7b2843d5 # v0.12.0
         with:
@@ -82,7 +82,7 @@ jobs:
             frontend/
             spring/
             openshift/
-            .github/workflows/pr-open.yml
+            .github/workflows/*.yml
 
   deploys:
     name: Deploys (${{ matrix.name }})
@@ -133,7 +133,7 @@ jobs:
             frontend/
             spring/
             openshift/
-            .github/workflows/pr-open.yml
+            .github/workflows/*.yml
 
   tests:
     name: Health Check
@@ -150,7 +150,7 @@ jobs:
             frontend/
             spring/
             openshift/
-            .github/workflows/pr-open.yml
+            .github/workflows/*.yml
       - name: Wait for backend healthcheck
         if: steps.triggers.outputs.triggered == 'true'
         run: |
@@ -184,7 +184,7 @@ jobs:
             frontend/
             spring/
             openshift/
-            .github/workflows/pr-open.yml
+            .github/workflows/*.yml
       - name: Post Deploy Links
         if: steps.triggers.outputs.triggered == 'true'
         uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
