@@ -1,10 +1,10 @@
 import axios from "axios";
 import useKeycloak from "./useKeycloak";
 import { API_BASE } from "../../config";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const useAxios = (useDefault = false, opts = {}) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const keycloak = useKeycloak();
   if (useDefault) {
     return axios.create(opts);
@@ -22,7 +22,7 @@ const useAxios = (useDefault = false, opts = {}) => {
         };
       } catch (error) {
         keycloak.logout();
-        history.push("/upload");
+        navigate("/upload");
       }
     }
     return config;

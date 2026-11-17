@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
 import Keycloak from "keycloak-js";
 
 import KeycloakProvider from "./app/components/KeycloakProvider";
@@ -20,7 +20,10 @@ const keycloakInitOptions = {
   pkceMethod: "S256",
 };
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <KeycloakProvider
     authClient={keycloak}
     initOptions={keycloakInitOptions}
