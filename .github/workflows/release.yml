@@ -65,6 +65,7 @@ jobs:
               -p ZONE="prod"
               -p NAME="cthub"
               -p IMAGE_TAG="${{ needs.init.outputs.pr }}"
+              -p REPLICAS="2"
               -p CRUNCHY_SECRET_NAME="cthub-prod-crunchy-pguser-postgres"
               -p DB_HOST_SECRET_NAME="cthub-prod-crunchy-pguser-postgres"
               -p MINIO_BUCKET_NAME="zevapr"
@@ -84,6 +85,7 @@ jobs:
               -p ZONE="prod"
               -p NAME="cthub"
               -p IMAGE_TAG="${{ needs.init.outputs.pr }}"
+              -p REPLICAS="2"
               -p ENABLE_KEYCLOAK="true"
               -p KEYCLOAK_URL="https://loginproxy.gov.bc.ca/auth/"
     steps:
