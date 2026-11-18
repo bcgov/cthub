@@ -65,7 +65,7 @@ objects:
         app: ${NAME}-${ZONE}
         deployment: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      replicas: 1
+      replicas: 2
       selector:
         matchLabels:
           deployment: ${NAME}-${ZONE}-${COMPONENT}
