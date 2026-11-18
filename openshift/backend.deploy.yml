@@ -97,8 +97,28 @@ objects:
                 - /bin/sh
                 - -c
                 - |
-                  echo "Running database migrations..."
-                  python manage.py migrate --noinput
+                  python manage.py shell -c '
+                  from django.core.management import call_command
+                  from django.db import connection
+
+                  lock_params = ["cthub", "django-migrations"]
+                  print("Waiting for the database migration lock...")
+                  with connection.cursor() as cursor:
+                      cursor.execute(
+                          "SELECT pg_advisory_lock(hashtext(%s), hashtext(%s))",
+                          lock_params,
+                      )
+
+                  try:
+                      print("Running database migrations...")
+                      call_command("migrate", interactive=False)
+                  finally:
+                      with connection.cursor() as cursor:
+                          cursor.execute(
+                              "SELECT pg_advisory_unlock(hashtext(%s), hashtext(%s))",
+                              lock_params,
+                          )
+                  '
               resources:
                 requests:
                   cpu: 50m
