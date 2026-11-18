@@ -73,7 +73,7 @@ objects:
         app: ${NAME}-${ZONE}
         deployment: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       selector:
         matchLabels:
           deployment: ${NAME}-${ZONE}-${COMPONENT}
