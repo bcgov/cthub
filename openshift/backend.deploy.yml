@@ -16,6 +16,9 @@ parameters:
   - name: IMAGE_TAG
     description: Container image tag or digest
     required: true
+  - name: REPLICAS
+    description: Number of deployment replicas
+    value: "1"
   - name: REGISTRY
     description: Container registry
     value: ghcr.io
@@ -70,7 +73,7 @@ objects:
         app: ${NAME}-${ZONE}
         deployment: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      replicas: 2
+      replicas: ${REPLICAS}
       selector:
         matchLabels:
           deployment: ${NAME}-${ZONE}-${COMPONENT}
