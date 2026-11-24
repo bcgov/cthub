@@ -32,6 +32,8 @@ jobs:
     name: TEST Deploys (${{ matrix.name }})
     needs: [init]
     environment: test
+    permissions:
+      contents: read
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:

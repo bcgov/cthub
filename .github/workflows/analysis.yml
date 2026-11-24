@@ -62,6 +62,8 @@ jobs:
 
   backend-tests:
     name: Backend Tests
+    permissions:
+      contents: read
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     services:
