@@ -92,7 +92,7 @@ jobs:
               -p KEYCLOAK_URL="https://loginproxy.gov.bc.ca/auth/"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: bcgov/actions-openshift/deployer@45d8c7f7d0d5e3b15786cb99a83f410e01547133 # v0.9.0
+      - uses: bcgov/actions-openshift/deployer@510a8105fdffbb718094e8a093e638132e300975 # v0.10.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
