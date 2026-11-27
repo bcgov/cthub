@@ -19,7 +19,7 @@ pytest==9.2.0
 pytest-check==3.1.0
 openpyxl==3.1.5
 minio==7.2.20
-xlsxwriter==3.3.1
+xlsxwriter==3.3.2
 xmltodict==1.0.4
 dnspython==2.9.2
 email-validator==2.4.0
