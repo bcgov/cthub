@@ -46,7 +46,7 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab (PR)
         if: always() && github.event_name == 'pull_request'
-        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           category: "trivy"
           sarif_file: "trivy-results.sarif"
@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: always() && github.event_name != 'pull_request'
-        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           category: "trivy"
           sarif_file: "trivy-results.sarif"
@@ -82,7 +82,7 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: bcgov/actions/test-and-analyse@6c8ac0469fcf0d826533bc526c90119b8f149884 # v0.13.0
+      - uses: bcgov/actions/test-and-analyse@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
         env:
           DB_HOST: localhost
           DB_PORT: "5432"
@@ -111,6 +111,6 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 1
     steps:
-      - uses: bcgov/actions/workflow-results@6c8ac0469fcf0d826533bc526c90119b8f149884 # v0.13.0
+      - uses: bcgov/actions/workflow-results@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
         with:
           needs: ${{ toJson(needs) }}

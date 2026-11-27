@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: bcgov/actions-openshift/cleanup-pr@510a8105fdffbb718094e8a093e638132e300975 # v0.10.0
+      - uses: bcgov/actions-openshift/cleanup-pr@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
         with:
           cleanup: label
           cleanup_name: cthub-pr-${{ github.event.number }}
@@ -35,6 +35,6 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 1
     steps:
-      - uses: bcgov/actions/workflow-results@6c8ac0469fcf0d826533bc526c90119b8f149884 # v0.13.0
+      - uses: bcgov/actions/workflow-results@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
         with:
           needs: ${{ toJson(needs) }}
